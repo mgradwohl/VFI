@@ -29,6 +29,10 @@ $RECYCLE.BIN/
 *.tlog
 *.res
 *.old
+*.log
+*.filters
+*.user
+*.ilk
 
 # =========================
 # Operating System Files
