@@ -1,0 +1,66 @@
+//
+// GAMECRC.RC2 - resources Microsoft Visual C++ does not edit directly
+//
+
+#ifdef APSTUDIO_INVOKED
+	#error this file is not editable by Microsoft Visual C++
+#endif //APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Add manually edited resources here...
+
+/////////////////////////////////////////////////////////////////////////////
+
+
+#ifndef _MAC
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+ VS_VERSION_INFO VERSIONINFO
+ FILEVERSION STAMPER_NUM_FILE_VERSION
+ PRODUCTVERSION STAMPER_NUM_PROD_VERSION
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x40004L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904e4"
+        BEGIN
+            VALUE "Comments", "Generate and retrieve file information.\0"
+            VALUE "CompanyName", "Microsoft Games and Matt Gradwohl\0"
+            VALUE "FileDescription", "Visual File Information\0"
+            VALUE "FileVersion", STAMPER_STR_FILE_VERSION
+            VALUE "InternalName", "vfi\0"
+            VALUE "LegalCopyright", "Copyright ©1995-2003 Microsoft\0"
+            VALUE "LegalTrademarks", "Copyright ©1995-2003 Matt Gradwohl\0"
+            VALUE "OriginalFilename", "vfi.exe\0"
+            VALUE "ProductName", "Visual File Information\0"
+            VALUE "ProductVersion", STAMPER_STR_PROD_VERSION
+			//VALUE "Build Date", __DATE__
+			//VALUE "Build Time", __TIME__
+#if defined (DEBUG)
+			VALUE "Build Type", "Debug\0"
+#elif defined (TEST)
+			VALUE "Build Type", "Test\0"
+#else
+			VALUE "Build Type", "Release\0"
+#endif
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1252
+    END
+END
+
+#endif    // !_MAC

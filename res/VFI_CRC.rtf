@@ -1,0 +1,2074 @@
+{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fswiss\fprq2\fcharset0 Tahoma;}{\f1\fmodern\fprq1\fcharset0 Courier New;}{\f2\fswiss\fcharset0 Arial;}}
+\viewkind4\uc1\pard\nowidctlpar\f0\fs18 The following article was found on the net. If you would like to see how CRCs are calculated go here: \ul http://www.snippets.org/snippets/CRC.TXT\ulnone  or here: \ul http://www.snippets.org/snippets/index.php3#section1group26 \ulnone there is plenty of code on the Snippets site, although it\rquote s not exactly the same as the code I use.\par
+\par
+\f1\fs16 A PAINLESS GUIDE TO CRC ERROR DETECTION ALGORITHMS\par
+==================================================\par
+"Everything you wanted to know about CRC algorithms, but were afraid\par
+to ask for fear that errors in your understanding might be detected."\par
+\par
+Version : 3.\par
+Date    : 19 August 1993.\par
+Author  : Ross N. Williams.\par
+Net     : ross@guest.adelaide.edu.au.\par
+FTP     : ftp.adelaide.edu.au/pub/rocksoft/crc_v3.txt\par
+Company : Rocksoft^tm Pty Ltd.\par
+Snail   : 16 Lerwick Avenue, Hazelwood Park 5066, Australia.\par
+Fax     : +61 8 373-4911 (c/- Internode Systems Pty Ltd).\par
+Phone   : +61 8 379-9217 (10am to 10pm Adelaide Australia time).\par
+Note    : "Rocksoft" is a trademark of Rocksoft Pty Ltd, Australia.\par
+Status  : Copyright (C) Ross Williams, 1993. However, permission is\par
+          granted to make and distribute verbatim copies of this\par
+          document provided that this information block and copyright\par
+          notice is included. Also, the C code modules included\par
+          in this document are fully public domain.\par
+Thanks  : Thanks to Jean-loup Gailly (jloup@chorus.fr) and Mark Adler\par
+          (me@quest.jpl.nasa.gov) who both proof read this document\par
+          and picked out lots of nits as well as some big fat bugs.\par
+\par
+Table of Contents\par
+-----------------\par
+    Abstract\par
+ 1. Introduction: Error Detection\par
+ 2. The Need For Complexity\par
+ 3. The Basic Idea Behind CRC Algorithms\par
+ 4. Polynomical Arithmetic\par
+ 5. Binary Arithmetic with No Carries\par
+ 6. A Fully Worked Example\par
+ 7. Choosing A Poly\par
+ 8. A Straightforward CRC Implementation\par
+ 9. A Table-Driven Implementation\par
+10. A Slightly Mangled Table-Driven Implementation\par
+11. "Reflected" Table-Driven Implementations\par
+12. "Reversed" Polys\par
+13. Initial and Final Values\par
+14. Defining Algorithms Absolutely\par
+15. A Parameterized Model For CRC Algorithms\par
+16. A Catalog of Parameter Sets for Standards\par
+17. An Implementation of the Model Algorithm\par
+18. Roll Your Own Table-Driven Implementation\par
+19. Generating A Lookup Table\par
+20. Summary\par
+21. Corrections\par
+ A. Glossary\par
+ B. References\par
+ C. References I Have Detected But Haven't Yet Sighted\par
+\par
+\par
+Abstract\par
+--------\par
+This document explains CRCs (Cyclic Redundancy Codes) and their\par
+table-driven implementations in full, precise detail. Much of the\par
+literature on CRCs, and in particular on their table-driven\par
+implementations, is a little obscure (or at least seems so to me).\par
+This document is an attempt to provide a clear and simple no-nonsense\par
+explanation of CRCs and to absolutely nail down every detail of the\par
+operation of their high-speed implementations. In addition to this,\par
+this document presents a parameterized model CRC algorithm called the\par
+"Rocksoft^tm Model CRC Algorithm". The model algorithm can be\par
+parameterized to behave like most of the CRC implementations around,\par
+and so acts as a good reference for describing particular algorithms.\par
+A low-speed implementation of the model CRC algorithm is provided in\par
+the C programming language. Lastly there is a section giving two forms\par
+of high-speed table driven implementations, and providing a program\par
+that generates CRC lookup tables.\par
+\par
+\par
+1. Introduction: Error Detection\par
+--------------------------------\par
+The aim of an error detection technique is to enable the receiver of a\par
+message transmitted through a noisy (error-introducing) channel to\par
+determine whether the message has been corrupted. To do this, the\par
+transmitter constructs a value (called a checksum) that is a function\par
+of the message, and appends it to the message. The receiver can then\par
+use the same function to calculate the checksum of the received\par
+message and compare it with the appended checksum to see if the\par
+message was correctly received. For example, if we chose a checksum\par
+function which was simply the sum of the bytes in the message mod 256\par
+(i.e. modulo 256), then it might go something as follows. All numbers\par
+are in decimal.\par
+\par
+   Message                    :  6 23  4\par
+   Message with checksum      :  6 23  4 33\par
+   Message after transmission :  6 27  4 33\par
+\par
+In the above, the second byte of the message was corrupted from 23 to\par
+27 by the communications channel. However, the receiver can detect\par
+this by comparing the transmitted checksum (33) with the computer\par
+checksum of 37 (6 + 27 + 4). If the checksum itself is corrupted, a\par
+correctly transmitted message might be incorrectly identified as a\par
+corrupted one. However, this is a safe-side failure. A dangerous-side\par
+failure occurs where the message and/or checksum is corrupted in a\par
+manner that results in a transmission that is internally consistent.\par
+Unfortunately, this possibility is completely unavoidable and the best\par
+that can be done is to minimize its probability by increasing the\par
+amount of information in the checksum (e.g. widening the checksum from\par
+one byte to two bytes).\par
+\par
+Other error detection techniques exist that involve performing complex\par
+transformations on the message to inject it with redundant\par
+information. However, this document addresses only CRC algorithms,\par
+which fall into the class of error detection algorithms that leave the\par
+data intact and append a checksum on the end. i.e.:\par
+\par
+      <original intact message> <checksum>\par
+\par
+\par
+2. The Need For Complexity\par
+--------------------------\par
+In the checksum example in the previous section, we saw how a\par
+corrupted message was detected using a checksum algorithm that simply\par
+sums the bytes in the message mod 256:\par
+\par
+   Message                    :  6 23  4\par
+   Message with checksum      :  6 23  4 33\par
+   Message after transmission :  6 27  4 33\par
+\par
+A problem with this algorithm is that it is too simple. If a number of\par
+random corruptions occur, there is a 1 in 256 chance that they will\par
+not be detected. For example:\par
+\par
+   Message                    :  6 23  4\par
+   Message with checksum      :  6 23  4 33\par
+   Message after transmission :  8 20  5 33\par
+\par
+To strengthen the checksum, we could change from an 8-bit register to\par
+a 16-bit register (i.e. sum the bytes mod 65536 instead of mod 256) so\par
+as to apparently reduce the probability of failure from 1/256 to\par
+1/65536. While basically a good idea, it fails in this case because\par
+the formula used is not sufficiently "random"; with a simple summing\par
+formula, each incoming byte affects roughly only one byte of the\par
+summing register no matter how wide it is. For example, in the second\par
+example above, the summing register could be a Megabyte wide, and the\par
+error would still go undetected. This problem can only be solved by\par
+replacing the simple summing formula with a more sophisticated formula\par
+that causes each incoming byte to have an effect on the entire\par
+checksum register.\par
+\par
+Thus, we see that at least two aspects are required to form a strong\par
+checksum function:\par
+\par
+   WIDTH: A register width wide enough to provide a low a-priori\par
+          probability of failure (e.g. 32-bits gives a 1/2^32 chance\par
+          of failure).\par
+\par
+   CHAOS: A formula that gives each input byte the potential to change\par
+          any number of bits in the register.\par
+\par
+Note: The term "checksum" was presumably used to describe early\par
+summing formulas, but has now taken on a more general meaning\par
+encompassing more sophisticated algorithms such as the CRC ones. The\par
+CRC algorithms to be described satisfy the second condition very well,\par
+and can be configured to operate with a variety of checksum widths.\par
+\par
+\par
+3. The Basic Idea Behind CRC Algorithms\par
+---------------------------------------\par
+Where might we go in our search for a more complex function than\par
+summing? All sorts of schemes spring to mind. We could construct\par
+tables using the digits of pi, or hash each incoming byte with all the\par
+bytes in the register. We could even keep a large telephone book\par
+on-line, and use each incoming byte combined with the register bytes\par
+to index a new phone number which would be the next register value.\par
+The possibilities are limitless.\par
+\par
+However, we do not need to go so far; the next arithmetic step\par
+suffices. While addition is clearly not strong enough to form an\par
+effective checksum, it turns out that division is, so long as the\par
+divisor is about as wide as the checksum register.\par
+\par
+The basic idea of CRC algorithms is simply to treat the message as an\par
+enormous binary number, to divide it by another fixed binary number,\par
+and to make the remainder from this division the checksum. Upon\par
+receipt of the message, the receiver can perform the same division and\par
+compare the remainder with the "checksum" (transmitted remainder).\par
+\par
+Example: Suppose the the message consisted of the two bytes (6,23) as\par
+in the previous example. These can be considered to be the hexadecimal\par
+number 0617 which can be considered to be the binary number\par
+0000-0110-0001-0111. Suppose that we use a checksum register one-byte\par
+wide and use a constant divisor of 1001, then the checksum is the\par
+remainder after 0000-0110-0001-0111 is divided by 1001. While in this\par
+case, this calculation could obviously be performed using common\par
+garden variety 32-bit registers, in the general case this is messy. So\par
+instead, we'll do the division using good-'ol long division which you\par
+learnt in school (remember?). Except this time, it's in binary:\par
+\par
+          ...0000010101101 = 00AD =  173 = QUOTIENT\par
+         ____-___-___-___-\par
+9= 1001 ) 0000011000010111 = 0617 = 1559 = DIVIDEND\par
+DIVISOR   0000.,,....,.,,,\par
+          ----.,,....,.,,,\par
+           0000,,....,.,,,\par
+           0000,,....,.,,,\par
+           ----,,....,.,,,\par
+            0001,....,.,,,\par
+            0000,....,.,,,\par
+            ----,....,.,,,\par
+             0011....,.,,,\par
+             0000....,.,,,\par
+             ----....,.,,,\par
+              0110...,.,,,\par
+              0000...,.,,,\par
+              ----...,.,,,\par
+               1100..,.,,,\par
+               1001..,.,,,\par
+               ====..,.,,,\par
+                0110.,.,,,\par
+                0000.,.,,,\par
+                ----.,.,,,\par
+                 1100,.,,,\par
+                 1001,.,,,\par
+                 ====,.,,,\par
+                  0111.,,,\par
+                  0000.,,,\par
+                  ----.,,,\par
+                   1110,,,\par
+                   1001,,,\par
+                   ====,,,\par
+                    1011,,\par
+                    1001,,\par
+                    ====,,\par
+                     0101,\par
+                     0000,\par
+                     ----\par
+                      1011\par
+                      1001\par
+                      ====\par
+                      0010 = 02 = 2 = REMAINDER\par
+\par
+\par
+In decimal this is "1559 divided by 9 is 173 with a remainder of 2".\par
+\par
+Although the effect of each bit of the input message on the quotient\par
+is not all that significant, the 4-bit remainder gets kicked about\par
+quite a lot during the calculation, and if more bytes were added to\par
+the message (dividend) it's value could change radically again very\par
+quickly. This is why division works where addition doesn't.\par
+\par
+In case you're wondering, using this 4-bit checksum the transmitted\par
+message would look like this (in hexadecimal): 06172 (where the 0617\par
+is the message and the 2 is the checksum). The receiver would divide\par
+0617 by 9 and see whether the remainder was 2.\par
+\par
+\par
+4. Polynomical Arithmetic\par
+-------------------------\par
+While the division scheme described in the previous section is very\par
+very similar to the checksumming schemes called CRC schemes, the CRC\par
+schemes are in fact a bit weirder, and we need to delve into some\par
+strange number systems to understand them.\par
+\par
+The word you will hear all the time when dealing with CRC algorithms\par
+is the word "polynomial". A given CRC algorithm will be said to be\par
+using a particular polynomial, and CRC algorithms in general are said\par
+to be operating using polynomial arithmetic. What does this mean?\par
+\par
+Instead of the divisor, dividend (message), quotient, and remainder\par
+(as described in the previous section) being viewed as positive\par
+integers, they are viewed as polynomials with binary coefficients.\par
+This is done by treating each number as a bit-string whose bits are\par
+the coefficients of a polynomial. For example, the ordinary number 23\par
+(decimal) is 17 (hex) and 10111 binary and so it corresponds to the\par
+polynomial:\par
+\par
+   1*x^4 + 0*x^3 + 1*x^2 + 1*x^1 + 1*x^0\par
+\par
+or, more simply:\par
+\par
+   x^4 + x^2 + x^1 + x^0\par
+\par
+Using this technique, the message, and the divisor can be represented\par
+as polynomials and we can do all our arithmetic just as before, except\par
+that now it's all cluttered up with Xs. For example, suppose we wanted\par
+to multiply 1101 by 1011. We can do this simply by multiplying the\par
+polynomials:\par
+\par
+(x^3 + x^2 + x^0)(x^3 + x^1 + x^0)\par
+= (x^6 + x^4 + x^3\par
+ + x^5 + x^3 + x^2\par
+ + x^3 + x^1 + x^0) = x^6 + x^5 + x^4 + 3*x^3 + x^2 + x^1 + x^0\par
+\par
+At this point, to get the right answer, we have to pretend that x is 2\par
+and propagate binary carries from the 3*x^3 yielding\par
+\par
+   x^7 + x^3 + x^2 + x^1 + x^0\par
+\par
+It's just like ordinary arithmetic except that the base is abstracted\par
+and brought into all the calculations explicitly instead of being\par
+there implicitly. So what's the point?\par
+\par
+The point is that IF we pretend that we DON'T know what x is, we CAN'T\par
+perform the carries. We don't know that 3*x^3 is the same as x^4 + x^3\par
+because we don't know that x is 2. In this true polynomial arithmetic\par
+the relationship between all the coefficients is unknown and so the\par
+coefficients of each power effectively become strongly typed;\par
+coefficients of x^2 are effectively of a different type to\par
+coefficients of x^3.\par
+\par
+With the coefficients of each power nicely isolated, mathematicians\par
+came up with all sorts of different kinds of polynomial arithmetics\par
+simply by changing the rules about how coefficients work. Of these\par
+schemes, one in particular is relevant here, and that is a polynomial\par
+arithmetic where the coefficients are calculated MOD 2 and there is no\par
+carry; all coefficients must be either 0 or 1 and no carries are\par
+calculated. This is called "polynomial arithmetic mod 2". Thus,\par
+returning to the earlier example:\par
+\par
+(x^3 + x^2 + x^0)(x^3 + x^1 + x^0)\par
+= (x^6 + x^4 + x^3\par
+ + x^5 + x^3 + x^2\par
+ + x^3 + x^1 + x^0)\par
+= x^6 + x^5 + x^4 + 3*x^3 + x^2 + x^1 + x^0\par
+\par
+Under the other arithmetic, the 3*x^3 term was propagated using the\par
+carry mechanism using the knowledge that x=2. Under "polynomial\par
+arithmetic mod 2", we don't know what x is, there are no carries, and\par
+all coefficients have to be calculated mod 2. Thus, the result\par
+becomes:\par
+\par
+= x^6 + x^5 + x^4 + x^3 + x^2 + x^1 + x^0\par
+\par
+As Knuth [Knuth81] says (p.400):\par
+\par
+   "The reader should note the similarity between polynomial\par
+   arithmetic and multiple-precision arithmetic (Section 4.3.1), where\par
+   the radix b is substituted for x. The chief difference is that the\par
+   coefficient u_k of x^k in polynomial arithmetic bears little or no\par
+   relation to its neighboring coefficients x^\{k-1\} [and x^\{k+1\}], so\par
+   the idea of "carrying" from one place to another is absent. In fact\par
+   polynomial arithmetic modulo b is essentially identical to multiple\par
+   precision arithmetic with radix b, except that all carries are\par
+   suppressed."\par
+\par
+Thus polynomical arithmetic mod 2 is just binary arithmetic mod 2 with\par
+no carries. While polynomials provide useful mathematical machinery in\par
+more analytical approaches to CRC and error-correction algorithms, for\par
+the purposes of exposition they provide no extra insight and some\par
+encumbrance and have been discarded in the remainder of this document\par
+in favour of direct manipulation of the arithmetical system with which\par
+they are isomorphic: binary arithmetic with no carry.\par
+\par
+\par
+5. Binary Arithmetic with No Carries\par
+------------------------------------\par
+Having dispensed with polynomials, we can focus on the real arithmetic\par
+issue, which is that all the arithmetic performed during CRC\par
+calculations is performed in binary with no carries. Often this is\par
+called polynomial arithmetic, but as I have declared the rest of this\par
+document a polynomial free zone, we'll have to call it CRC arithmetic\par
+instead. As this arithmetic is a key part of CRC calculations, we'd\par
+better get used to it. Here we go:\par
+\par
+Adding two numbers in CRC arithmetic is the same as adding numbers in\par
+ordinary binary arithmetic except there is no carry. This means that\par
+each pair of corresponding bits determine the corresponding output bit\par
+without reference to any other bit positions. For example:\par
+\par
+        10011011\par
+       +11001010\par
+        --------\par
+        01010001\par
+        --------\par
+\par
+There are only four cases for each bit position:\par
+\par
+   0+0=0\par
+   0+1=1\par
+   1+0=1\par
+   1+1=0  (no carry)\par
+\par
+Subtraction is identical:\par
+\par
+        10011011\par
+       -11001010\par
+        --------\par
+        01010001\par
+        --------\par
+\par
+with\par
+\par
+   0-0=0\par
+   0-1=1  (wraparound)\par
+   1-0=1\par
+   1-1=0\par
+\par
+In fact, both addition and subtraction in CRC arithmetic is equivalent\par
+to the XOR operation, and the XOR operation is its own inverse. This\par
+effectively reduces the operations of the first level of power\par
+(addition, subtraction) to a single operation that is its own inverse.\par
+This is a very convenient property of the arithmetic.\par
+\par
+By collapsing of addition and subtraction, the arithmetic discards any\par
+notion of magnitude beyond the power of its highest one bit. While it\par
+seems clear that 1010 is greater than 10, it is no longer the case\par
+that 1010 can be considered to be greater than 1001. To see this, note\par
+that you can get from 1010 to 1001 by both adding and subtracting the\par
+same quantity:\par
+\par
+   1010 = 1010 + 0011\par
+   1010 = 1010 - 0011\par
+\par
+This makes nonsense of any notion of order.\par
+\par
+Having defined addition, we can move to multiplication and division.\par
+Multiplication is absolutely straightforward, being the sum of the\par
+first number, shifted in accordance with the second number.\par
+\par
+        1101\par
+      x 1011\par
+        ----\par
+        1101\par
+       1101.\par
+      0000..\par
+     1101...\par
+     -------\par
+     1111111  Note: The sum uses CRC addition\par
+     -------\par
+\par
+Division is a little messier as we need to know when "a number goes\par
+into another number". To do this, we invoke the weak definition of\par
+magnitude defined earlier: that X is greater than or equal to Y iff\par
+the position of the highest 1 bit of X is the same or greater than the\par
+position of the highest 1 bit of Y. Here's a fully worked division\par
+(nicked from [Tanenbaum81]).\par
+\par
+            1100001010\par
+       _______________\par
+10011 ) 11010110110000\par
+        10011,,.,,....\par
+        -----,,.,,....\par
+         10011,.,,....\par
+         10011,.,,....\par
+         -----,.,,....\par
+          00001.,,....\par
+          00000.,,....\par
+          -----.,,....\par
+           00010,,....\par
+           00000,,....\par
+           -----,,....\par
+            00101,....\par
+            00000,....\par
+            -----,....\par
+             01011....\par
+             00000....\par
+             -----....\par
+              10110...\par
+              10011...\par
+              -----...\par
+               01010..\par
+               00000..\par
+               -----..\par
+                10100.\par
+                10011.\par
+                -----.\par
+                 01110\par
+                 00000\par
+                 -----\par
+                  1110 = Remainder\par
+\par
+That's really it. Before proceeding further, however, it's worth our\par
+while playing with this arithmetic a bit to get used to it.\par
+\par
+We've already played with addition and subtraction, noticing that they\par
+are the same thing. Here, though, we should note that in this\par
+arithmetic A+0=A and A-0=A. This obvious property is very useful\par
+later.\par
+\par
+In dealing with CRC multiplication and division, it's worth getting a\par
+feel for the concepts of MULTIPLE and DIVISIBLE.\par
+\par
+If a number A is a multiple of B then what this means in CRC\par
+arithmetic is that it is possible to construct A from zero by XORing\par
+in various shifts of B. For example, if A was 0111010110 and B was 11,\par
+we could construct A from B as follows:\par
+\par
+                  0111010110\par
+                = .......11.\par
+                + ....11....\par
+                + ...11.....\par
+                  .11.......\par
+\par
+However, if A is 0111010111, it is not possible to construct it out of\par
+various shifts of B (can you see why? - see later) so it is said to be\par
+not divisible by B in CRC arithmetic.\par
+\par
+Thus we see that CRC arithmetic is primarily about XORing particular\par
+values at various shifting offsets.\par
+\par
+\par
+6. A Fully Worked Example\par
+-------------------------\par
+Having defined CRC arithmetic, we can now frame a CRC calculation as\par
+simply a division, because that's all it is! This section fills in the\par
+details and gives an example.\par
+\par
+To perform a CRC calculation, we need to choose a divisor. In maths\par
+marketing speak the divisor is called the "generator polynomial" or\par
+simply the "polynomial", and is a key parameter of any CRC algorithm.\par
+It would probably be more friendly to call the divisor something else,\par
+but the poly talk is so deeply ingrained in the field that it would\par
+now be confusing to avoid it. As a compromise, we will refer to the\par
+CRC polynomial as the "poly". Just think of this number as a sort of\par
+parrot. "Hello poly!"\par
+\par
+You can choose any poly and come up with a CRC algorithm. However,\par
+some polys are better than others, and so it is wise to stick with the\par
+tried an tested ones. A later section addresses this issue.\par
+\par
+The width (position of the highest 1 bit) of the poly is very\par
+important as it dominates the whole calculation. Typically, widths of\par
+16 or 32 are chosen so as to simplify implementation on modern\par
+computers. The width of a poly is the actual bit position of the\par
+highest bit. For example, the width of 10011 is 4, not 5. For the\par
+purposes of example, we will chose a poly of 10011 (of width W of 4).\par
+\par
+Having chosen a poly, we can proceed with the calculation. This is\par
+simply a division (in CRC arithmetic) of the message by the poly. The\par
+only trick is that W zero bits are appended to the message before the\par
+CRC is calculated. Thus we have:\par
+\par
+   Original message                : 1101011011\par
+   Poly                            :      10011\par
+   Message after appending W zeros : 11010110110000\par
+\par
+Now we simply divide the augmented message by the poly using CRC\par
+arithmetic. This is the same division as before:\par
+\par
+            1100001010 = Quotient (nobody cares about the quotient)\par
+       _______________\par
+10011 ) 11010110110000 = Augmented message (1101011011 + 0000)\par
+=Poly  10011,,.,,....\par
+        -----,,.,,....\par
+         10011,.,,....\par
+         10011,.,,....\par
+         -----,.,,....\par
+          00001.,,....\par
+          00000.,,....\par
+          -----.,,....\par
+           00010,,....\par
+           00000,,....\par
+           -----,,....\par
+            00101,....\par
+            00000,....\par
+            -----,....\par
+             01011....\par
+             00000....\par
+             -----....\par
+              10110...\par
+              10011...\par
+              -----...\par
+               01010..\par
+               00000..\par
+               -----..\par
+                10100.\par
+                10011.\par
+                -----.\par
+                 01110\par
+                 00000\par
+                 -----\par
+                  1110 = Remainder = THE CHECKSUM!!!!\par
+\par
+The division yields a quotient, which we throw away, and a remainder,\par
+which is the calculated checksum. This ends the calculation.\par
+\par
+Usually, the checksum is then appended to the message and the result\par
+transmitted. In this case the transmission would be: 11010110111110.\par
+\par
+At the other end, the receiver can do one of two things:\par
+\par
+   a. Separate the message and checksum. Calculate the checksum for\par
+      the message (after appending W zeros) and compare the two\par
+      checksums.\par
+\par
+   b. Checksum the whole lot (without appending zeros) and see if it\par
+      comes out as zero!\par
+\par
+These two options are equivalent. However, in the next section, we\par
+will be assuming option b because it is marginally mathematically\par
+cleaner.\par
+\par
+A summary of the operation of the class of CRC algorithms:\par
+\par
+   1. Choose a width W, and a poly G (of width W).\par
+   2. Append W zero bits to the message. Call this M'.\par
+   3. Divide M' by G using CRC arithmetic. The remainder is the checksum.\par
+\par
+That's all there is to it.\par
+\par
+7. Choosing A Poly\par
+------------------\par
+Choosing a poly is somewhat of a black art and the reader is referred\par
+to [Tanenbaum81] (p.130-132) which has a very clear discussion of this\par
+issue. This section merely aims to put the fear of death into anyone\par
+who so much as toys with the idea of making up their own poly. If you\par
+don't care about why one poly might be better than another and just\par
+want to find out about high-speed implementations, choose one of the\par
+arithmetically sound polys listed at the end of this section and skip\par
+to the next section.\par
+\par
+First note that the transmitted message T is a multiple of the poly.\par
+To see this, note that 1) the last W bits of T is the remainder after\par
+dividing the augmented (by zeros remember) message by the poly, and 2)\par
+addition is the same as subtraction so adding the remainder pushes the\par
+value up to the next multiple. Now note that if the transmitted\par
+message is corrupted in transmission that we will receive T+E where E\par
+is an error vector (and + is CRC addition (i.e. XOR)). Upon receipt of\par
+this message, the receiver divides T+E by G. As T mod G is 0, (T+E)\par
+mod G = E mod G. Thus, the capacity of the poly we choose to catch\par
+particular kinds of errors will be determined by the set of multiples\par
+of G, for any corruption E that is a multiple of G will be undetected.\par
+Our task then is to find classes of G whose multiples look as little\par
+like the kind of line noise (that will be creating the corruptions) as\par
+possible. So let's examine the kinds of line noise we can expect.\par
+\par
+SINGLE BIT ERRORS: A single bit error means E=1000...0000. We can\par
+ensure that this class of error is always detected by making sure that\par
+G has at least two bits set to 1. Any multiple of G will be\par
+constructed using shifting and adding and it is impossible to\par
+construct a value with a single bit by shifting an adding a single\par
+value with more than one bit set, as the two end bits will always\par
+persist.\par
+\par
+TWO-BIT ERRORS: To detect all errors of the form 100...000100...000\par
+(i.e. E contains two 1 bits) choose a G that does not have multiples\par
+that are 11, 101, 1001, 10001, 100001, etc. It is not clear to me how\par
+one goes about doing this (I don't have the pure maths background),\par
+but Tanenbaum assures us that such G do exist, and cites G with 1 bits\par
+(15,14,1) turned on as an example of one G that won't divide anything\par
+less than 1...1 where ... is 32767 zeros.\par
+\par
+ERRORS WITH AN ODD NUMBER OF BITS: We can catch all corruptions where\par
+E has an odd number of bits by choosing a G that has an even number of\par
+bits. To see this, note that 1) CRC multiplication is simply XORing a\par
+constant value into a register at various offsets, 2) XORing is simply\par
+a bit-flip operation, and 3) if you XOR a value with an even number of\par
+bits into a register, the oddness of the number of 1 bits in the\par
+register remains invariant. Example: Starting with E=111, attempt to\par
+flip all three bits to zero by the repeated application of XORing in\par
+11 at one of the two offsets (i.e. "E=E XOR 011" and "E=E XOR 110")\par
+This is nearly isomorphic to the "glass tumblers" party puzzle where\par
+you challenge someone to flip three tumblers by the repeated\par
+application of the operation of flipping any two. Most of the popular\par
+CRC polys contain an even number of 1 bits. (Note: Tanenbaum states\par
+more specifically that all errors with an odd number of bits can be\par
+caught by making G a multiple of 11).\par
+\par
+BURST ERRORS: A burst error looks like E=000...000111...11110000...00.\par
+That is, E consists of all zeros except for a run of 1s somewhere\par
+inside. This can be recast as E=(10000...00)(1111111...111) where\par
+there are z zeros in the LEFT part and n ones in the RIGHT part. To\par
+catch errors of this kind, we simply set the lowest bit of G to 1.\par
+Doing this ensures that LEFT cannot be a factor of G. Then, so long as\par
+G is wider than RIGHT, the error will be detected. See Tanenbaum for a\par
+clearer explanation of this; I'm a little fuzzy on this one. Note:\par
+Tanenbaum asserts that the probability of a burst of length greater\par
+than W getting through is (0.5)^W.\par
+\par
+That concludes the section on the fine art of selecting polys.\par
+\par
+Some popular polys are:\par
+16 bits: (16,12,5,0)                                [X25 standard]\par
+         (16,15,2,0)                                ["CRC-16"]\par
+32 bits: (32,26,23,22,16,12,11,10,8,7,5,4,2,1,0)    [Ethernet]\par
+\par
+\par
+8. A Straightforward CRC Implementation\par
+---------------------------------------\par
+That's the end of the theory; now we turn to implementations. To start\par
+with, we examine an absolutely straight-down-the-middle boring\par
+straightforward low-speed implementation that doesn't use any speed\par
+tricks at all. We'll then transform that program progessively until we\par
+end up with the compact table-driven code we all know and love and\par
+which some of us would like to understand.\par
+\par
+To implement a CRC algorithm all we have to do is implement CRC\par
+division. There are two reasons why we cannot simply use the divide\par
+instruction of whatever machine we are on. The first is that we have\par
+to do the divide in CRC arithmetic. The second is that the dividend\par
+might be ten megabytes long, and todays processors do not have\par
+registers that big.\par
+\par
+So to implement CRC division, we have to feed the message through a\par
+division register. At this point, we have to be absolutely precise\par
+about the message data. In all the following examples the message will\par
+be considered to be a stream of bytes (each of 8 bits) with bit 7 of\par
+each byte being considered to be the most significant bit (MSB). The\par
+bit stream formed from these bytes will be the bit stream with the MSB\par
+(bit 7) of the first byte first, going down to bit 0 of the first\par
+byte, and then the MSB of the second byte and so on.\par
+\par
+With this in mind, we can sketch an implementation of the CRC\par
+division. For the purposes of example, consider a poly with W=4 and\par
+the poly=10111. Then, the perform the division, we need to use a 4-bit\par
+register:\par
+\par
+                  3   2   1   0   Bits\par
+                +---+---+---+---+\par
+       Pop! <-- |   |   |   |   | <----- Augmented message\par
+                +---+---+---+---+\par
+\par
+             1    0   1   1   1   = The Poly\par
+\par
+(Reminder: The augmented message is the message followed by W zero bits.)\par
+\par
+To perform the division perform the following:\par
+\par
+   Load the register with zero bits.\par
+   Augment the message by appending W zero bits to the end of it.\par
+   While (more message bits)\par
+      Begin\par
+      Shift the register left by one bit, reading the next bit of the\par
+         augmented message into register bit position 0.\par
+      If (a 1 bit popped out of the register during step 3)\par
+         Register = Register XOR Poly.\par
+      End\par
+   The register now contains the remainder.\par
+\par
+(Note: In practice, the IF condition can be tested by testing the top\par
+ bit of R before performing the shift.)\par
+\par
+We will call this algorithm "SIMPLE".\par
+\par
+This might look a bit messy, but all we are really doing is\par
+"subtracting" various powers (i.e. shiftings) of the poly from the\par
+message until there is nothing left but the remainder. Study the\par
+manual examples of long division if you don't understand this.\par
+\par
+It should be clear that the above algorithm will work for any width W.\par
+\par
+\par
+9. A Table-Driven Implementation\par
+--------------------------------\par
+The SIMPLE algorithm above is a good starting point because it\par
+corresponds directly to the theory presented so far, and because it is\par
+so SIMPLE. However, because it operates at the bit level, it is rather\par
+awkward to code (even in C), and inefficient to execute (it has to\par
+loop once for each bit). To speed it up, we need to find a way to\par
+enable the algorithm to process the message in units larger than one\par
+bit. Candidate quantities are nibbles (4 bits), bytes (8 bits), words\par
+(16 bits) and longwords (32 bits) and higher if we can achieve it. Of\par
+these, 4 bits is best avoided because it does not correspond to a byte\par
+boundary. At the very least, any speedup should allow us to operate at\par
+byte boundaries, and in fact most of the table driven algorithms\par
+operate a byte at a time.\par
+\par
+For the purposes of discussion, let us switch from a 4-bit poly to a\par
+32-bit one. Our register looks much the same, except the boxes\par
+represent bytes instead of bits, and the Poly is 33 bits (one implicit\par
+1 bit at the top and 32 "active" bits) (W=32).\par
+\par
+                   3    2    1    0   Bytes\par
+                +----+----+----+----+\par
+       Pop! <-- |    |    |    |    | <----- Augmented message\par
+                +----+----+----+----+\par
+\par
+               1<------32 bits------>\par
+\par
+The SIMPLE algorithm is still applicable. Let us examine what it does.\par
+Imagine that the SIMPLE algorithm is in full swing and consider the\par
+top 8 bits of the 32-bit register (byte 3) to have the values:\par
+\par
+   t7 t6 t5 t4 t3 t2 t1 t0\par
+\par
+In the next iteration of SIMPLE, t7 will determine whether the Poly\par
+will be XORed into the entire register. If t7=1, this will happen,\par
+otherwise it will not. Suppose that the top 8 bits of the poly are g7\par
+g6.. g0, then after the next iteration, the top byte will be:\par
+\par
+        t6 t5 t4 t3 t2 t1 t0 ??\par
++ t7 * (g7 g6 g5 g4 g3 g2 g1 g0)    [Reminder: + is XOR]\par
+\par
+The NEW top bit (that will control what happens in the next iteration)\par
+now has the value t6 + t7*g7. The important thing to notice here is\par
+that from an informational point of view, all the information required\par
+to calculate the NEW top bit was present in the top TWO bits of the\par
+original top byte. Similarly, the NEXT top bit can be calculated in\par
+advance SOLELY from the top THREE bits t7, t6, and t5. In fact, in\par
+general, the value of the top bit in the register in k iterations can\par
+be calculated from the top k bits of the register. Let us take this\par
+for granted for a moment.\par
+\par
+Consider for a moment that we use the top 8 bits of the register to\par
+calculate the value of the top bit of the register during the next 8\par
+iterations. Suppose that we drive the next 8 iterations using the\par
+calculated values (which we could perhaps store in a single byte\par
+register and shift out to pick off each bit). Then we note three\par
+things:\par
+\par
+   * The top byte of the register now doesn't matter. No matter how\par
+     many times and at what offset the poly is XORed to the top 8\par
+     bits, they will all be shifted out the right hand side during the\par
+     next 8 iterations anyway.\par
+\par
+\par
+   * The remaining bits will be shifted left one position and the\par
+     rightmost byte of the register will be shifted in the next byte\par
+\par
+   AND\par
+\par
+   * While all this is going on, the register will be subjected to a\par
+     series of XOR's in accordance with the bits of the pre-calculated\par
+     control byte.\par
+\par
+Now consider the effect of XORing in a constant value at various\par
+offsets to a register. For example:\par
+\par
+       0100010  Register\par
+       ...0110  XOR this\par
+       ..0110.  XOR this\par
+       0110...  XOR this\par
+       -------\par
+       0011000\par
+       -------\par
+\par
+The point of this is that you can XOR constant values into a register\par
+to your heart's delight, and in the end, there will exist a value\par
+which when XORed in with the original register will have the same\par
+effect as all the other XORs.\par
+\par
+Perhaps you can see the solution now. Putting all the pieces together\par
+we have an algorithm that goes like this:\par
+\par
+   While (augmented message is not exhausted)\par
+      Begin\par
+      Examine the top byte of the register\par
+      Calculate the control byte from the top byte of the register\par
+      Sum all the Polys at various offsets that are to be XORed into\par
+         the register in accordance with the control byte\par
+      Shift the register left by one byte, reading a new message byte\par
+         into the rightmost byte of the register\par
+      XOR the summed polys to the register\par
+      End\par
+\par
+As it stands this is not much better than the SIMPLE algorithm.\par
+However, it turns out that most of the calculation can be precomputed\par
+and assembled into a table. As a result, the above algorithm can be\par
+reduced to:\par
+\par
+   While (augmented message is not exhaused)\par
+      Begin\par
+      Top = top_byte(Register);\par
+      Register = (Register << 24) | next_augmessage_byte;\par
+      Register = Register XOR precomputed_table[Top];\par
+      End\par
+\par
+There! If you understand this, you've grasped the main idea of\par
+table-driven CRC algorithms. The above is a very efficient algorithm\par
+requiring just a shift, and OR, an XOR, and a table lookup per byte.\par
+Graphically, it looks like this:\par
+\par
+                   3    2    1    0   Bytes\par
+                +----+----+----+----+\par
+         +-----<|    |    |    |    | <----- Augmented message\par
+         |      +----+----+----+----+\par
+         |                ^\par
+         |                |\par
+         |               XOR\par
+         |                |\par
+         |     0+----+----+----+----+       Algorithm\par
+         v      +----+----+----+----+       ---------\par
+         |      +----+----+----+----+       1. Shift the register left by\par
+         |      +----+----+----+----+          one byte, reading in a new\par
+         |      +----+----+----+----+          message byte.\par
+         |      +----+----+----+----+       2. Use the top byte just rotated\par
+         |      +----+----+----+----+          out of the register to index\par
+         +----->+----+----+----+----+          the table of 256 32-bit values.\par
+                +----+----+----+----+       3. XOR the table value into the\par
+                +----+----+----+----+          register.\par
+                +----+----+----+----+       4. Goto 1 iff more augmented\par
+                +----+----+----+----+          message bytes.\par
+             255+----+----+----+----+\par
+\par
+\par
+In C, the algorithm main loop looks like this:\par
+\par
+   r=0;\par
+   while (len--)\par
+     \{\par
+      byte t = (r >> 24) & 0xFF;\par
+      r = (r << 8) | *p++;\par
+      r^=table[t];\par
+     \}\par
+\par
+where len is the length of the augmented message in bytes, p points to\par
+the augmented message, r is the register, t is a temporary, and table\par
+is the computed table. This code can be made even more unreadable as\par
+follows:\par
+\par
+   r=0; while (len--) r = ((r << 8) | *p++) ^ t[(r >> 24) & 0xFF];\par
+\par
+This is a very clean, efficient loop, although not a very obvious one\par
+to the casual observer not versed in CRC theory. We will call this the\par
+TABLE algorithm.\par
+\par
+\par
+10. A Slightly Mangled Table-Driven Implementation\par
+--------------------------------------------------\par
+Despite the terse beauty of the line\par
+\par
+   r=0; while (len--) r = ((r << 8) | *p++) ^ t[(r >> 24) & 0xFF];\par
+\par
+those optimizing hackers couldn't leave it alone. The trouble, you\par
+see, is that this loop operates upon the AUGMENTED message and in\par
+order to use this code, you have to append W/8 zero bytes to the end\par
+of the message before pointing p at it. Depending on the run-time\par
+environment, this may or may not be a problem; if the block of data\par
+was handed to us by some other code, it could be a BIG problem. One\par
+alternative is simply to append the following line after the above\par
+loop, once for each zero byte:\par
+\par
+      for (i=0; i<W/4; i++) r = (r << 8) ^ t[(r >> 24) & 0xFF];\par
+\par
+This looks like a sane enough solution to me. However, at the further\par
+expense of clarity (which, you must admit, is already a pretty scare\par
+commodity in this code) we can reorganize this small loop further so\par
+as to avoid the need to either augment the message with zero bytes, or\par
+to explicitly process zero bytes at the end as above. To explain the\par
+optimization, we return to the processing diagram given earlier.\par
+\par
+                   3    2    1    0   Bytes\par
+                +----+----+----+----+\par
+         +-----<|    |    |    |    | <----- Augmented message\par
+         |      +----+----+----+----+\par
+         |                ^\par
+         |                |\par
+         |               XOR\par
+         |                |\par
+         |     0+----+----+----+----+       Algorithm\par
+         v      +----+----+----+----+       ---------\par
+         |      +----+----+----+----+       1. Shift the register left by\par
+         |      +----+----+----+----+          one byte, reading in a new\par
+         |      +----+----+----+----+          message byte.\par
+         |      +----+----+----+----+       2. Use the top byte just rotated\par
+         |      +----+----+----+----+          out of the register to index\par
+         +----->+----+----+----+----+          the table of 256 32-bit values.\par
+                +----+----+----+----+       3. XOR the table value into the\par
+                +----+----+----+----+          register.\par
+                +----+----+----+----+       4. Goto 1 iff more augmented\par
+                +----+----+----+----+          message bytes.\par
+             255+----+----+----+----+\par
+\par
+Now, note the following facts:\par
+\par
+TAIL: The W/4 augmented zero bytes that appear at the end of the\par
+      message will be pushed into the register from the right as all\par
+      the other bytes are, but their values (0) will have no effect\par
+      whatsoever on the register because 1) XORing with zero does not\par
+      change the target byte, and 2) the four bytes are never\par
+      propagated out the left side of the register where their\par
+      zeroness might have some sort of influence. Thus, the sole\par
+      function of the W/4 augmented zero bytes is to drive the\par
+      calculation for another W/4 byte cycles so that the end of the\par
+      REAL data passes all the way through the register.\par
+\par
+HEAD: If the initial value of the register is zero, the first four\par
+      iterations of the loop will have the sole effect of shifting in\par
+      the first four bytes of the message from the right. This is\par
+      because the first 32 control bits are all zero and so nothing is\par
+      XORed into the register. Even if the initial value is not zero,\par
+      the first 4 byte iterations of the algorithm will have the sole\par
+      effect of shifting the first 4 bytes of the message into the\par
+      register and then XORing them with some constant value (that is\par
+      a function of the initial value of the register).\par
+\par
+These facts, combined with the XOR property\par
+\par
+   (A xor B) xor C = A xor (B xor C)\par
+\par
+mean that message bytes need not actually travel through the W/4 bytes\par
+of the register. Instead, they can be XORed into the top byte just\par
+before it is used to index the lookup table. This leads to the\par
+following modified version of the algorithm.\par
+\par
+\par
+         +-----<Message (non augmented)\par
+         |\par
+         v         3    2    1    0   Bytes\par
+         |      +----+----+----+----+\par
+        XOR----<|    |    |    |    |\par
+         |      +----+----+----+----+\par
+         |                ^\par
+         |                |\par
+         |               XOR\par
+         |                |\par
+         |     0+----+----+----+----+       Algorithm\par
+         v      +----+----+----+----+       ---------\par
+         |      +----+----+----+----+       1. Shift the register left by\par
+         |      +----+----+----+----+          one byte, reading in a new\par
+         |      +----+----+----+----+          message byte.\par
+         |      +----+----+----+----+       2. XOR the top byte just rotated\par
+         |      +----+----+----+----+          out of the register with the\par
+         +----->+----+----+----+----+          next message byte to yield an\par
+                +----+----+----+----+          index into the table ([0,255]).\par
+                +----+----+----+----+       3. XOR the table value into the\par
+                +----+----+----+----+          register.\par
+                +----+----+----+----+       4. Goto 1 iff more augmented\par
+             255+----+----+----+----+          message bytes.\par
+\par
+\par
+Note: The initial register value for this algorithm must be the\par
+initial value of the register for the previous algorithm fed through\par
+the table four times. Note: The table is such that if the previous\par
+algorithm used 0, the new algorithm will too.\par
+\par
+This is an IDENTICAL algorithm and will yield IDENTICAL results. The C\par
+code looks something like this:\par
+\par
+   r=0; while (len--) r = (r<<8) ^ t[(r >> 24) ^ *p++];\par
+\par
+and THIS is the code that you are likely to find inside current\par
+table-driven CRC implementations. Some FF masks might have to be ANDed\par
+in here and there for portability's sake, but basically, the above\par
+loop is IT. We will call this the DIRECT TABLE ALGORITHM.\par
+\par
+During the process of trying to understand all this stuff, I managed\par
+to derive the SIMPLE algorithm and the table-driven version derived\par
+from that. However, when I compared my code with the code found in\par
+real-implementations, I was totally bamboozled as to why the bytes\par
+were being XORed in at the wrong end of the register! It took quite a\par
+while before I figured out that theirs and my algorithms were actually\par
+the same. Part of why I am writing this document is that, while the\par
+link between division and my earlier table-driven code is vaguely\par
+apparent, any such link is fairly well erased when you start pumping\par
+bytes in at the "wrong end" of the register. It looks all wrong!\par
+\par
+If you've got this far, you not only understand the theory, the\par
+practice, the optimized practice, but you also understand the real\par
+code you are likely to run into. Could get any more complicated? Yes\par
+it can.\par
+\par
+\par
+11. "Reflected" Table-Driven Implementations\par
+--------------------------------------------\par
+Despite the fact that the above code is probably optimized about as\par
+much as it could be, this did not stop some enterprising individuals\par
+from making things even more complicated. To understand how this\par
+happened, we have to enter the world of hardware.\par
+\par
+DEFINITION: A value/register is reflected if it's bits are swapped\par
+around its centre. For example: 0101 is the 4-bit reflection of 1010.\par
+0011 is the reflection of 1100.\par
+0111-0101-1010-1111-0010-0101-1011-1100 is the reflection of\par
+0011-1101-1010-0100-1111-0101-1010-1110.\par
+\par
+Turns out that UARTs (those handy little chips that perform serial IO)\par
+are in the habit of transmitting each byte with the least significant\par
+bit (bit 0) first and the most significant bit (bit 7) last (i.e.\par
+reflected). An effect of this convention is that hardware engineers\par
+constructing hardware CRC calculators that operate at the bit level\par
+took to calculating CRCs of bytes streams with each of the bytes\par
+reflected within itself. The bytes are processed in the same order,\par
+but the bits in each byte are swapped; bit 0 is now bit 7, bit 1 is\par
+now bit 6, and so on. Now this wouldn't matter much if this convention\par
+was restricted to hardware land. However it seems that at some stage\par
+some of these CRC values were presented at the software level and\par
+someone had to write some code that would interoperate with the\par
+hardware CRC calculation.\par
+\par
+In this situation, a normal sane software engineer would simply\par
+reflect each byte before processing it. However, it would seem that\par
+normal sane software engineers were thin on the ground when this early\par
+ground was being broken, because instead of reflecting the bytes,\par
+whoever was responsible held down the byte and reflected the world,\par
+leading to the following "reflected" algorithm which is identical to\par
+the previous one except that everything is reflected except the input\par
+bytes.\par
+\par
+\par
+             Message (non augmented) >-----+\par
+                                           |\par
+           Bytes   0    1    2    3        v\par
+                +----+----+----+----+      |\par
+                |    |    |    |    |>----XOR\par
+                +----+----+----+----+      |\par
+                          ^                |\par
+                          |                |\par
+                         XOR               |\par
+                          |                |\par
+                +----+----+----+----+0     |\par
+                +----+----+----+----+      v\par
+                +----+----+----+----+      |\par
+                +----+----+----+----+      |\par
+                +----+----+----+----+      |\par
+                +----+----+----+----+      |\par
+                +----+----+----+----+      |\par
+                +----+----+----+----+<-----+\par
+                +----+----+----+----+\par
+                +----+----+----+----+\par
+                +----+----+----+----+\par
+                +----+----+----+----+\par
+                +----+----+----+----+255\par
+\par
+Notes:\par
+\par
+   * The table is identical to the one in the previous algorithm\par
+   except that each entry has been reflected.\par
+\par
+   * The initial value of the register is the same as in the previous\par
+   algorithm except that it has been reflected.\par
+\par
+   * The bytes of the message are processed in the same order as\par
+   before (i.e. the message itself is not reflected).\par
+\par
+   * The message bytes themselves don't need to be explicitly\par
+   reflected, because everything else has been!\par
+\par
+At the end of execution, the register contains the reflection of the\par
+final CRC value (remainder). Actually, I'm being rather hard on\par
+whoever cooked this up because it seems that hardware implementations\par
+of the CRC algorithm used the reflected checksum value and so\par
+producing a reflected CRC was just right. In fact reflecting the world\par
+was probably a good engineering solution - if a confusing one.\par
+\par
+We will call this the REFLECTED algorithm.\par
+\par
+Whether or not it made sense at the time, the effect of having\par
+reflected algorithms kicking around the world's FTP sites is that\par
+about half the CRC implementations one runs into are reflected and the\par
+other half not. It's really terribly confusing. In particular, it\par
+would seem to me that the casual reader who runs into a reflected,\par
+table-driven implementation with the bytes "fed in the wrong end"\par
+would have Buckley's chance of ever connecting the code to the concept\par
+of binary mod 2 division.\par
+\par
+It couldn't get any more confusing could it? Yes it could.\par
+\par
+\par
+12. "Reversed" Polys\par
+--------------------\par
+As if reflected implementations weren't enough, there is another\par
+concept kicking around which makes the situation bizaarly confusing.\par
+The concept is reversed Polys.\par
+\par
+It turns out that the reflection of good polys tend to be good polys\par
+too! That is, if G=11101 is a good poly value, then 10111 will be as\par
+well. As a consequence, it seems that every time an organization (such\par
+as CCITT) standardizes on a particularly good poly ("polynomial"),\par
+those in the real world can't leave the poly's reflection alone\par
+either. They just HAVE to use it. As a result, the set of "standard"\par
+poly's has a corresponding set of reflections, which are also in use.\par
+To avoid confusion, we will call these the "reversed" polys.\par
+\par
+   X25   standard: 1-0001-0000-0010-0001\par
+   X25   reversed: 1-0000-1000-0001-0001\par
+\par
+   CRC16 standard: 1-1000-0000-0000-0101\par
+   CRC16 reversed: 1-0100-0000-0000-0011\par
+\par
+Note that here it is the entire poly that is being reflected/reversed,\par
+not just the bottom W bits. This is an important distinction. In the\par
+reflected algorithm described in the previous section, the poly used\par
+in the reflected algorithm was actually identical to that used in the\par
+non-reflected algorithm; all that had happened is that the bytes had\par
+effectively been reflected. As such, all the 16-bit/32-bit numbers in\par
+the algorithm had to be reflected. In contrast, the ENTIRE poly\par
+includes the implicit one bit at the top, and so reversing a poly is\par
+not the same as reflecting its bottom 16 or 32 bits.\par
+\par
+The upshot of all this is that a reflected algorithm is not equivalent\par
+to the original algorithm with the poly reflected. Actually, this is\par
+probably less confusing than if they were duals.\par
+\par
+If all this seems a bit unclear, don't worry, because we're going to\par
+sort it all out "real soon now". Just one more section to go before\par
+that.\par
+\par
+\par
+13. Initial and Final Values\par
+----------------------------\par
+In addition to the complexity already seen, CRC algorithms differ from\par
+each other in two other regards:\par
+\par
+   * The initial value of the register.\par
+\par
+   * The value to be XORed with the final register value.\par
+\par
+For example, the "CRC32" algorithm initializes its register to\par
+FFFFFFFF and XORs the final register value with FFFFFFFF.\par
+\par
+Most CRC algorithms initialize their register to zero. However, some\par
+initialize it to a non-zero value. In theory (i.e. with no assumptions\par
+about the message), the initial value has no affect on the strength of\par
+the CRC algorithm, the initial value merely providing a fixed starting\par
+point from which the register value can progress. However, in\par
+practice, some messages are more likely than others, and it is wise to\par
+initialize the CRC algorithm register to a value that does not have\par
+"blind spots" that are likely to occur in practice. By "blind spot" is\par
+meant a sequence of message bytes that do not result in the register\par
+changing its value. In particular, any CRC algorithm that initializes\par
+its register to zero will have a blind spot of zero when it starts up\par
+and will be unable to "count" a leading run of zero bytes. As a\par
+leading run of zero bytes is quite common in real messages, it is wise\par
+to initialize the algorithm register to a non-zero value.\par
+\par
+\par
+14. Defining Algorithms Absolutely\par
+----------------------------------\par
+At this point we have covered all the different aspects of\par
+table-driven CRC algorithms. As there are so many variations on these\par
+algorithms, it is worth trying to establish a nomenclature for them.\par
+This section attempts to do that.\par
+\par
+We have seen that CRC algorithms vary in:\par
+\par
+   * Width of the poly (polynomial).\par
+   * Value of the poly.\par
+   * Initial value for the register.\par
+   * Whether the bits of each byte are reflected before being processed.\par
+   * Whether the algorithm feeds input bytes through the register or\par
+     xors them with a byte from one end and then straight into the table.\par
+   * Whether the final register value should be reversed (as in reflected\par
+     versions).\par
+   * Value to XOR with the final register value.\par
+\par
+In order to be able to talk about particular CRC algorithms, we need\par
+to able to define them more precisely than this. For this reason, the\par
+next section attempts to provide a well-defined parameterized model\par
+for CRC algorithms. To refer to a particular algorithm, we need then\par
+simply specify the algorithm in terms of parameters to the model.\par
+\par
+\par
+15. A Parameterized Model For CRC Algorithms\par
+--------------------------------------------\par
+In this section we define a precise parameterized model CRC algorithm\par
+which, for want of a better name, we will call the "Rocksoft^tm Model\par
+CRC Algorithm" (and why not? Rocksoft^tm could do with some free\par
+advertising :-).\par
+\par
+The most important aspect of the model algorithm is that it focusses\par
+exclusively on functionality, ignoring all implementation details. The\par
+aim of the exercise is to construct a way of referring precisely to\par
+particular CRC algorithms, regardless of how confusingly they are\par
+implemented. To this end, the model must be as simple and precise as\par
+possible, with as little confusion as possible.\par
+\par
+The Rocksoft^tm Model CRC Algorithm is based essentially on the DIRECT\par
+TABLE ALGORITHM specified earlier. However, the algorithm has to be\par
+further parameterized to enable it to behave in the same way as some\par
+of the messier algorithms out in the real world.\par
+\par
+To enable the algorithm to behave like reflected algorithms, we\par
+provide a boolean option to reflect the input bytes, and a boolean\par
+option to specify whether to reflect the output checksum value. By\par
+framing reflection as an input/output transformation, we avoid the\par
+confusion of having to mentally map the parameters of reflected and\par
+non-reflected algorithms.\par
+\par
+An extra parameter allows the algorithm's register to be initialized\par
+to a particular value. A further parameter is XORed with the final\par
+value before it is returned.\par
+\par
+By putting all these pieces together we end up with the parameters of\par
+the algorithm:\par
+\par
+   NAME: This is a name given to the algorithm. A string value.\par
+\par
+   WIDTH: This is the width of the algorithm expressed in bits. This\par
+   is one less than the width of the Poly.\par
+\par
+   POLY: This parameter is the poly. This is a binary value that\par
+   should be specified as a hexadecimal number. The top bit of the\par
+   poly should be omitted. For example, if the poly is 10110, you\par
+   should specify 06. An important aspect of this parameter is that it\par
+   represents the unreflected poly; the bottom bit of this parameter\par
+   is always the LSB of the divisor during the division regardless of\par
+   whether the algorithm being modelled is reflected.\par
+\par
+   INIT: This parameter specifies the initial value of the register\par
+   when the algorithm starts. This is the value that is to be assigned\par
+   to the register in the direct table algorithm. In the table\par
+   algorithm, we may think of the register always commencing with the\par
+   value zero, and this value being XORed into the register after the\par
+   N'th bit iteration. This parameter should be specified as a\par
+   hexadecimal number.\par
+\par
+   REFIN: This is a boolean parameter. If it is FALSE, input bytes are\par
+   processed with bit 7 being treated as the most significant bit\par
+   (MSB) and bit 0 being treated as the least significant bit. If this\par
+   parameter is FALSE, each byte is reflected before being processed.\par
+\par
+   REFOUT: This is a boolean parameter. If it is set to FALSE, the\par
+   final value in the register is fed into the XOROUT stage directly,\par
+   otherwise, if this parameter is TRUE, the final register value is\par
+   reflected first.\par
+\par
+   XOROUT: This is an W-bit value that should be specified as a\par
+   hexadecimal number. It is XORed to the final register value (after\par
+   the REFOUT) stage before the value is returned as the official\par
+   checksum.\par
+\par
+   CHECK: This field is not strictly part of the definition, and, in\par
+   the event of an inconsistency between this field and the other\par
+   field, the other fields take precedence. This field is a check\par
+   value that can be used as a weak validator of implementations of\par
+   the algorithm. The field contains the checksum obtained when the\par
+   ASCII string "123456789" is fed through the specified algorithm\par
+   (i.e. 313233... (hexadecimal)).\par
+\par
+With these parameters defined, the model can now be used to specify a\par
+particular CRC algorithm exactly. Here is an example specification for\par
+a popular form of the CRC-16 algorithm.\par
+\par
+   Name   : "CRC-16"\par
+   Width  : 16\par
+   Poly   : 8005\par
+   Init   : 0000\par
+   RefIn  : True\par
+   RefOut : True\par
+   XorOut : 0000\par
+   Check  : BB3D\par
+\par
+\par
+16. A Catalog of Parameter Sets for Standards\par
+---------------------------------------------\par
+At this point, I would like to give a list of the specifications for\par
+commonly used CRC algorithms. However, most of the algorithms that I\par
+have come into contact with so far are specified in such a vague way\par
+that this has not been possible. What I can provide is a list of polys\par
+for various CRC standards I have heard of:\par
+\par
+   X25   standard : 1021       [CRC-CCITT, ADCCP, SDLC/HDLC]\par
+   X25   reversed : 0811\par
+\par
+   CRC16 standard : 8005\par
+   CRC16 reversed : 4003       [LHA]\par
+\par
+   CRC32          : 04C11DB7   [PKZIP, AUTODIN II, Ethernet, FDDI]\par
+\par
+I would be interested in hearing from anyone out there who can tie\par
+down the complete set of model parameters for any of these standards.\par
+\par
+However, a program that was kicking around seemed to imply the\par
+following specifications. Can anyone confirm or deny them (or provide\par
+the check values (which I couldn't be bothered coding up and\par
+calculating)).\par
+\par
+   Name   : "CRC-16/CITT"\par
+   Width  : 16\par
+   Poly   : 1021\par
+   Init   : FFFF\par
+   RefIn  : False\par
+   RefOut : False\par
+   XorOut : 0000\par
+   Check  : ?\par
+\par
+\par
+   Name   : "XMODEM"\par
+   Width  : 16\par
+   Poly   : 8408\par
+   Init   : 0000\par
+   RefIn  : True\par
+   RefOut : True\par
+   XorOut : 0000\par
+   Check  : ?\par
+\par
+\par
+   Name   : "ARC"\par
+   Width  : 16\par
+   Poly   : 8005\par
+   Init   : 0000\par
+   RefIn  : True\par
+   RefOut : True\par
+   XorOut : 0000\par
+   Check  : ?\par
+\par
+Here is the specification for the CRC-32 algorithm which is reportedly\par
+used in PKZip, AUTODIN II, Ethernet, and FDDI.\par
+\par
+   Name   : "CRC-32"\par
+   Width  : 32\par
+   Poly   : 04C11DB7\par
+   Init   : FFFFFFFF\par
+   RefIn  : True\par
+   RefOut : True\par
+   XorOut : FFFFFFFF\par
+   Check  : CBF43926\par
+\par
+\par
+17. An Implementation of the Model Algorithm\par
+--------------------------------------------\par
+Here is an implementation of the model algorithm in the C programming\par
+language. The implementation consists of a header file (.h) and an\par
+implementation file (.c). If you're reading this document in a\par
+sequential scroller, you can skip this code by searching for the\par
+string "Roll Your Own".\par
+\par
+To ensure that the following code is working, configure it for the\par
+CRC-16 and CRC-32 algorithms given above and ensure that they produce\par
+the specified "check" checksum when fed the test string "123456789"\par
+(see earlier).\par
+\par
+/******************************************************************************/\par
+/*                             Start of crcmodel.h                            */\par
+/******************************************************************************/\par
+/*                                                                            */\par
+/* Author : Ross Williams (ross@guest.adelaide.edu.au.).                      */\par
+/* Date   : 3 June 1993.                                                      */\par
+/* Status : Public domain.                                                    */\par
+/*                                                                            */\par
+/* Description : This is the header (.h) file for the reference               */\par
+/* implementation of the Rocksoft^tm Model CRC Algorithm. For more            */\par
+/* information on the Rocksoft^tm Model CRC Algorithm, see the document       */\par
+/* titled "A Painless Guide to CRC Error Detection Algorithms" by Ross        */\par
+/* Williams (ross@guest.adelaide.edu.au.). This document is likely to be in   */\par
+/* "ftp.adelaide.edu.au/pub/rocksoft".                                        */\par
+/*                                                                            */\par
+/* Note: Rocksoft is a trademark of Rocksoft Pty Ltd, Adelaide, Australia.    */\par
+/*                                                                            */\par
+/******************************************************************************/\par
+/*                                                                            */\par
+/* How to Use This Package                                                    */\par
+/* -----------------------                                                    */\par
+/* Step 1: Declare a variable of type cm_t. Declare another variable          */\par
+/*         (p_cm say) of type p_cm_t and initialize it to point to the first  */\par
+/*         variable (e.g. p_cm_t p_cm = &cm_t).                               */\par
+/*                                                                            */\par
+/* Step 2: Assign values to the parameter fields of the structure.            */\par
+/*         If you don't know what to assign, see the document cited earlier.  */\par
+/*         For example:                                                       */\par
+/*            p_cm->cm_width = 16;                                            */\par
+/*            p_cm->cm_poly  = 0x8005L;                                       */\par
+/*            p_cm->cm_init  = 0L;                                            */\par
+/*            p_cm->cm_refin = TRUE;                                          */\par
+/*            p_cm->cm_refot = TRUE;                                          */\par
+/*            p_cm->cm_xorot = 0L;                                            */\par
+/*         Note: Poly is specified without its top bit (18005 becomes 8005).  */\par
+/*         Note: Width is one bit less than the raw poly width.               */\par
+/*                                                                            */\par
+/* Step 3: Initialize the instance with a call cm_ini(p_cm);                  */\par
+/*                                                                            */\par
+/* Step 4: Process zero or more message bytes by placing zero or more         */\par
+/*         successive calls to cm_nxt. Example: cm_nxt(p_cm,ch);              */\par
+/*                                                                            */\par
+/* Step 5: Extract the CRC value at any time by calling crc = cm_crc(p_cm);   */\par
+/*         If the CRC is a 16-bit value, it will be in the bottom 16 bits.    */\par
+/*                                                                            */\par
+/******************************************************************************/\par
+/*                                                                            */\par
+/* Design Notes                                                               */\par
+/* ------------                                                               */\par
+/* PORTABILITY: This package has been coded very conservatively so that       */\par
+/* it will run on as many machines as possible. For example, all external     */\par
+/* identifiers have been restricted to 6 characters and all internal ones to  */\par
+/* 8 characters. The prefix cm (for Crc Model) is used as an attempt to avoid */\par
+/* namespace collisions. This package is endian independent.                  */\par
+/*                                                                            */\par
+/* EFFICIENCY: This package (and its interface) is not designed for           */\par
+/* speed. The purpose of this package is to act as a well-defined reference   */\par
+/* model for the specification of CRC algorithms. If you want speed, cook up  */\par
+/* a specific table-driven implementation as described in the document cited  */\par
+/* above. This package is designed for validation only; if you have found or  */\par
+/* implemented a CRC algorithm and wish to describe it as a set of parameters */\par
+/* to the Rocksoft^tm Model CRC Algorithm, your CRC algorithm implementation  */\par
+/* should behave identically to this package under those parameters.          */\par
+/*                                                                            */\par
+/******************************************************************************/\par
+\par
+/* The following #ifndef encloses this entire */\par
+/* header file, rendering it indempotent.     */\par
+#ifndef CM_DONE\par
+#define CM_DONE\par
+\par
+/******************************************************************************/\par
+\par
+/* The following definitions are extracted from my style header file which    */\par
+/* would be cumbersome to distribute with this package. The DONE_STYLE is the */\par
+/* idempotence symbol used in my style header file.                           */\par
+\par
+#ifndef DONE_STYLE\par
+\par
+typedef unsigned long   ulong;\par
+typedef unsigned        bool;\par
+typedef unsigned char * p_ubyte_;\par
+\par
+#ifndef TRUE\par
+#define FALSE 0\par
+#define TRUE  1\par
+#endif\par
+\par
+/* Change to the second definition if you don't have prototypes. */\par
+#define P_(A) A\par
+/* #define P_(A) () */\par
+\par
+/* Uncomment this definition if you don't have void. */\par
+/* typedef int void; */\par
+\par
+#endif\par
+\par
+/******************************************************************************/\par
+\par
+/* CRC Model Abstract Type */\par
+/* ----------------------- */\par
+/* The following type stores the context of an executing instance of the  */\par
+/* model algorithm. Most of the fields are model parameters which must be */\par
+/* set before the first initializing call to cm_ini.                      */\par
+typedef struct\par
+  \{\par
+   int   cm_width;   /* Parameter: Width in bits [8,32].       */\par
+   ulong cm_poly;    /* Parameter: The algorithm's polynomial. */\par
+   ulong cm_init;    /* Parameter: Initial register value.     */\par
+   bool  cm_refin;   /* Parameter: Reflect input bytes?        */\par
+   bool  cm_refot;   /* Parameter: Reflect output CRC?         */\par
+   ulong cm_xorot;   /* Parameter: XOR this to output CRC.     */\par
+\par
+   ulong cm_reg;     /* Context: Context during execution.     */\par
+  \} cm_t;\par
+typedef cm_t *p_cm_t;\par
+\par
+/******************************************************************************/\par
+\par
+/* Functions That Implement The Model */\par
+/* ---------------------------------- */\par
+/* The following functions animate the cm_t abstraction. */\par
+\par
+void cm_ini P_((p_cm_t p_cm));\par
+/* Initializes the argument CRC model instance.          */\par
+/* All parameter fields must be set before calling this. */\par
+\par
+void cm_nxt P_((p_cm_t p_cm,int ch));\par
+/* Processes a single message byte [0,255]. */\par
+\par
+void cm_blk P_((p_cm_t p_cm,p_ubyte_ blk_adr,ulong blk_len));\par
+/* Processes a block of message bytes. */\par
+\par
+ulong cm_crc P_((p_cm_t p_cm));\par
+/* Returns the CRC value for the message bytes processed so far. */\par
+\par
+/******************************************************************************/\par
+\par
+/* Functions For Table Calculation */\par
+/* ------------------------------- */\par
+/* The following function can be used to calculate a CRC lookup table.        */\par
+/* It can also be used at run-time to create or check static tables.          */\par
+\par
+ulong cm_tab P_((p_cm_t p_cm,int index));\par
+/* Returns the i'th entry for the lookup table for the specified algorithm.   */\par
+/* The function examines the fields cm_width, cm_poly, cm_refin, and the      */\par
+/* argument table index in the range [0,255] and returns the table entry in   */\par
+/* the bottom cm_width bytes of the return value.                             */\par
+\par
+/******************************************************************************/\par
+\par
+/* End of the header file idempotence #ifndef */\par
+#endif\par
+\par
+/******************************************************************************/\par
+/*                             End of crcmodel.h                              */\par
+/******************************************************************************/\par
+\par
+\par
+/******************************************************************************/\par
+/*                             Start of crcmodel.c                            */\par
+/******************************************************************************/\par
+/*                                                                            */\par
+/* Author : Ross Williams (ross@guest.adelaide.edu.au.).                      */\par
+/* Date   : 3 June 1993.                                                      */\par
+/* Status : Public domain.                                                    */\par
+/*                                                                            */\par
+/* Description : This is the implementation (.c) file for the reference       */\par
+/* implementation of the Rocksoft^tm Model CRC Algorithm. For more            */\par
+/* information on the Rocksoft^tm Model CRC Algorithm, see the document       */\par
+/* titled "A Painless Guide to CRC Error Detection Algorithms" by Ross        */\par
+/* Williams (ross@guest.adelaide.edu.au.). This document is likely to be in   */\par
+/* "ftp.adelaide.edu.au/pub/rocksoft".                                        */\par
+/*                                                                            */\par
+/* Note: Rocksoft is a trademark of Rocksoft Pty Ltd, Adelaide, Australia.    */\par
+/*                                                                            */\par
+/******************************************************************************/\par
+/*                                                                            */\par
+/* Implementation Notes                                                       */\par
+/* --------------------                                                       */\par
+/* To avoid inconsistencies, the specification of each function is not echoed */\par
+/* here. See the header file for a description of these functions.            */\par
+/* This package is light on checking because I want to keep it short and      */\par
+/* simple and portable (i.e. it would be too messy to distribute my entire    */\par
+/* C culture (e.g. assertions package) with this package.                     */\par
+/*                                                                            */\par
+/******************************************************************************/\par
+\par
+#include "crcmodel.h"\par
+\par
+/******************************************************************************/\par
+\par
+/* The following definitions make the code more readable. */\par
+\par
+#define BITMASK(X) (1L << (X))\par
+#define MASK32 0xFFFFFFFFL\par
+#define LOCAL static\par
+\par
+/******************************************************************************/\par
+\par
+LOCAL ulong reflect P_((ulong v,int b));\par
+LOCAL ulong reflect (v,b)\par
+/* Returns the value v with the bottom b [0,32] bits reflected. */\par
+/* Example: reflect(0x3e23L,3) == 0x3e26                        */\par
+ulong v;\par
+int   b;\par
+\{\par
+ int   i;\par
+ ulong t = v;\par
+ for (i=0; i<b; i++)\par
+   \{\par
+    if (t & 1L)\par
+       v|=  BITMASK((b-1)-i);\par
+    else\par
+       v&= ~BITMASK((b-1)-i);\par
+    t>>=1;\par
+   \}\par
+ return v;\par
+\}\par
+\par
+/******************************************************************************/\par
+\par
+LOCAL ulong widmask P_((p_cm_t));\par
+LOCAL ulong widmask (p_cm)\par
+/* Returns a longword whose value is (2^p_cm->cm_width)-1.     */\par
+/* The trick is to do this portably (e.g. without doing <<32). */\par
+p_cm_t p_cm;\par
+\{\par
+ return (((1L<<(p_cm->cm_width-1))-1L)<<1)|1L;\par
+\}\par
+\par
+/******************************************************************************/\par
+\par
+void cm_ini (p_cm)\par
+p_cm_t p_cm;\par
+\{\par
+ p_cm->cm_reg = p_cm->cm_init;\par
+\}\par
+\par
+/******************************************************************************/\par
+\par
+void cm_nxt (p_cm,ch)\par
+p_cm_t p_cm;\par
+int    ch;\par
+\{\par
+ int   i;\par
+ ulong uch  = (ulong) ch;\par
+ ulong topbit = BITMASK(p_cm->cm_width-1);\par
+\par
+ if (p_cm->cm_refin) uch = reflect(uch,8);\par
+ p_cm->cm_reg ^= (uch << (p_cm->cm_width-8));\par
+ for (i=0; i<8; i++)\par
+   \{\par
+    if (p_cm->cm_reg & topbit)\par
+       p_cm->cm_reg = (p_cm->cm_reg << 1) ^ p_cm->cm_poly;\par
+    else\par
+       p_cm->cm_reg <<= 1;\par
+    p_cm->cm_reg &= widmask(p_cm);\par
+   \}\par
+\}\par
+\par
+/******************************************************************************/\par
+\par
+void cm_blk (p_cm,blk_adr,blk_len)\par
+p_cm_t   p_cm;\par
+p_ubyte_ blk_adr;\par
+ulong    blk_len;\par
+\{\par
+ while (blk_len--) cm_nxt(p_cm,*blk_adr++);\par
+\}\par
+\par
+/******************************************************************************/\par
+\par
+ulong cm_crc (p_cm)\par
+p_cm_t p_cm;\par
+\{\par
+ if (p_cm->cm_refot)\par
+    return p_cm->cm_xorot ^ reflect(p_cm->cm_reg,p_cm->cm_width);\par
+ else\par
+    return p_cm->cm_xorot ^ p_cm->cm_reg;\par
+\}\par
+\par
+/******************************************************************************/\par
+\par
+ulong cm_tab (p_cm,index)\par
+p_cm_t p_cm;\par
+int    index;\par
+\{\par
+ int   i;\par
+ ulong r;\par
+ ulong topbit = BITMASK(p_cm->cm_width-1);\par
+ ulong inbyte = (ulong) index;\par
+\par
+ if (p_cm->cm_refin) inbyte = reflect(inbyte,8);\par
+ r = inbyte << (p_cm->cm_width-8);\par
+ for (i=0; i<8; i++)\par
+    if (r & topbit)\par
+       r = (r << 1) ^ p_cm->cm_poly;\par
+    else\par
+       r<<=1;\par
+ if (p_cm->cm_refin) r = reflect(r,p_cm->cm_width);\par
+ return r & widmask(p_cm);\par
+\}\par
+\par
+/******************************************************************************/\par
+/*                             End of crcmodel.c                              */\par
+/******************************************************************************/\par
+\par
+\par
+18. Roll Your Own Table-Driven Implementation\par
+---------------------------------------------\par
+Despite all the fuss I've made about understanding and defining CRC\par
+algorithms, the mechanics of their high-speed implementation remains\par
+trivial. There are really only two forms: normal and reflected. Normal\par
+shifts to the left and covers the case of algorithms with Refin=FALSE\par
+and Refot=FALSE. Reflected shifts to the right and covers algorithms\par
+with both those parameters true. (If you want one parameter true and\par
+the other false, you'll have to figure it out for yourself!) The\par
+polynomial is embedded in the lookup table (to be discussed). The\par
+other parameters, Init and XorOt can be coded as macros. Here is the\par
+32-bit normal form (the 16-bit form is similar).\par
+\par
+   unsigned long crc_normal ();\par
+   unsigned long crc_normal (blk_adr,blk_len)\par
+   unsigned char *blk_adr;\par
+   unsigned long  blk_len;\par
+   \{\par
+    unsigned long crc = INIT;\par
+    while (blk_len--)\par
+       crc = crctable[((crc>>24) ^ *blk_adr++) & 0xFFL] ^ (crc << 8);\par
+    return crc ^ XOROT;\par
+   \}\par
+\par
+Here is the reflected form:\par
+\par
+   unsigned long crc_reflected ();\par
+   unsigned long crc_reflected (blk_adr,blk_len)\par
+   unsigned char *blk_adr;\par
+   unsigned long  blk_len;\par
+   \{\par
+    unsigned long crc = INIT_REFLECTED;\par
+    while (blk_len--)\par
+       crc = crctable[(crc ^ *blk_adr++) & 0xFFL] ^ (crc >> 8));\par
+    return crc ^ XOROT;\par
+   \}\par
+\par
+Note: I have carefully checked the above two code fragments, but I\par
+haven't actually compiled or tested them. This shouldn't matter to\par
+you, as, no matter WHAT you code, you will always be able to tell if\par
+you have got it right by running whatever you have created against the\par
+reference model given earlier. The code fragments above are really\par
+just a rough guide. The reference model is the definitive guide.\par
+\par
+Note: If you don't care much about speed, just use the reference model\par
+code!\par
+\par
+\par
+19. Generating A Lookup Table\par
+-----------------------------\par
+The only component missing from the normal and reversed code fragments\par
+in the previous section is the lookup table. The lookup table can be\par
+computed at run time using the cm_tab function of the model package\par
+given earlier, or can be pre-computed and inserted into the C program.\par
+In either case, it should be noted that the lookup table depends only\par
+on the POLY and RefIn (and RefOt) parameters. Basically, the\par
+polynomial determines the table, but you can generate a reflected\par
+table too if you want to use the reflected form above.\par
+\par
+The following program generates any desired 16-bit or 32-bit lookup\par
+table. Skip to the word "Summary" if you want to skip over this code.\par
+\par
+\par
+\par
+/******************************************************************************/\par
+/*                             Start of crctable.c                            */\par
+/******************************************************************************/\par
+/*                                                                            */\par
+/* Author  : Ross Williams (ross@guest.adelaide.edu.au.).                     */\par
+/* Date    : 3 June 1993.                                                     */\par
+/* Version : 1.0.                                                             */\par
+/* Status  : Public domain.                                                   */\par
+/*                                                                            */\par
+/* Description : This program writes a CRC lookup table (suitable for         */\par
+/* inclusion in a C program) to a designated output file. The program can be  */\par
+/* statically configured to produce any table covered by the Rocksoft^tm      */\par
+/* Model CRC Algorithm. For more information on the Rocksoft^tm Model CRC     */\par
+/* Algorithm, see the document titled "A Painless Guide to CRC Error          */\par
+/* Detection Algorithms" by Ross Williams (ross@guest.adelaide.edu.au.). This */\par
+/* document is likely to be in "ftp.adelaide.edu.au/pub/rocksoft".            */\par
+/*                                                                            */\par
+/* Note: Rocksoft is a trademark of Rocksoft Pty Ltd, Adelaide, Australia.    */\par
+/*                                                                            */\par
+/******************************************************************************/\par
+\par
+#include <stdio.h>\par
+#include <stdlib.h>\par
+#include "crcmodel.h"\par
+\par
+/******************************************************************************/\par
+\par
+/* TABLE PARAMETERS                                                           */\par
+/* ================                                                           */\par
+/* The following parameters entirely determine the table to be generated. You */\par
+/* should need to modify only the definitions in this section before running  */\par
+/* this program.                                                              */\par
+/*                                                                            */\par
+/*    TB_FILE  is the name of the output file.                                */\par
+/*    TB_WIDTH is the table width in bytes (either 2 or 4).                   */\par
+/*    TB_POLY  is the "polynomial", which must be TB_WIDTH bytes wide.        */\par
+/*    TB_REVER indicates whether the table is to be reversed (reflected).     */\par
+/*                                                                            */\par
+/* Example:                                                                   */\par
+/*                                                                            */\par
+/*    #define TB_FILE   "crctable.out"                                        */\par
+/*    #define TB_WIDTH  2                                                     */\par
+/*    #define TB_POLY   0x8005L                                               */\par
+/*    #define TB_REVER  TRUE                                                  */\par
+\par
+#define TB_FILE   "crctable.out"\par
+#define TB_WIDTH  4\par
+#define TB_POLY   0x04C11DB7L\par
+#define TB_REVER  TRUE\par
+\par
+/******************************************************************************/\par
+\par
+/* Miscellaneous definitions. */\par
+\par
+#define LOCAL static\par
+FILE *outfile;\par
+#define WR(X) fprintf(outfile,(X))\par
+#define WP(X,Y) fprintf(outfile,(X),(Y))\par
+\par
+/******************************************************************************/\par
+\par
+LOCAL void chk_err P_((char *));\par
+LOCAL void chk_err (mess)\par
+/* If mess is non-empty, write it out and abort. Otherwise, check the error   */\par
+/* status of outfile and abort if an error has occurred.                      */\par
+char *mess;\par
+\{\par
+ if (mess[0] != 0   ) \{printf("%s\\n",mess); exit(EXIT_FAILURE);\}\par
+ if (ferror(outfile)) \{perror("chk_err");   exit(EXIT_FAILURE);\}\par
+\}\par
+\par
+/******************************************************************************/\par
+\par
+LOCAL void chkparam P_((void));\par
+LOCAL void chkparam ()\par
+\{\par
+ if ((TB_WIDTH != 2) && (TB_WIDTH != 4))\par
+    chk_err("chkparam: Width parameter is illegal.");\par
+ if ((TB_WIDTH == 2) && (TB_POLY & 0xFFFF0000L))\par
+    chk_err("chkparam: Poly parameter is too wide.");\par
+ if ((TB_REVER != FALSE) && (TB_REVER != TRUE))\par
+    chk_err("chkparam: Reverse parameter is not boolean.");\par
+\}\par
+\par
+/******************************************************************************/\par
+\par
+LOCAL void gentable P_((void));\par
+LOCAL void gentable ()\par
+\{\par
+ WR("/*****************************************************************/\\n");\par
+ WR("/*                                                               */\\n");\par
+ WR("/* CRC LOOKUP TABLE                                              */\\n");\par
+ WR("/* ================                                              */\\n");\par
+ WR("/* The following CRC lookup table was generated automagically    */\\n");\par
+ WR("/* by the Rocksoft^tm Model CRC Algorithm Table Generation       */\\n");\par
+ WR("/* Program V1.0 using the following model parameters:            */\\n");\par
+ WR("/*                                                               */\\n");\par
+ WP("/*    Width   : %1lu bytes.                                         */\\n",\par
+    (ulong) TB_WIDTH);\par
+ if (TB_WIDTH == 2)\par
+ WP("/*    Poly    : 0x%04lX                                           */\\n",\par
+    (ulong) TB_POLY);\par
+ else\par
+ WP("/*    Poly    : 0x%08lXL                                      */\\n",\par
+    (ulong) TB_POLY);\par
+ if (TB_REVER)\par
+ WR("/*    Reverse : TRUE.                                            */\\n");\par
+ else\par
+ WR("/*    Reverse : FALSE.                                           */\\n");\par
+ WR("/*                                                               */\\n");\par
+ WR("/* For more information on the Rocksoft^tm Model CRC Algorithm,  */\\n");\par
+ WR("/* see the document titled \\"A Painless Guide to CRC Error        */\\n");\par
+ WR("/* Detection Algorithms\\" by Ross Williams                        */\\n");\par
+ WR("/* (ross@guest.adelaide.edu.au.). This document is likely to be  */\\n");\par
+ WR("/* in the FTP archive \\"ftp.adelaide.edu.au/pub/rocksoft\\".        */\\n");\par
+ WR("/*                                                               */\\n");\par
+ WR("/*****************************************************************/\\n");\par
+ WR("\\n");\par
+ switch (TB_WIDTH)\par
+   \{\par
+    case 2: WR("unsigned short crctable[256] =\\n\{\\n"); break;\par
+    case 4: WR("unsigned long  crctable[256] =\\n\{\\n"); break;\par
+    default: chk_err("gentable: TB_WIDTH is invalid.");\par
+   \}\par
+ chk_err("");\par
+\par
+ \{\par
+  int i;\par
+  cm_t cm;\par
+  char *form    = (TB_WIDTH==2) ? "0x%04lX" : "0x%08lXL";\par
+  int   perline = (TB_WIDTH==2) ? 8 : 4;\par
+\par
+  cm.cm_width = TB_WIDTH*8;\par
+  cm.cm_poly  = TB_POLY;\par
+  cm.cm_refin = TB_REVER;\par
+\par
+  for (i=0; i<256; i++)\par
+    \{\par
+     WR(" ");\par
+     WP(form,(ulong) cm_tab(&cm,i));\par
+     if (i != 255) WR(",");\par
+     if (((i+1) % perline) == 0) WR("\\n");\par
+     chk_err("");\par
+    \}\par
+\par
+ WR("\};\\n");\par
+ WR("\\n");\par
+ WR("/*****************************************************************/\\n");\par
+ WR("/*                   End of CRC Lookup Table                     */\\n");\par
+ WR("/*****************************************************************/\\n");\par
+ WR("");\par
+ chk_err("");\par
+\}\par
+\}\par
+\par
+/******************************************************************************/\par
+\par
+main ()\par
+\{\par
+ printf("\\n");\par
+ printf("Rocksoft^tm Model CRC Algorithm Table Generation Program V1.0\\n");\par
+ printf("-------------------------------------------------------------\\n");\par
+ printf("Output file is \\"%s\\".\\n",TB_FILE);\par
+ chkparam();\par
+ outfile = fopen(TB_FILE,"w"); chk_err("");\par
+ gentable();\par
+ if (fclose(outfile) != 0)\par
+    chk_err("main: Couldn't close output file.");\par
+ printf("\\nSUCCESS: The table has been successfully written.\\n");\par
+\}\par
+\par
+/******************************************************************************/\par
+/*                             End of crctable.c                              */\par
+/******************************************************************************/\par
+\par
+20. Summary\par
+-----------\par
+This document has provided a detailed explanation of CRC algorithms\par
+explaining their theory and stepping through increasingly\par
+sophisticated implementations ranging from simple bit shifting through\par
+to byte-at-a-time table-driven implementations. The various\par
+implementations of different CRC algorithms that make them confusing\par
+to deal with have been explained. A parameterized model algorithm has\par
+been described that can be used to precisely define a particular CRC\par
+algorithm, and a reference implementation provided. Finally, a program\par
+to generate CRC tables has been provided.\par
+\par
+21. Corrections\par
+---------------\par
+If you think that any part of this document is unclear or incorrect,\par
+or have any other information, or suggestions on how this document\par
+could be improved, please context the author. In particular, I would\par
+like to hear from anyone who can provide Rocksoft^tm Model CRC\par
+Algorithm parameters for standard algorithms out there.\par
+\par
+A. Glossary\par
+-----------\par
+CHECKSUM - A number that has been calculated as a function of some\par
+message. The literal interpretation of this word "Check-Sum" indicates\par
+that the function should involve simply adding up the bytes in the\par
+message. Perhaps this was what early checksums were. Today, however,\par
+although more sophisticated formulae are used, the term "checksum" is\par
+still used.\par
+\par
+CRC - This stands for "Cyclic Redundancy Code". Whereas the term\par
+"checksum" seems to be used to refer to any non-cryptographic checking\par
+information unit, the term "CRC" seems to be reserved only for\par
+algorithms that are based on the "polynomial" division idea.\par
+\par
+G - This symbol is used in this document to represent the Poly.\par
+\par
+MESSAGE - The input data being checksummed. This is usually structured\par
+as a sequence of bytes. Whether the top bit or the bottom bit of each\par
+byte is treated as the most significant or least significant is a\par
+parameter of CRC algorithms.\par
+\par
+POLY - This is my friendly term for the polynomial of a CRC.\par
+\par
+POLYNOMIAL - The "polynomial" of a CRC algorithm is simply the divisor\par
+in the division implementing the CRC algorithm.\par
+\par
+REFLECT - A binary number is reflected by swapping all of its bits\par
+around the central point. For example, 1101 is the reflection of 1011.\par
+\par
+ROCKSOFT^TM MODEL CRC ALGORITHM - A parameterized algorithm whose\par
+purpose is to act as a solid reference for describing CRC algorithms.\par
+Typically CRC algorithms are specified by quoting a polynomial.\par
+However, in order to construct a precise implementation, one also\par
+needs to know initialization values and so on.\par
+\par
+WIDTH - The width of a CRC algorithm is the width of its polynomical\par
+minus one. For example, if the polynomial is 11010, the width would be\par
+4 bits. The width is usually set to be a multiple of 8 bits.\par
+\par
+B. References\par
+-------------\par
+[Griffiths87] Griffiths, G., Carlyle Stones, G., "The Tea-Leaf Reader\par
+Algorithm: An Efficient Implementation of CRC-16 and CRC-32",\par
+Communications of the ACM, 30(7), pp.617-620. Comment: This paper\par
+describes a high-speed table-driven implementation of CRC algorithms.\par
+The technique seems to be a touch messy, and is superceded by the\par
+Sarwete algorithm.\par
+\par
+[Knuth81] Knuth, D.E., "The Art of Computer Programming", Volume 2:\par
+Seminumerical Algorithms, Section 4.6.\par
+\par
+[Nelson 91] Nelson, M., "The Data Compression Book", M&T Books, (501\par
+Galveston Drive, Redwood City, CA 94063), 1991, ISBN: 1-55851-214-4.\par
+Comment: If you want to see a real implementation of a real 32-bit\par
+checksum algorithm, look on pages 440, and 446-448.\par
+\par
+[Sarwate88] Sarwate, D.V., "Computation of Cyclic Redundancy Checks\par
+via Table Look-Up", Communications of the ACM, 31(8), pp.1008-1013.\par
+Comment: This paper describes a high-speed table-driven implementation\par
+for CRC algorithms that is superior to the tea-leaf algorithm.\par
+Although this paper describes the technique used by most modern CRC\par
+implementations, I found the appendix of this paper (where all the\par
+good stuff is) difficult to understand.\par
+\par
+[Tanenbaum81] Tanenbaum, A.S., "Computer Networks", Prentice Hall,\par
+1981, ISBN: 0-13-164699-0. Comment: Section 3.5.3 on pages 128 to 132\par
+provides a very clear description of CRC codes. However, it does not\par
+describe table-driven implementation techniques.\par
+\par
+\par
+C. References I Have Detected But Haven't Yet Sighted\par
+-----------------------------------------------------\par
+Boudreau, Steen, "Cyclic Redundancy Checking by Program," AFIPS\par
+Proceedings, Vol. 39, 1971.\par
+\par
+Davies, Barber, "Computer Networks and Their Protocols," J. Wiley &\par
+Sons, 1979.\par
+\par
+Higginson, Kirstein, "On the Computation of Cyclic Redundancy Checks\par
+by Program," The Computer Journal (British), Vol. 16, No. 1, Feb 1973.\par
+\par
+McNamara, J. E., "Technical Aspects of Data Communication," 2nd\par
+Edition, Digital Press, Bedford, Massachusetts, 1982.\par
+\par
+Marton and Frambs, "A Cyclic Redundancy Checking (CRC) Algorithm,"\par
+Honeywell Computer Journal, Vol. 5, No. 3, 1971.\par
+\par
+Nelson M., "File verification using CRC", Dr Dobbs Journal, May 1992,\par
+pp.64-67.\par
+\par
+Ramabadran T.V., Gaitonde S.S., "A tutorial on CRC computations", IEEE\par
+Micro, Aug 1988.\par
+\par
+Schwaderer W.D., "CRC Calculation", April 85 PC Tech Journal,\par
+pp.118-133.\par
+\par
+Ward R.K, Tabandeh M., "Error Correction and Detection, A Geometric\par
+Approach" The Computer Journal, Vol. 27, No. 3, 1984, pp.246-253.\par
+\par
+Wecker, S., "A Table-Lookup Algorithm for Software Computation of\par
+Cyclic Redundancy Check (CRC)," Digital Equipment Corporation\par
+memorandum, 1974.\par
+\par
+\pard\f2\fs20\par
+}
+ 

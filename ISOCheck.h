@@ -1,0 +1,22 @@
+#define ISO_UNKNOWN				0x0000
+#define ISO_NONE				0x0000
+#define ISO_START				0x0001
+#define ISO_EXT_TOOLONG			0x0001
+#define ISO_EXT_BADCHAR			0x0002
+#define ISO_EXT_HASDOT			0x0004
+#define ISO_EXT_LOWERCASE		0x0008
+#define ISO_FILE_TOOLONG		0x0010
+#define ISO_FILE_BADCHAR		0x0020
+#define ISO_FILE_HASDOT			0x0040
+#define ISO_FILE_LOWERCASE		0x0080
+#define ISO_PATH_TOOLONG		0x0100
+#define ISO_PATH_TOODEEP		0x0200
+#define ISO_PATH_BADCHAR		0x0400
+#define ISO_PATH_HASDOT			0x0800
+#define ISO_PATH_LOWERCASE		0x1000
+#define ISO_END					0x1000
+#define ISO_MAX					0x1FFF
+
+WORD isoGetISOFlags(LPCWSTR wzPath);
+WORD isoGetISOFlags(LPCWSTR wzPath, LPCWSTR wzName, LPCWSTR wzExt);
+LPWSTR isoGetISOFlagsString(const WORD wISOFlags);

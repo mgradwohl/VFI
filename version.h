@@ -1,0 +1,12 @@
+//~~ STAMPER BEGIN
+#define STAMPER_NUM_FILE_VERSION 4,2007,02,0701
+#define STAMPER_NUM_PROD_VERSION 4,82,00,0000
+#define STAMPER_STR_FILE_VERSION L"4.2007.02.0701\0"
+
+#if defined (DEBUG)
+	#define STAMPER_STR_PROD_VERSION L"4.82 (Debug, Unicode)\0"
+#else
+	#define STAMPER_STR_PROD_VERSION L"4.82 (Release, Unicode)\0"
+#endif
+
+//~~ STAMPER END
