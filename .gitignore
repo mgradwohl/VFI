@@ -14,6 +14,22 @@ $RECYCLE.BIN/
 *.msm
 *.msp
 
+# Visual Studio Crap
+*.obj
+*.pch
+*.idb
+*.pdb
+*.map
+*.pchast
+*.dep
+*.suo
+*.aps
+*.psess
+*.SCC
+*.tlog
+*.res
+*.old
+
 # =========================
 # Operating System Files
 # =========================
@@ -26,7 +42,8 @@ $RECYCLE.BIN/
 .LSOverride
 
 # Icon must ends with two \r.
-Icon
+Icon
+
 
 # Thumbnails
 ._*
