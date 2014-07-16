@@ -200,7 +200,7 @@ bool float2str(LPTSTR pszDest, double d)
 	TCHAR szIn[32];
 	TCHAR szOut[32];
 
-	lstrprintf(szIn, _T("%.4f"), d);
+	lstrprintf_s(szIn, _T("%.4f"), d, 32);
 	if (0 == GetNumberFormat( LOCALE_USER_DEFAULT, 0, szIn, NULL, szOut, 32 ))
 		return false;
 
@@ -303,6 +303,9 @@ bool pipe2null(LPTSTR psz)
 
 DWORD MyGetLongPathName(LPCWSTR lpwszShortPath, LPWSTR lpwszLongPath, DWORD cchBuf)
 {
+//TODO:	if this is supposed to get a long path name from a short path name, I'm not sure how it does it.
+//		this code never actually references lpwszShortPath so I'm not sure what it's returning in lpwszLong Path
+
 	LPSHELLFOLDER psfDesktop = NULL;
 	ULONG chEaten = 0;
 	LPITEMIDLIST pidlShellItem = NULL;
@@ -335,6 +338,8 @@ DWORD MyGetLongPathName(LPCWSTR lpwszShortPath, LPWSTR lpwszLongPath, DWORD cchB
 	}
 
 	cchBuf;
+	lpwszShortPath;
+
 	return lstrlen(lpwszLongPath);
 }
 

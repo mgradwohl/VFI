@@ -24,8 +24,8 @@
 #define LPQWORD			QWORD*
 #define MAKEDWORD(a, b)	((DWORD)(((WORD)(a)) | ((DWORD)((WORD)(b))) << 16))
 #define MAKEQWORD(a, b)	((QWORD)(((DWORD)(a)) | ((QWORD)((DWORD)(b))) << 32))
-#define LODWORD(l)		((DWORD)(l))
-#define HIDWORD(l)		((DWORD)(((QWORD)(l) >> 32) & 0xFFFFFFFF))
+//#define LODWORD(l)		((DWORD)(l))
+//#define HIDWORD(l)		((DWORD)(((QWORD)(l) >> 32) & 0xFFFFFFFF))
 
 // MoveWindowEx flags
 enum { CDF_CENTER, CDF_TOPLEFT, CDF_NONE };

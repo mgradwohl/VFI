@@ -1269,7 +1269,7 @@ DWORD UpdateThreadCRC( LPVOID pParam )
 			// Start chunking
 			// While there are still chunks as big as g_dwChunk left
 			qwBytesRemaining = qwSize = pFileInfo->GetSize64();
-			dwBytesRead = min(g_dwChunk, qwBytesRemaining);
+			dwBytesRead = (DWORD) min(g_dwChunk, qwBytesRemaining);
 			for (qwBytesRemaining = qwSize;
 				qwBytesRemaining > 0;
 				qwBytesRemaining -= dwBytesRead)
@@ -1289,9 +1289,9 @@ DWORD UpdateThreadCRC( LPVOID pParam )
 				}
 				
 				// read a chunk (or just what's remaining)
-				dwBytesRead = min(g_dwChunk, qwBytesRemaining);
+				dwBytesRead = (DWORD) min(g_dwChunk, qwBytesRemaining);
 				TRACE(L"THREADCRC: Requesting %lu bytes\n",dwBytesRead);
-				if (FALSE == ReadFile(hFile, g_pBuf, min(g_dwChunk, qwBytesRemaining), &dwBytesRead, NULL))
+				if (FALSE == ReadFile(hFile, g_pBuf, min(g_dwChunk, ((DWORD)qwBytesRemaining)), &dwBytesRead, NULL))
 				{
 					pDoc->ChangeItemState(pFileInfo,FWFS_CRC_ERROR);
 					break;

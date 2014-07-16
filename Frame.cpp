@@ -355,7 +355,7 @@ void CMainFrame::UpdateProgress()
 	ASSERT (pDoc);
 	m_wndStatusBar.UpdateProgress(1, pDoc->m_dwDirtyInfo, pDoc->GetItemCount());
 	m_qwSize = pDoc->GetTotalSize();
-	m_wndStatusBar.UpdateProgress(2, (m_qwSize - pDoc->SizeRead()) >> 20, m_qwSize >> 20 );
+	m_wndStatusBar.UpdateProgress(2, (DWORD( (m_qwSize - pDoc->SizeRead()) ) >> 20), ((DWORD)m_qwSize >> 20) );
 }
 
 void CALLBACK EXPORT CMainFrame::TimerProc(HWND hWnd, UINT nMsg, UINT nIDEvent, DWORD dwTime)

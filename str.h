@@ -83,6 +83,7 @@ typedef const unsigned char* LPCXSTR;
 
 // wsprintf that does floats
 #define lstrprintf _stprintf
+#define lstrprintf_s _stprintf_s
 
 // initialization
 void lstrinit(LPTSTR psz);

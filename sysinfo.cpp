@@ -74,13 +74,15 @@ CSystemInformation::CSystemInformation()
 
 	::ZeroMemory(&m_osvi, sizeof(OSVERSIONINFOEX));
 	m_osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+
+	#pragma warning(disable : 4996)
 	m_fExtendedInfo = ( 0 != ::GetVersionEx((OSVERSIONINFO*)&m_osvi));
 	if (!m_fExtendedInfo)
 	{
 		m_osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
 		::GetVersionEx((OSVERSIONINFO*)&m_osvi);
 	}
-
+	#pragma warning(3 : 4996)
 	::ZeroMemory(&m_si, sizeof(SYSTEM_INFO));
 	GetSystemInfo(&m_si);
 }

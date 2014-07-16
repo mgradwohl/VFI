@@ -178,7 +178,7 @@ bool GetModuleFolder(HINSTANCE hInst, LPWSTR pszFolder)
 
 	WCHAR szDrive[TMAX_DRIVE];
 	WCHAR szDir[TMAX_DIR];
-	_tsplitpath( pszFolder, szDrive, szDir, NULL, NULL );
+	_tsplitpath_s( pszFolder, szDrive, TMAX_DRIVE, szDir, TMAX_DIR, NULL, 0, NULL, 0 );
 
 	lstrcpy(pszFolder, szDrive);
 	lstrcat(pszFolder, szDir);
@@ -324,7 +324,7 @@ bool GetModuleName(HINSTANCE hInst, LPWSTR pszName)
 	if (0 == ::GetModuleFileName(hInst, pszName, TMAX_PATH))
 		return false;
 
-	_tsplitpath( pszName, NULL, NULL, pszName, NULL );
+	_tsplitpath_s( pszName, NULL, 0, NULL, 0, pszName, TMAX_PATH, NULL, 0 );
 
 	return true;
 }
