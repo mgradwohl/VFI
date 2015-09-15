@@ -1,6 +1,4 @@
 // QWORD (Quad WORD) 64-bit datatype and helpers
-// mattgr
-// 9/24/1999
 
 #define QWORD			DWORDLONG
 #define LPQWORD			QWORD*

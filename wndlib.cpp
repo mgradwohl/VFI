@@ -1,7 +1,3 @@
-// wndlib.cpp
-// mattgr
-// 3/27/2000
-
 #ifndef WINVER
 	#define WINVER			0x0501
 #endif

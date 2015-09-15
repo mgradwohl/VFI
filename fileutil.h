@@ -1,6 +1,3 @@
-// fileutil.h
-// mattgr	7/10/1999
-
 #pragma once
 #ifndef FILEUTIL_H
 

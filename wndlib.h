@@ -1,7 +1,3 @@
-// wndlib.h
-// mattgr
-// 3/27/2000
-
 #pragma once
 #ifndef WNDLIB_H
 

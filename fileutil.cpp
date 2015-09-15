@@ -1,6 +1,3 @@
-// fileutil.cpp
-// mattgr	7/10/1999
-
 #include <windows.h>
 #include <WCHAR.h>
 #include <lmcons.h>		// for UNLEN only

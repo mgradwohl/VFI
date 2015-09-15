@@ -1,7 +1,3 @@
-// filelib.h
-// mattgr
-// 3/27/2000
-
 #pragma once
 #ifndef FILELIB_H
 

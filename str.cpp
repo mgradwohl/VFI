@@ -1,6 +1,4 @@
 // String functions, not using CRT if possible
-// mattgr
-// 2/20/1998
 
 #ifdef _DEBUG
 	#ifdef DEBUG_NEW

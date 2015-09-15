@@ -1,7 +1,3 @@
-// strlib.h
-// mattgr
-// 3/23/2000
-
 #pragma once
 #ifndef STRLIB_H
 
