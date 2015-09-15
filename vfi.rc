@@ -660,8 +660,8 @@ END
 STRINGTABLE 
 BEGIN
     STR_KB                  "KB"
-    STR_AUTHORFULL          "Matt Gradwohl (mattgr@microsoft.com)\r\nCopyright ©1996-2003 Microsoft Game Studios\r\nCopyright ©1996-2004 Matt Gradwohl"
-    STR_AUTHOR              "Copyright ©1996-2004 Microsoft Game Studios"
+    STR_AUTHORFULL          "Visual File Information\r\nCopyright (c) Microsoft Corporation. All rights reserved."
+    STR_AUTHOR              "Copyright (c) Microsoft Corporation. All rights reserved."
     STR_OPENTITLE           "Choose file(s) to add."
     STR_BROWSESAVE          "Choose a folder to use as your default save path."
     STR_FILESAVING          "Visual File Information -- Saving File..."
