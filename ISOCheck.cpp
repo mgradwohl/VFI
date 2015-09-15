@@ -465,9 +465,6 @@ void FreeStringArray()
 	int i;
 	for (i = 0; i < ISO_MAX; i++)
 	{
-		//ROCKALL
-		//g_Heap.DeleteAll(false);
-
 		//WINDOWS
 		delete [] g_pwz[i];
 	}

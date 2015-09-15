@@ -1289,7 +1289,7 @@ DWORD UpdateThreadCRC( LPVOID pParam )
 				break;
 			}
 
-			// Start chunking
+			// Start generating chunks
 			// While there are still chunks as big as g_dwChunk left
 			qwBytesRemaining = qwSize = pFileInfo->GetSize64();
 			dwBytesRead = (DWORD) min(g_dwChunk, qwBytesRemaining);

@@ -248,7 +248,7 @@ int CWiseFile::GetSize(LPWSTR pszText, bool bHex)
 	}
 	else
 	{
-		// I don't use StrFormatByteSize cause it wordifies shit
+		// Not using StrFormatByteSize because it wordifies everything
 		if (int2str(pszText, LODWORD(m_qwSize)))
 		{
 			return FWF_SUCCESS;
@@ -275,7 +275,7 @@ int CWiseFile::GetSize64(LPWSTR pszText, bool bHex)
 	}
 	else
 	{
-		// I don't use StrFormatByteSize cause it wordifies shit
+		// Not using StrFormatByteSize because it wordifies everything
 		if (int2str(pszText, m_qwSize))
 		{
 			return FWF_SUCCESS;

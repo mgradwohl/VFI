@@ -172,7 +172,7 @@ private:
 	static int QWordCompare( QWORD qw1, QWORD qw2, bool fSortAscending);
 	int m_iSortColumn;
 
-	// Columns and styles and window shit
+	// Columns, styles and window collateral
 	CColumnInfo* m_pci;
 	DWORD m_dwExStyle;
 	DWORD m_dwViewStyle;

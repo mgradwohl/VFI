@@ -71,9 +71,6 @@ BOOL CProgressBox::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 	
-	//is dialog has no font usage, so don't fuck with it
-	//ChangeDialogFont(this, theApp.GetUIFont(), CDF_CENTER);
-	
 	if (!MoveWindowEx(m_hWnd, m_wAlign))
 		return FALSE;
 

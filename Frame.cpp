@@ -101,7 +101,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	if (CFrameWnd::OnCreate(lpCreateStruct) == -1)
 		return -1;
 	
-	// turn off all the redraw shit
+	// Turn off Redraw
     DWORD dwStyle = ::GetClassLong (m_hWnd, GCL_STYLE);
     ::SetClassLong (m_hWnd, GCL_STYLE, dwStyle & ~(CS_HREDRAW | CS_VREDRAW));
 
