@@ -173,7 +173,6 @@ int mbstrcbn(LPCSTR psz, int cch);
 bool int2str(LPWSTR pszDest, QWORD i);
 bool float2str(LPWSTR pszDest, double d);
 
-
 bool lstrcontains(LPCWSTR pszBuf, LPCWSTR pszSet);
 
 int lstrcount(LPCWSTR pszBuf, TCHAR chFind);

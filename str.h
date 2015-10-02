@@ -203,22 +203,6 @@ int mbstrcmpin (LPCSTR psz1, LPCSTR psz2, int cch);
 // lstrrchr
 LPTSTR lstrrchr(LPCTSTR pszStart, LPCTSTR pszEnd, TCHAR cFind);
 
-// Get number as a string
-bool int2str(LPTSTR pszDest, int i);
-bool float2str(LPTSTR pszDest, double d);
-
-// load a string resource
-#if 0
-	bool wstrload(HINSTANCE hInst, UINT nID, LPWSTR pszBuf, int cchBuf);
-	bool mbstrload(HINSTANCE hInst, UINT nID, LPSTR pszBuf, int cbBuf);
-
-	#if defined(UNICODE)
-		#define lstrload	wstrload
-	#else
-		#define lstrload	mbstrload
-	#endif
-#endif
-
 // format a string
 bool lstrfmt(HINSTANCE hInst, UINT nFormatID, LPTSTR pszBuf, int cchBuf...);
 

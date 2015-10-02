@@ -199,35 +199,6 @@ LPTSTR lstrrchr(LPCTSTR pszStart, LPCTSTR pszEnd, TCHAR cFind)
 	return StrRChr(pszStart, pszEnd, cFind);
 }
 
-// Get number as a string
-bool int2str(LPTSTR pszDest, int i)
-{
-	TCHAR szIn[32];
-	TCHAR szOut[32];
-	TCHAR szDec[2];
-
-	GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_SDECIMAL, szDec, 2);
-	wsprintf(szIn,_T("%lu"),i);
-	if (0 == GetNumberFormat( LOCALE_USER_DEFAULT, 0, szIn, NULL, szOut, 32 ))
-		return false;
-
-	LPTSTR pszDec = lstrrchr(szOut, NULL, szDec[0]);
-	lstrinit(pszDec);
-	return (NULL != lstrcpy( pszDest, szOut ) );
-}
-
-bool float2str(LPTSTR pszDest, double d)
-{
-	TCHAR szIn[32];
-	TCHAR szOut[32];
-
-	lstrprintf_s(szIn, _T("%.4f"), d, 32);
-	if (0 == GetNumberFormat( LOCALE_USER_DEFAULT, 0, szIn, NULL, szOut, 32 ))
-		return false;
-
-	return (NULL != lstrcpy( pszDest, szOut ) );
-}
-
 // load a string resource
 bool wstrload(HINSTANCE hInst, UINT nID, LPWSTR pszBuf, int cbBuf)
 {

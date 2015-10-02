@@ -649,11 +649,6 @@ void CMyDoc::DeleteKillList()
 			delete pFileInfo;
 			//g_Heap.Delete(pFileInfo);
 		}
-		catch(CException* pEx)
-		{
-			TRACE0( "\tCMyDoc::DeleteKillList CException\n");
-			pEx->Delete();
-		}
 		catch(...)
 		{
 			TRACE0( "\tCMyDoc::DeleteKillList CException\n");
@@ -843,11 +838,6 @@ void CMyDoc::DeleteMainList()
 		try
 		{
 			delete pFileInfo;
-		}
-		catch(CException* pEx)
-		{
-			TRACE0( "\tCMyDoc::DeleteMainList CException\n");
-			pEx->Delete();
 		}
 		catch(...)
 		{
