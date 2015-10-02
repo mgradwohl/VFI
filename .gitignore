@@ -8,13 +8,19 @@ Desktop.ini
 # Recycle Bin used on file shares
 $RECYCLE.BIN/
 
+# Build folders
+[Dd]ebug/
+[Rr]elease/
+
 # Windows Installer files
 *.cab
 *.msi
 *.msm
 *.msp
 
-# Visual Studio Crap
+# Visual Studio Collateral
+*.opensdf
+*.sdf
 *.obj
 *.pch
 *.idb
