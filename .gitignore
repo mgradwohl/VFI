@@ -55,3 +55,10 @@ Icon
 # Files that might appear on external disk
 .Spotlight-V100
 .Trashes
+Debug/BuildLog.htm
+*.exe
+*.sdf
+*.opensdf
+*.ncb
+*.lastbuildstate
+Release/BuildLog.htm

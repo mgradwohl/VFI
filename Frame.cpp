@@ -173,7 +173,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	DockControlBar(&m_wndToolBar);
 
 	// create a UI update timer
-	if ( !::SetTimer(NULL, TIM_UPDATE, TIM_UPDATE_INTERVAL, TimerProc) )
+	if ( !::SetTimer(NULL, TIM_UPDATE, TIM_UPDATE_INTERVAL, (TIMERPROC) TimerProc) )
 		return -1;
 
 	// set menu default items

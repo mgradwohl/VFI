@@ -135,7 +135,7 @@ bool CHelpDlg::LoadRTF()
 	EDITSTREAM es;
 	es.dwCookie = (ULONG) &resstm;  //dwCookie is made for this
 	es.dwError = 0;
-	es.pfnCallback = EditStreamInCallBack;
+	es.pfnCallback = (EDITSTREAMCALLBACK) EditStreamInCallBack;
 
 	m_RTF.StreamIn(SF_RTF, es);
 
