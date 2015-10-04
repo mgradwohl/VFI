@@ -138,7 +138,10 @@ void CPageGeneral::OnAudiocue()
 	CButton* pCheck = static_cast<CButton*> (GetDlgItem(IDC_AUDIOCUE));
 	ASSERT (pCheck);
 
-	m_fAudioCue= pCheck->GetCheck();
+	if (pCheck != nullptr)
+	{
+		m_fAudioCue = pCheck->GetCheck();
+	}
 
 	CButton* pBrowse = static_cast<CButton*> (GetDlgItem(IDC_BROWSEWAVE));
 	ASSERT (pBrowse);
@@ -192,7 +195,7 @@ CColumnInfo* CPageColumn::GetColumnInfo()
 	return m_pci;
 }
 
-int CPageColumn::DoModal() 
+INT_PTR CPageColumn::DoModal() 
 {
 	for( int i=0; i < LIST_NUMCOLUMNS; i++ )
 	{

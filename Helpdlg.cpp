@@ -156,7 +156,7 @@ bool CHelpDlg::LoadRTF()
 	/*	DWORD dwSize = */ resstm.GetLength();
 
 	EDITSTREAM es;
-	es.dwCookie = (ULONG) &resstm;  //dwCookie is made for this
+	es.dwCookie = (DWORD_PTR) &resstm;  //dwCookie is made for this
 	es.dwError = 0;
 	es.pfnCallback = (EDITSTREAMCALLBACK) EditStreamInCallBack;
 

@@ -273,7 +273,10 @@ void CMainFrame::OnDropFiles(HDROP hDropInfo)
 {
 	CMyListView* pView = static_cast<CMyListView*> (GetActiveView());
 	ASSERT( pView );
-	pView->SendMessage(WM_DROPFILES, (WPARAM) hDropInfo, 0);
+	if (pView != nullptr)
+	{
+		pView->SendMessage(WM_DROPFILES, (WPARAM)hDropInfo, 0);
+	}
 }
 
 void CMainFrame::OnUpdateCount(CCmdUI* pCmdUI)
@@ -376,9 +379,12 @@ void CMainFrame::UpdateProgress()
 {
 	CMyDoc* pDoc = static_cast<CMyDoc*> (GetActiveDocument());
 	ASSERT (pDoc);
-	m_wndStatusBar.UpdateProgress(1, pDoc->m_dwDirtyInfo, pDoc->GetItemCount());
-	m_qwSize = pDoc->GetTotalSize();
-	m_wndStatusBar.UpdateProgress(2, (DWORD( (m_qwSize - pDoc->SizeRead()) ) >> 20), ((DWORD)m_qwSize >> 20) );
+	if (pDoc != nullptr)
+	{
+		m_wndStatusBar.UpdateProgress(1, pDoc->m_dwDirtyInfo, pDoc->GetItemCount());
+		m_qwSize = pDoc->GetTotalSize();
+		m_wndStatusBar.UpdateProgress(2, (DWORD((m_qwSize - pDoc->SizeRead())) >> 20), ((DWORD)m_qwSize >> 20));
+	}
 }
 
 void CALLBACK EXPORT CMainFrame::TimerProc(HWND hWnd, UINT nMsg, UINT nIDEvent, DWORD dwTime)

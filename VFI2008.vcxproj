@@ -30,6 +30,7 @@
     <ProjectGuid>{82CBEA25-8E8D-40BF-AF01-45DF55D4C24A}</ProjectGuid>
     <RootNamespace>VFI2008</RootNamespace>
     <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0.10240.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">

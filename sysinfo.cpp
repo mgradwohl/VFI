@@ -434,7 +434,7 @@ bool CSystemInformation::GetOSVersionString(LPWSTR pszBuf)
 		 GetOSVersionMajor() == 4 &&
 		 GetOSVersionMinor() == 10 &&
 		 GetOSVersionBuild() == 2222 &&
-		 0==lstrcmpi(m_osvi.szCSDVersion, L" A "))
+		 0==lstrcmpiW(m_osvi.szCSDVersion, L" A "))
 	{
 			lstrcpy(m_osvi.szCSDVersion, L"A");
 			wsprintf(szOS, L"Microsoft Windows 98 Second Edition");
@@ -506,7 +506,7 @@ bool CSystemInformation::IsServer()
 	{
 		return false;
 	}
-	return (0 != lstrcmpi(L"WINNT", szValue));
+	return (0 != lstrcmpiW(L"WINNT", szValue));
 }
 
 bool CSystemInformation::GetKeyboardLayout(LPWSTR pszBuf)

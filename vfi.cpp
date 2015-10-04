@@ -306,7 +306,7 @@ public:
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CAboutDlg)
 	public:
-	virtual int DoModal();
+	virtual INT_PTR DoModal();
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	//}}AFX_VIRTUAL
@@ -322,8 +322,8 @@ private:
 	WORD m_wAlign;
 	int m_iBorder;
 	bool m_fBigDialog;
-	DWORD dwTotalPhys;
-	DWORD dwAvailPhys;
+	SIZE_T dwTotalPhys;
+	SIZE_T dwAvailPhys;
 public:
 };
 
@@ -370,7 +370,7 @@ bool CMyApp::ForwardMessages()
 				msg.message == WM_SYSCOMMAND ||
 				msg.message == WM_DESTROY )
             {
-                ::PostQuitMessage( msg.wParam );
+                ::PostQuitMessage( (int)msg.wParam );
 				return true;
 			}
 			::TranslateMessage( &msg );
@@ -381,7 +381,7 @@ bool CMyApp::ForwardMessages()
 	return false;
 }
 
-int CAboutDlg::DoModal() 
+INT_PTR CAboutDlg::DoModal() 
 {
 	return CDialog::DoModal();
 }
@@ -453,13 +453,16 @@ BOOL CAboutDlg::OnInitDialog()
 	CMainFrame* pFrame = static_cast<CMainFrame*> (AfxGetMainWnd());
 	CMyDoc* pDoc = static_cast<CMyDoc*> (pFrame->GetActiveDocument());
 	ASSERT (pDoc);
-	str.Format(L"Info Thread: %s\tCount: %u\r\nCRC Thread: %s\tCount: %u\r\nTerminate: %s",
-		g_eGoThreadInfo.Signaled() ? L"running" : L"paused", pDoc->m_dwDirtyInfo,
-		g_eGoThreadCRC.Signaled() ? L"running" : L"paused", pDoc->m_dwDirtyCRC,
-		g_eTermThreads.Signaled() ? L"yes" : L"no");
+	if (pDoc != nullptr)
+	{
+		str.Format(L"Info Thread: %s\tCount: %u\r\nCRC Thread: %s\tCount: %u\r\nTerminate: %s",
+			g_eGoThreadInfo.Signaled() ? L"running" : L"paused", pDoc->m_dwDirtyInfo,
+			g_eGoThreadCRC.Signaled() ? L"running" : L"paused", pDoc->m_dwDirtyCRC,
+			g_eTermThreads.Signaled() ? L"yes" : L"no");
 
-	pCtl = static_cast<CStatic*> (GetDlgItem(IDC_EVENTINFO));
-	pCtl->SetWindowText(str);
+		pCtl = static_cast<CStatic*> (GetDlgItem(IDC_EVENTINFO));
+		pCtl->SetWindowText(str);
+	}
 
 	Compact(false);
 
@@ -580,16 +583,18 @@ bool CAboutDlg::UpdateMemoryInfo()
 	// set the Event information
 	CMainFrame* pFrame = static_cast<CMainFrame*> (AfxGetMainWnd());
 	CMyDoc* pDoc = static_cast<CMyDoc*> (pFrame->GetActiveDocument());
-	ASSERT (pDoc);
-	CString str;
-	str.Format(L"Info Thread: %s\tCount: %u\r\nCRC Thread: %s\tCount: %u\r\nTerminate: %s",
-		g_eGoThreadInfo.Signaled() ? L"running" : L"paused", pDoc->m_dwDirtyInfo,
-		g_eGoThreadCRC.Signaled() ? L"running" : L"paused", pDoc->m_dwDirtyCRC,
-		g_eTermThreads.Signaled() ? L"yes" : L"no");
+	ASSERT(pDoc);
+	if (pDoc != nullptr)
+	{
+		CString str;
+		str.Format(L"Info Thread: %s\tCount: %u\r\nCRC Thread: %s\tCount: %u\r\nTerminate: %s",
+			g_eGoThreadInfo.Signaled() ? L"running" : L"paused", pDoc->m_dwDirtyInfo,
+			g_eGoThreadCRC.Signaled() ? L"running" : L"paused", pDoc->m_dwDirtyCRC,
+			g_eTermThreads.Signaled() ? L"yes" : L"no");
 
-	pCtl = static_cast<CStatic*> (GetDlgItem(IDC_EVENTINFO));
-	pCtl->SetWindowText(str);
-
+		pCtl = static_cast<CStatic*> (GetDlgItem(IDC_EVENTINFO));
+		pCtl->SetWindowText(str);
+	}
 	return true;
 }
 
@@ -598,38 +603,45 @@ void CAboutDlg::GrowDialog()
 	// find out how big the dialog is
 	CRect rcWnd;
 	GetWindowRect(&rcWnd);
+	CString str;
 
+	// get all the pointers and check for null before...
 	// IDC_AUTHOR
 	CStatic* pCtl1 = static_cast<CStatic*> (GetDlgItem(IDC_AUTHOR));
 	ASSERT (pCtl1);
-	CRect rc1;
-	pCtl1->GetWindowRect(&rc1);
-	// set full author string
-	CString str;
-	str.LoadString(STR_AUTHORFULL);
-	pCtl1->SetWindowText(str);
 
 	// IDC_SYSINFO
 	CStatic* pCtl2 = static_cast<CStatic*> (GetDlgItem(IDC_SYSINFO));
-	ASSERT (pCtl2);
-	CRect rc2;
-	pCtl2->GetWindowRect(&rc2);
+	ASSERT(pCtl2);
 
 	// IDC_MEMORY
 	CStatic* pCtl3 = static_cast<CStatic*> (GetDlgItem(IDC_MEMORY));
-	ASSERT (pCtl3);
-	CRect rc3;
-	pCtl3->GetWindowRect(&rc3);
+	ASSERT(pCtl3);
 
 	// IDC_EVENTINFO
 	CStatic* pCtl4 = static_cast<CStatic*> (GetDlgItem(IDC_EVENTINFO));
-	ASSERT (pCtl4);
-	CRect rc4;
-	pCtl4->GetWindowRect(&rc4);
+	ASSERT(pCtl4);
 
 	// IDOK
 	CButton* pCtl5 = static_cast<CButton*> (GetDlgItem(IDOK));
-	ASSERT (pCtl5);
+	ASSERT(pCtl5);
+
+	// ... doing any work with the pointers
+	// set full author string
+	CRect rc1;
+	pCtl1->GetWindowRect(&rc1);
+	str.LoadString(STR_AUTHORFULL);
+	pCtl1->SetWindowText(str);
+
+	CRect rc2;
+	pCtl2->GetWindowRect(&rc2);
+
+	CRect rc3;
+	pCtl3->GetWindowRect(&rc3);
+
+	CRect rc4;
+	pCtl4->GetWindowRect(&rc4);
+
 	CRect rc5;
 	pCtl5->GetWindowRect(&rc5);
 

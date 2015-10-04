@@ -467,9 +467,10 @@ void CMyListView::OnDropFiles(HDROP hDropInfo)
 	m_Find.Close();	
 
 	// now we know how many files there are, so we add them
-	strText.FormatMessage(STR_FILEADD, FileList.GetCount());
+	int count = Clamp(FileList.GetCount());
+	strText.FormatMessage(STR_FILEADD, count);
 	Box.SetWindowText(strText);
-	Box.m_ctlProgress.SetRange32(0, FileList.GetCount());
+	Box.m_ctlProgress.SetRange32(0, count);
 	CString strFile;
 	while ( !FileList.IsEmpty())
 	{
@@ -1153,7 +1154,7 @@ bool CMyListView::DeleteItem( CObject* pObject)
 
 	ZeroMemory( &lvfi, sizeof(lvfi));
 	lvfi.flags=LVFI_PARAM;
-	lvfi.lParam=(LONG) pObject;
+	lvfi.lParam=(LPARAM) pObject;
 	iItem=theListCtrl.FindItem( &lvfi, -1);
 	if ( -1 == iItem)
 	{
@@ -1234,7 +1235,7 @@ int CMyListView::FindVisibleItem(CObject* pObject)
 		lvi.iItem = iItem;
 		if (TRUE == theListCtrl.GetItem(&lvi))
 		{
-			if ( (DWORD)pObject == (DWORD)lvi.lParam )
+			if ( (LPARAM)pObject == (LPARAM)lvi.lParam )
 			{
 				return iItem;
 			}
@@ -1374,7 +1375,7 @@ void CMyListView::OnDestroy()
 void CMyListView::MyModifyStyleEx( DWORD dwRemove, DWORD dwAdd)
 {
 	CListCtrl& theListCtrl=GetListCtrl();
-	DWORD dwExStyle = theListCtrl.SendMessage (LVM_GETEXTENDEDLISTVIEWSTYLE);
+	LRESULT dwExStyle = theListCtrl.SendMessage (LVM_GETEXTENDEDLISTVIEWSTYLE);
 	dwExStyle |= dwAdd;
 	dwExStyle &= ~dwRemove;
 	theListCtrl.SendMessage (LVM_SETEXTENDEDLISTVIEWSTYLE, 0, dwExStyle);
@@ -1915,9 +1916,12 @@ bool CMyListView::FillBuffer(bool fAllRows, bool fAllFields)
 			pInfo = reinterpret_cast<CWiseFile*> (theListCtrl.GetItemData(j));
 			ASSERT (pInfo);
 
-			pDoc->GetRowString( *pInfo, pszItem );
-			lstrcat( m_pBuf, pszItem );
-			lstrcat( m_pBuf, L"\r\n" );
+			if (pInfo != nullptr)
+			{
+				pDoc->GetRowString(*pInfo, pszItem);
+				lstrcat(m_pBuf, pszItem);
+				lstrcat(m_pBuf, L"\r\n");
+			}
 		}
 	}
 	else
@@ -1959,7 +1963,7 @@ LPWSTR CMyListView::GetBuffer()
 	return m_pBuf;
 }
 
-DWORD CMyListView::GetBufferSize()
+SIZE_T CMyListView::GetBufferSize()
 {
 	return GlobalSize(m_hBuf);
 }

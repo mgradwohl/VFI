@@ -70,7 +70,7 @@ protected:
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg BOOL OnToolTipText(UINT nID, NMHDR* pNMHDR, LRESULT* pResult);
 	//}}AFX_MSG
-	virtual int OnToolHitTest(CPoint point, TOOLINFO* pTI);
+	virtual INT_PTR OnToolHitTest(CPoint point, TOOLINFO* pTI);
 	DECLARE_MESSAGE_MAP()
 
 private:

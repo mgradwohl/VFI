@@ -267,7 +267,7 @@ void CMyStatusBar::OnSize(UINT nType, int cx, int cy)
 	}
 }
 
-int CMyStatusBar::OnToolHitTest(CPoint point, TOOLINFO* pTI)
+INT_PTR CMyStatusBar::OnToolHitTest(CPoint point, TOOLINFO* pTI)
 {
 	ASSERT(FALSE);
 	CRect rc1;
@@ -280,13 +280,13 @@ int CMyStatusBar::OnToolHitTest(CPoint point, TOOLINFO* pTI)
 	if (rc1.PtInRect(point))
 	{
 		pTI->rect = rc1;
-		pTI->uId = (UINT)m_ctlProgress1.m_hWnd;
+		pTI->uId = (UINT_PTR)m_ctlProgress1.m_hWnd;
 		return 1;
 	}
 	if (rc2.PtInRect(point))
 	{
 		pTI->rect = rc2;
-		pTI->uId = (UINT)m_ctlProgress2.m_hWnd;
+		pTI->uId = (UINT_PTR)m_ctlProgress2.m_hWnd;
 		return 1;
 	}
 	return CStatusBar::OnToolHitTest(point, pTI);
@@ -300,26 +300,30 @@ BOOL CMyStatusBar::OnToolTipText( UINT id, NMHDR* pNMHDR, LRESULT* pResult )
 	TOOLTIPTEXTA* pTTTA = (TOOLTIPTEXTA*)pNMHDR;
 	TOOLTIPTEXTW* pTTTW = (TOOLTIPTEXTW*)pNMHDR;
 
-	CMyDoc* pDoc = GetFrame()->GetDocument();
-	ASSERT (pDoc);
-	DWORD dw = pDoc->GetItemCount();
 	WCHAR szTip[128];
 	WCHAR szRead[128];
 	WCHAR szTotal[128];
 
+	CMyDoc* pDoc = GetFrame()->GetDocument();
+	ASSERT(pDoc);
+	if (pDoc == nullptr)
+	{
+		return FALSE;
+	}
+	DWORD dw = pDoc->GetItemCount();
 	StrFormatByteSize64(pDoc->m_qwSize, szTotal, 128);
 	StrFormatByteSize64(pDoc->SizeRead(), szRead, 128);
-
-	UINT nID = pNMHDR->idFrom;
+	
+	UINT_PTR nID = pNMHDR->idFrom;
 
 	if (pNMHDR->code == TTN_NEEDTEXTA && (pTTTA->uFlags & TTF_IDISHWND) ||
 		pNMHDR->code == TTN_NEEDTEXTW && (pTTTW->uFlags & TTF_IDISHWND))
 	{
-		if (nID == (UINT)m_ctlProgress1.m_hWnd)
+		if (nID == (UINT_PTR)m_ctlProgress1.m_hWnd)
 		{
 			strfmt(AfxGetResourceHandle(), szTip, TIP_PROGRESS_INFO, dw - pDoc->m_dwDirtyInfo, dw);
 		}
-		if (nID == (UINT)m_ctlProgress2.m_hWnd)
+		if (nID == (UINT_PTR)m_ctlProgress2.m_hWnd)
 		{
 			strfmt(AfxGetResourceHandle(), szTip, TIP_PROGRESS_CRC, dw - pDoc->m_dwDirtyCRC, dw, szRead, szTotal);
 		}

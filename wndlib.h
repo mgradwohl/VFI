@@ -60,6 +60,8 @@ enum { CDF_CENTER, CDF_TOPLEFT, CDF_NONE };
 #define MWX_NW		0x0008	// 0000 0000  0000 1000
 #define MWX_APP		0x8000	// 1000 0000  0000 0000
 
+UINT32 UClamp(INT_PTR val);
+__int32 Clamp(INT_PTR val);
 int Width(LPCRECT prc);
 int Height(LPCRECT prc);
 int Height(const HWND hWnd);

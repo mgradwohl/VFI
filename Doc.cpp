@@ -321,8 +321,9 @@ DWORD CMyDoc::RecurseDir( LPWSTR pszPath )
 		}
 	}
 
-	strText.FormatMessage(STR_FILEADD, FileList.GetCount());
-	Box.m_ctlProgress.SetRange32(0, FileList.GetCount());
+	int count = Clamp(FileList.GetCount());
+	strText.FormatMessage(STR_FILEADD, count);
+	Box.m_ctlProgress.SetRange32(0, count);
 	Box.SetWindowText(strText);
 	CString strFile;
 	while ( !FileList.IsEmpty())
@@ -448,11 +449,15 @@ DWORD UpdateThreadInfo( LPVOID pParam )
 			// the file has version information, but doesn't have CRC information
 			// so add it back to the dirty list so that the CRC thread will pick it up
 			pDoc->AddToDirty(pFileInfo);
-		} //while 
-		if (pDoc->m_dwDirtyInfo < 1)
+		} //while
+
+		if (pDoc != nullptr)
 		{
-			TRACE(L"THREADINFO: pausing\n");
-			g_eGoThreadInfo.Reset();
+			if (pDoc->m_dwDirtyInfo < 1)
+			{
+				TRACE(L"THREADINFO: pausing\n");
+				g_eGoThreadInfo.Reset();
+			}
 		}
 	} // while
 	TRACE(L"THREADINFO: exiting\n");
@@ -630,10 +635,11 @@ void CMyDoc::DeleteKillList()
 	CProgressBox Box;
 	Box.Create(AfxGetMainWnd(), MWX_SE);
 	
-	strText.FormatMessage(STR_EMPTYTRASH, m_KillList.GetCount());
+	int count = Clamp(m_KillList.GetCount());
+	strText.FormatMessage(STR_EMPTYTRASH, count);
 	Box.SetWindowText(strText);
 	Box.m_ctlProgress.SetPos(0);
-	Box.m_ctlProgress.SetRange32(0, m_KillList.GetCount());
+	Box.m_ctlProgress.SetRange32(0, count);
 	Box.m_ctlProgress.SetStep(1);
 	Box.ShowWindow(SW_SHOWNORMAL);
 	
@@ -819,10 +825,11 @@ void CMyDoc::DeleteMainList()
 	CProgressBox Box;
 	Box.Create(AfxGetMainWnd(), MWX_SE);
 	
-	strText.FormatMessage(STR_FILEREMOVE, m_FileList.GetCount());
+	int count = Clamp(m_FileList.GetCount());
+	strText.FormatMessage(STR_FILEREMOVE, count);
 	Box.SetWindowText(strText);
 	Box.m_ctlProgress.SetPos(0);
-	Box.m_ctlProgress.SetRange32(0, m_FileList.GetCount());
+	Box.m_ctlProgress.SetRange32(0, count);
 	Box.m_ctlProgress.SetStep(1);
 	Box.ShowWindow(SW_SHOWNORMAL);
 	
@@ -969,7 +976,7 @@ void CMyDoc::SafeUpdateAllViews(CView* pSender, LPARAM lHint, CObject* pHint)
 		pView = GetNextView(pos);
 		//ASSERT_VALID(pView);
 		if (pView != pSender)
-			pView->PostMessage(theApp.WM_UPDATEVIEW(), lHint, (long) pHint);
+			pView->PostMessage(theApp.WM_UPDATEVIEW(), lHint, (LPARAM) pHint);
 	}
 }
 
@@ -1032,6 +1039,10 @@ bool CMyDoc::GetRowString(CWiseFile& rFile, LPWSTR pszBuf)
 	CColumnInfo* pci = pView->GetColumnInfo();
 	DWORD cbItem = sizeof(rFile);
 	LPWSTR pszText = (LPWSTR) HeapAlloc(GetProcessHeap(), 0, (cbItem + 1) );
+	if (pszText == nullptr)
+	{
+		ASSERT(pszText);
+	}
 
 	*pszBuf = 0;
 	*pszText = 0;
@@ -1479,9 +1490,12 @@ bool CMyDoc::WriteFileEx(LPCWSTR pszFile)
 	for (j = 0; j < c; j++)
 	{
 		pInfo = reinterpret_cast<CWiseFile*> (theListCtrl.GetItemData(j));
-		ASSERT (pInfo);
+		ASSERT(pInfo);
+		if (pInfo != nullptr)
+		{
+			GetRowString(*pInfo, pwz);
+		}
 
-		GetRowString( *pInfo, pwz );
 		lstrcat( pwz, L"\r\n" );
 
 		if (0 == ::WriteFile(hFile, (LPCVOID) pwz, lstrcb(pwz), &dw, NULL))

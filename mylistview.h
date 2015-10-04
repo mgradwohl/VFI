@@ -43,7 +43,7 @@ protected: // create from serialization only
 public:
 	void ShowCmdHelp();
 	HGLOBAL GetBufferHandle();
-	DWORD GetBufferSize();
+	SIZE_T GetBufferSize();
 	LPWSTR GetBuffer();
 	void CloseBuffer();
 	bool FillBuffer(bool fAllRows, bool fAllFields);
@@ -85,7 +85,7 @@ public:
 	CMyDoc* GetDocument();
 
 	// Window stuff
-	DWORD MyGetExStyle();
+	LRESULT MyGetExStyle();
 	void MyModifyStyleEx( DWORD dwRemove, DWORD dwAdd);
 	bool SetViewType(DWORD dwViewType);
 	DWORD GetViewType();
@@ -214,7 +214,7 @@ inline void CMyListView::EmptyList()
 	GetListCtrl().DeleteAllItems();
 }
 
-inline DWORD CMyListView::MyGetExStyle()
+inline LRESULT CMyListView::MyGetExStyle()
 {
 	CListCtrl& theListCtrl=GetListCtrl();
 	return theListCtrl.SendMessage (LVM_GETEXTENDEDLISTVIEWSTYLE);

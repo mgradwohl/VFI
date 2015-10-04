@@ -47,8 +47,6 @@ void ChangeDialogFont(CWnd* pWnd, CFont* pFont, int nFlag);
 class CMyApp : public CWinApp
 {
 public:
-//	bool GetCommandLineFolder(LPWSTR pszFolder);
-	bool CheckCommonControls();
 	inline UINT WM_UPDATEVIEW()
 	{
 		return m_wmUpdateView;
@@ -56,9 +54,7 @@ public:
 
 	CFont* GetUIFont();
 	CString m_strISORoot;
-//	int ErrorMsgBox( CWnd* pWnd, CString strMessage, UINT uStyle, DWORD dwError);
 	WCHAR m_szIniPath[MAX_PATH];
-//	CString GetModuleDirectory();
 	bool ForwardMessages();
 	CMyApp();
 	BOOL FirstInstance();
@@ -89,4 +85,3 @@ extern CMyApp theApp;
 
 #define VFI_H
 #endif//VFI_H
-

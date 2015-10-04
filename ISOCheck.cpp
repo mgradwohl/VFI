@@ -113,8 +113,7 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  dwReason, LPVOID lpReserved)
 				#ifdef DEBUG
 					OutputDebugString(L"isoCheck:attach\r\n");
 				#endif
-				InterlockedIncrement(&g_cProcess);
-				if (g_cProcess == 1)
+				if (InterlockedIncrement(&g_cProcess) == 1)
 				{
 					InitStringArray();
 				}
@@ -134,8 +133,7 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  dwReason, LPVOID lpReserved)
 				#ifdef DEBUG
 					OutputDebugString(L"isoCheck:detach\r\n");
 				#endif
-				InterlockedDecrement(&g_cProcess);
-				if (g_cProcess < 1)
+				if (InterlockedDecrement(&g_cProcess) < 1)
 				{
 					FreeStringArray();
 				}

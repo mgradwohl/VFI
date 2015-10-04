@@ -43,11 +43,12 @@ public:
 		m_pszCodePage = NULL;
 		m_pML = NULL;
 
-		CoInitialize(NULL);
-		if (S_OK != CoCreateInstance(CLSID_CMultiLanguage, NULL, CLSCTX_INPROC_SERVER, IID_IMultiLanguage2, (void**)&m_pML))
-//		if (S_OK != CoCreateInstance(CLSID_CMultiLanguage, NULL, CLSCTX_INPROC_SERVER, IID_IMultiLanguage, (void**)&m_pML))
+		if (SUCCEEDED(CoInitialize(NULL)))
 		{
-			m_pML = NULL;
+			if (FAILED(CoCreateInstance(CLSID_CMultiLanguage, NULL, CLSCTX_INPROC_SERVER, IID_IMultiLanguage2, (void**)&m_pML)))
+			{
+				m_pML = NULL;
+			}
 		}
 	}
 

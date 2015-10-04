@@ -74,6 +74,27 @@
 #include "strlib.h"
 #include "wndlib.h"
 
+
+		UINT32 UClamp(INT_PTR val)
+		{
+			__int64 ret = val;
+			if (ret > _UI32_MAX)
+			{
+				ret = _UI32_MAX - 1;
+			}
+			return (UINT32)ret;
+		}
+
+		__int32 Clamp(INT_PTR val)
+		{
+			__int64 ret = val;
+			if (ret > _I32_MAX)
+			{
+				ret = _I32_MAX - 1;
+			}
+			return (__int32)ret;
+		}
+
 int Width(LPCRECT prc)
 {
 	return abs(prc->right - prc->left);
@@ -179,7 +200,7 @@ void ChangeDialogFont(const HWND hWnd, const HFONT hFont, const int nFlag)
 		SetFont(hWndChild, hFont, false);
 		GetWindowRect(hWndChild, &rcWnd);
 		GetClassName(hWndChild, szBuf, 31);
-		if(0==lstrcmpi(szBuf, _T("COMBOBOX")))
+		if(0==lstrcmpiW(szBuf, _T("COMBOBOX")))
 		{
 			RECT rc;
 			SendMessage(hWndChild, CB_GETDROPPEDCONTROLRECT,0,(LPARAM) &rc);
@@ -447,28 +468,29 @@ bool BrowseForFile(const HWND hWnd, LPCWSTR pszTitle, LPWSTR pszFolder)
 	BROWSEINFO bi;
 	ZeroMemory(&bi, sizeof(BROWSEINFO));
 	LPMALLOC pMalloc;
-	CoGetMalloc(MEMCTX_TASK, &pMalloc);
-	//SHGetMalloc(&pMalloc);
-
-	bi.hwndOwner = hWnd;
-	bi.lpszTitle = pszTitle;
-	bi.lpfn = NULL;
-	bi.pszDisplayName = pszFolder;
-	bi.ulFlags = BIF_BROWSEINCLUDEFILES | BIF_VALIDATE | BIF_EDITBOX |  BIF_USENEWUI |  BIF_NEWDIALOGSTYLE | BIF_STATUSTEXT | BIF_RETURNONLYFSDIRS;
-	bi.pidlRoot = NULL;
-
-	LPITEMIDLIST pidList = SHBrowseForFolder(&bi);
-	if (NULL == pidList)
+	if (SUCCEEDED(CoGetMalloc(MEMCTX_TASK, &pMalloc)))
 	{
-		return false;
-	}
+		bi.hwndOwner = hWnd;
+		bi.lpszTitle = pszTitle;
+		bi.lpfn = NULL;
+		bi.pszDisplayName = pszFolder;
+		bi.ulFlags = BIF_BROWSEINCLUDEFILES | BIF_VALIDATE | BIF_EDITBOX | BIF_USENEWUI | BIF_NEWDIALOGSTYLE | BIF_STATUSTEXT | BIF_RETURNONLYFSDIRS;
+		bi.pidlRoot = NULL;
 
-	if (TRUE == SHGetPathFromIDList(pidList, pszFolder))
-	{
-		pMalloc->Free(pidList);
+		LPITEMIDLIST pidList = SHBrowseForFolder(&bi);
+		if (NULL == pidList)
+		{
+			return false;
+		}
+
+		if (TRUE == SHGetPathFromIDList(pidList, pszFolder))
+		{
+			pMalloc->Free(pidList);
+		}
+		pMalloc->Release();
+		return true;
 	}
-	pMalloc->Release();
-	return true;
+	return false;
 }
 
 bool BrowseForFolder(const HWND hWnd, LPCWSTR pszTitle, LPWSTR pszFolder)
@@ -480,27 +502,29 @@ bool BrowseForFolder(const HWND hWnd, LPCWSTR pszTitle, LPWSTR pszFolder)
 	ZeroMemory(&bi, sizeof(BROWSEINFO));
 	LPMALLOC pMalloc;
 	//SHGetMalloc(&pMalloc);
-	CoGetMalloc(MEMCTX_TASK, &pMalloc);
-
-	bi.hwndOwner = hWnd;
-	bi.lpszTitle = pszTitle;
-	bi.lpfn = NULL;
-	bi.pszDisplayName = pszFolder;
-	bi.ulFlags = BIF_VALIDATE | BIF_EDITBOX |  BIF_USENEWUI |  BIF_NEWDIALOGSTYLE | BIF_STATUSTEXT | BIF_RETURNONLYFSDIRS;
-	bi.pidlRoot = NULL;
-
-	LPITEMIDLIST pidList = SHBrowseForFolder(&bi);
-	if (NULL == pidList)
+	if (SUCCEEDED(CoGetMalloc(MEMCTX_TASK, &pMalloc)))
 	{
-		pMalloc->Release();
-		return false;
-	}
+		bi.hwndOwner = hWnd;
+		bi.lpszTitle = pszTitle;
+		bi.lpfn = NULL;
+		bi.pszDisplayName = pszFolder;
+		bi.ulFlags = BIF_VALIDATE | BIF_EDITBOX | BIF_USENEWUI | BIF_NEWDIALOGSTYLE | BIF_STATUSTEXT | BIF_RETURNONLYFSDIRS;
+		bi.pidlRoot = NULL;
 
-	if (TRUE == SHGetPathFromIDList(pidList, pszFolder))
-	{
+		LPITEMIDLIST pidList = SHBrowseForFolder(&bi);
+		if (NULL == pidList)
+		{
+			pMalloc->Release();
+			return false;
+		}
+
+		if (TRUE == SHGetPathFromIDList(pidList, pszFolder))
+		{
 			pMalloc->Free(pidList);
-	}
+		}
 
-	pMalloc->Release();
-	return true;
+		pMalloc->Release();
+		return true;
+	}
+	return false;
 }
