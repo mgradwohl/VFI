@@ -333,7 +333,7 @@ void CMyListView::OnAddButtload()
 {
 	TRACE(L"CMyListView::OnAddButtload()\n");
 
-    WCHAR szFolder[MAX_PATH];
+	WCHAR szFolder[MAX_PATH];
 	if (BrowseForFolder(m_hWnd, L"Choose a folder, all files in the folder will be added to the list.", szFolder))
 	{
 		CMyDoc* pDoc=GetDocument();
@@ -409,7 +409,7 @@ void CMyListView::OnDropFiles(HDROP hDropInfo)
 		while ( fRun )
 		{
 			fRun = (TRUE == m_Find.FindNextFile()); 
- 			// if it's a directory, and it's not dots then add it to the path list
+			// if it's a directory, and it's not dots then add it to the path list
 			if ( m_Find.IsDirectory() && !m_Find.IsDots() )
 			{
 				PathList.AddTail( m_Find.GetFilePath() );
@@ -444,7 +444,7 @@ void CMyListView::OnDropFiles(HDROP hDropInfo)
 		while ( fRun )
 		{
 			fRun = (TRUE==m_Find.FindNextFile());
- 			// if it's a directory, and it's not dots then add it to the path list
+			// if it's a directory, and it's not dots then add it to the path list
 			if ( m_Find.IsDirectory() && !m_Find.IsDots() )
 			{
 				PathList.AddTail( m_Find.GetFilePath() );
@@ -469,6 +469,7 @@ void CMyListView::OnDropFiles(HDROP hDropInfo)
 	strText.FormatMessage(STR_FILEADD, count);
 	Box.SetWindowText(strText);
 	Box.m_ctlProgress.SetRange32(0, count);
+
 	CString strFile;
 	while ( !FileList.IsEmpty())
 	{
@@ -501,8 +502,8 @@ void CMyListView::OnGetDispInfo(NMHDR* pNMHDR, LRESULT* pResult)
 
 	if (pDispInfo->item.mask & LVIF_TEXT)
 	{
-        pInfo->GetFieldString((LPWSTR)m_szItemText, pDispInfo->item.iSubItem, m_fIncludePath);
-        pDispInfo->item.pszText = (LPWSTR) m_szItemText;
+		pInfo->GetFieldString((LPWSTR)m_szItemText, pDispInfo->item.iSubItem, m_fIncludePath);
+		pDispInfo->item.pszText = (LPWSTR) m_szItemText;
 	}
 	*pResult = 0;
 }
@@ -602,7 +603,7 @@ void CMyListView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 						// use the path generated
 						WCHAR szPath[MAX_PATH];
 						pDoc->GetFileName(szPath);
-                        pDoc->WriteFileEx(szPath);
+						pDoc->WriteFileEx(szPath);
 					}
 					else
 					{
@@ -1021,14 +1022,14 @@ void CMyListView::OnFileRename()
 {
 	SHFILEOPSTRUCT	shFileOp;
 
-    shFileOp.hwnd; 
-    shFileOp.wFunc; 
-    shFileOp.pFrom; 
-    shFileOp.pTo; 
-    shFileOp.fFlags; 
-    shFileOp.fAnyOperationsAborted; 
-    shFileOp.hNameMappings; 
-    shFileOp.lpszProgressTitle; 
+	shFileOp.hwnd; 
+	shFileOp.wFunc; 
+	shFileOp.pFrom; 
+	shFileOp.pTo; 
+	shFileOp.fFlags; 
+	shFileOp.fAnyOperationsAborted; 
+	shFileOp.hNameMappings; 
+	shFileOp.lpszProgressTitle; 
  }
 
 void CMyListView::OnFileTouch() 
@@ -1226,7 +1227,11 @@ int CMyListView::FindVisibleItem(CObject* pObject)
 			}
 		}
 	}
-	TRACE(L"FindVisibleItem found item %d.\n",iItem);
+
+	//
+	CWiseFile* pFileInfo = reinterpret_cast<CWiseFile*> (theListCtrl.GetItemData(iItem));
+	ASSERT(pFileInfo);
+	TRACE(L"FindVisibleItem found item %s.\n", pFileInfo->GetFullPath());
 	return -1;
 }
 
@@ -1544,11 +1549,11 @@ int CMyListView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	
 	HWND hWnd = GetListCtrl().GetSafeHwnd();
 
-    DWORD dwStyle = ::GetClassLong (m_hWnd, GCL_STYLE);
-    ::SetClassLong (m_hWnd, GCL_STYLE, dwStyle & ~(CS_HREDRAW | CS_VREDRAW));
+	DWORD dwStyle = ::GetClassLong (m_hWnd, GCL_STYLE);
+	::SetClassLong (m_hWnd, GCL_STYLE, dwStyle & ~(CS_HREDRAW | CS_VREDRAW));
 
-    dwStyle = ::GetClassLong (hWnd, GCL_STYLE);
-    ::SetClassLong (hWnd, GCL_STYLE, dwStyle & ~(CS_HREDRAW | CS_VREDRAW));
+	dwStyle = ::GetClassLong (hWnd, GCL_STYLE);
+	::SetClassLong (hWnd, GCL_STYLE, dwStyle & ~(CS_HREDRAW | CS_VREDRAW));
 
 	return 0;
 }
@@ -1836,7 +1841,7 @@ bool CMyListView::FillBuffer(bool fAllRows, bool fAllFields)
 	CWiseFile* pInfo = NULL;
 	int iItem = 0;
 	int c = 0;
-    int j = 0;
+	int j = 0;
 	POSITION pos;
 
 	CloseBuffer();

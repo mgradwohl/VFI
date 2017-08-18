@@ -303,7 +303,7 @@ DWORD CMyDoc::RecurseDir( LPWSTR pszPath )
 		while ( fRun )
 		{
 			fRun = (TRUE == m_Find.FindNextFile());
- 			// if it's a directory, and it's not dots then add it to the path list
+			// if it's a directory, and it's not dots then add it to the path list
 			if ( m_Find.IsDirectory() && !m_Find.IsDots() )
 			{
 				PathList.AddTail( m_Find.GetFilePath() );
@@ -1455,7 +1455,7 @@ bool CMyDoc::WriteFileEx(LPCWSTR pszFile)
 // do the work here
 	CWiseFile* pInfo = NULL;
 	int c = 0;
-    int j = 0;
+	int j = 0;
 	DWORD dw = 0;
 
 	LPWSTR pwz = (LPWSTR) HeapAlloc(GetProcessHeap(), 0, 8192 * 2);
