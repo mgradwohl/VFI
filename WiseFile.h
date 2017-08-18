@@ -39,8 +39,6 @@ bool GetLanguageName(UINT Locale, LPWSTR pszBuf);
 //class CCodePage;
 #include "tcodepage.h"
 
-#include "isocheck.h"
-
 // file states
 enum FileStates
 {
@@ -64,7 +62,6 @@ enum FileStates
 #define FWF_ERR_SPECIALPATH		-5;
 #define FWF_ERR_NOVERSION		-6
 #define FWF_ERR_LOWMEMORY		-7;
-#define FWF_ERR_ISO				-8;
 #define FWF_ERR_OTHER			-64;
 
 class CWiseFile : public CObject
@@ -182,11 +179,6 @@ public:
 	DWORD GetCRC()
 		{ return m_dwCRC; }
 
-	LPWSTR GetISO(bool fIncludePath);
-	int GetISO( LPWSTR pszText, bool fIncludePath );
-	WORD GetISO()
-		{ return m_wISOFlags; }
-
 	void SetState( WORD wState )
 		{ m_wFileState = wState; }
 
@@ -205,7 +197,6 @@ public:
 		{ m_dwCRC = dwCRC;}
 	// execute helpers
 	int ReadVersionInfo();
-	int CheckISO();
 
 #ifdef _DEBUG
 	virtual void Dump(CDumpContext& dc) const;
@@ -248,7 +239,6 @@ private:
 	DWORD		m_dwFlags;
 
 	DWORD		m_dwCRC;
-	WORD		m_wISOFlags;
 	WORD		m_wFileState;
 	
 	// Flags

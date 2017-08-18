@@ -32,7 +32,6 @@
 #include "wndlib.h"
 #include "globals.h"
 //#include <../cpputil/myfilebox.h>
-#include "sysinfo.h"
 
 #include "resource.h"
 #include "VFI.h"
@@ -44,7 +43,7 @@
 #include "timedlg.h"
 #include "progressbox.h"
 #include <mmsystem.h>
-	#pragma comment(lib, "winmm.lib")
+	//#pragma comment(lib, "winmm.lib")
 
 #ifdef _DEBUG
 	#define new DEBUG_NEW
@@ -311,7 +310,7 @@ bool CMyListView::AddItem(CWiseFile* pFileInfo)
 
 		CString strTitle;
 		strTitle.LoadString(ERR_TITLE);
-		strError.Format(ERR_ADDFILE_FAILED, strError, GetLastError() );
+		strError.Format(ERR_ADDFILE_FAILED, (LPCWSTR)strError, GetLastError() );
 
 		ErrorMessageBox(AfxGetMainWnd()->GetSafeHwnd(), GetLastError(), strTitle, strError);
 
@@ -327,7 +326,6 @@ bool CMyListView::AddItem(CWiseFile* pFileInfo)
 		}		
 	}
 
-	theApp.m_strISORoot=pFileInfo->GetPath();
 	return TRUE;
 }
 
@@ -478,7 +476,7 @@ void CMyListView::OnDropFiles(HDROP hDropInfo)
 		strFile = FileList.RemoveHead();
 		if (FALSE == pDoc->AddFile(strFile))
 		{
-			strText.FormatMessage(ERR_FILEINUSE, strFile);
+			strText.FormatMessage(ERR_FILEINUSE, (LPCWSTR)strFile);
 			UpdateStatus(strText);
 		}
 
@@ -503,16 +501,8 @@ void CMyListView::OnGetDispInfo(NMHDR* pNMHDR, LRESULT* pResult)
 
 	if (pDispInfo->item.mask & LVIF_TEXT)
 	{
-		if(pDispInfo->item.iSubItem < 19)
-		{
-              pInfo->GetFieldString((LPWSTR)m_szItemText, pDispInfo->item.iSubItem, m_fIncludePath);
-              pDispInfo->item.pszText = (LPWSTR) m_szItemText;
-		}
-		else
-		{
-			// special case for ISO column (column 19)
-			pDispInfo->item.pszText = (LPWSTR) pInfo->GetISO(m_fIncludePath);
-		}
+        pInfo->GetFieldString((LPWSTR)m_szItemText, pDispInfo->item.iSubItem, m_fIncludePath);
+        pDispInfo->item.pszText = (LPWSTR) m_szItemText;
 	}
 	*pResult = 0;
 }
@@ -806,11 +796,6 @@ int CALLBACK CMyListView::ListViewCompareProc(LPARAM lParam1, LPARAM lParam2, LP
 					iResult = DWordCompare(pFile1->GetCRC(), pFile2->GetCRC(), pView->m_fSortAscend);
 					break;
 				}
-			case 19:   // sort by ISO
-				{
-					iResult = DWordCompare(pFile1->GetISO(), pFile2->GetISO(), pView->m_fSortAscend);
-					break;
-				}
 			default:
 				iResult = 0;
 				break;
@@ -893,7 +878,7 @@ bool CMyListView::RestorePreferences()
 	m_pci[16].SetFormat(LVCFMT_LEFT);
 	m_pci[17].SetFormat(LVCFMT_LEFT);
 	m_pci[18].SetFormat(LVCFMT_LEFT);
-	m_pci[19].SetFormat(LVCFMT_LEFT);
+	//m_pci[19].SetFormat(LVCFMT_LEFT);
 
 	// some are fixed, some aren't
 	m_pci[4].SetFixedWidth(12);		// '_MM/DD/YYYY_'
@@ -938,7 +923,7 @@ bool CMyListView::RestorePreferences()
 		CString strError;
 		CString strTitle;
 		strTitle.LoadString(ERR_TITLE);
-		strError.FormatMessage(ERR_WAVENOTFOUND, m_strWave);
+		strError.FormatMessage(ERR_WAVENOTFOUND, (LPCWSTR)m_strWave);
 		ErrorMessageBox(AfxGetMainWnd()->GetSafeHwnd(), GetLastError(), strTitle, strError);
 
 		m_strWave.Empty();
@@ -969,7 +954,7 @@ bool CMyListView::SavePreferences()
 		{
 			strValue.Format( L"%d, %d",theListCtrl.GetColumnWidth(i), m_pci[i].IsVisible() == TRUE ? 1 : 0 );
 		}
-		TRACE(L">>> CMyListView::SavePreferences\t%s\n",strValue);
+		TRACE(L">>> CMyListView::SavePreferences\t%s\n",(LPCWSTR)strValue);
 		theApp.WriteProfileString( L"Columns",strEntry,strValue);
 	}
 
@@ -1372,7 +1357,7 @@ void CMyListView::OnDestroy()
 	CListView::OnDestroy();
 }
 
-void CMyListView::MyModifyStyleEx( DWORD dwRemove, DWORD dwAdd)
+void CMyListView::MyModifyStyleEx( LRESULT dwRemove, LRESULT dwAdd)
 {
 	CListCtrl& theListCtrl=GetListCtrl();
 	LRESULT dwExStyle = theListCtrl.SendMessage (LVM_GETEXTENDEDLISTVIEWSTYLE);

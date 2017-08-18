@@ -1,26 +1,3 @@
-// Visual File Information
-// Copyright (c) Microsoft Corporation
-// All rights reserved. 
-// 
-// MIT License
-// 
-// Permission is hereby granted, free of charge, to any person obtaining 
-// a copy of this software and associated documentation files (the ""Software""), 
-// to deal in the Software without restriction, including without limitation 
-// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
-// and/or sell copies of the Software, and to permit persons to whom 
-// the Software is furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included 
-// in all copies or substantial portions of the Software.
-// 
-// THE SOFTWARE IS PROVIDED *AS IS*, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
-// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS 
-// OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
-// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR 
-// IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
 // Used by vfi.rc
@@ -45,7 +22,6 @@
 #define IDR_MENUNEW                     155
 #define IDR_MAINFRAMED                  155
 #define IDD_TESTINFO                    157
-#define IDR_RTF_ISO                     159
 #define IDR_RTF_OS                      161
 #define IDR_RTF_TYPE                    162
 #define IDR_RTF_VERSION                 163
@@ -59,7 +35,6 @@
 #define IDB_TOOLBARHOT                  174
 #define IDB_TOOLBARCOLD                 175
 #define IDR_ACCELERATOR1                183
-#define ID_VIEW_ISOFLAGS                184
 #define IDS_PROPSHT_CAPTION             200
 #define STR_MOREDIRTYFILES              201
 #define STR_DIRTYSAVE                   201
@@ -152,19 +127,6 @@
 #define STR_COPTONS                     534
 #define STR_COPYTONS                    534
 #define IDS_STRING600                   600
-#define STR_ISO_PATHTOOLONG             601
-#define STR_ISO_PATHBADCHAR             602
-#define STR_ISO_PATHHASDOT              603
-#define STR_ISO_PATHTOODEEP             604
-#define STR_ISO_FILETOOLONG             605
-#define STR_ISO_FILEBADCHAR             606
-#define STR_ISO_FILEHASDOT              607
-#define STR_ISO_EXTTOOLONG              608
-#define STR_ISO_EXTBADCHAR              609
-#define STR_ISO_EXTHASDOT               610
-#define STR_ISO_PATHLOWERCASE           611
-#define STR_ISO_FILELOWERCASE           612
-#define STR_ISO_EXTLOWERCASE            613
 #define IDS_STRING700                   700
 #define STR_FLAG_DEBUG                  701
 #define STR_FLAG_PRERELEASE             702
@@ -199,7 +161,6 @@
 #define IDC_BROWSEWAVE                  1005
 #define TIP_PROGRESS_INFO               1005
 #define IDC_ALLOWFOLDERS                1006
-#define IDC_ISOINCLUDEPATH              1007
 #define IDC_GENERATECRC                 1008
 #define IDC_SAVEPROMPT                  1008
 #define IDC_GRIDLINES                   1009
@@ -220,7 +181,6 @@
 #define IDC_DATEPICK                    1060
 #define IDC_COMPACT                     1067
 #define IDC_TEXT                        1068
-#define IDC_SYSINFO                     1069
 #define IDC_DISPLAYAGAIN                1070
 #define IDC_MEMORY                      1071
 #define IDC_AUTHOR                      1072
@@ -265,7 +225,6 @@
 #define ID_MENU_HELP                    32804
 #define IDM_TEST_INFO                   32805
 #define ID_HELP_ATTRIBS                 32806
-#define ID_HELP_ISO                     32807
 #define ID_HELP_FILEFLAGS               32808
 #define ID_HELP_FILETYPE                32809
 #define ID_HELP_OS                      32810

@@ -28,7 +28,6 @@
 	#error include 'stdafx.h' before including this file for PCH
 #endif
 
-#include "sysinfo.h"
 #include "tevent.h"
 #include "strlib.h"
 
@@ -53,7 +52,6 @@ public:
 	}
 
 	CFont* GetUIFont();
-	CString m_strISORoot;
 	WCHAR m_szIniPath[MAX_PATH];
 	bool ForwardMessages();
 	CMyApp();

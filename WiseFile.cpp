@@ -27,10 +27,7 @@
 #include "WiseFile.h"
 
 #include "Imagehlp.h"
-	#pragma comment(lib, "Imagehlp.lib")
-
-#include "ISOCheck.h"
-	//#pragma comment(lib, "isocheck.lib")
+	//#pragma comment(lib, "Imagehlp.lib")
 
 #ifdef _DEBUG
 	#define new DEBUG_NEW
@@ -175,7 +172,6 @@ const CWiseFile& CWiseFile::Copy(const CWiseFile& rwf)
 	m_dwAttribs = rwf.m_dwAttribs;
 	m_dwCRC = rwf.m_dwCRC;
 	m_dwFlags = rwf.m_dwFlags;
-	m_wISOFlags = rwf.m_wISOFlags;
 	m_dwOS = rwf.m_dwOS;
 	m_dwType = rwf.m_dwType;
 	m_qwFileVersion = rwf.m_qwFileVersion;
@@ -1063,40 +1059,6 @@ int CWiseFile::GetAttribs( LPWSTR pszText )
 	return ( (NULL==lstrcpy( pszText, m_szAttribs )) ? lstrcb(m_szAttribs) : FWF_SUCCESS );
 }
 
-int CWiseFile::GetISO(LPWSTR pszText, bool fIncludePath)
-{
-	if (!CheckState(FWFS_ATTACHED))
-	{
-		lstrinit(pszText);
-		return FWF_ERR_INVALID;
-	}
-
-	if (fIncludePath)
-	{
-		lstrcpyW( pszText, isoGetISOFlagsString(m_wISOFlags));
-	}
-	else
-	{
-		lstrcpyW( pszText, isoGetISOFlagsString((WORD)LOBYTE(m_wISOFlags)));
-	}
-
-	TRACE(L"%u %s\n", m_wISOFlags, pszText);
-	return FWF_SUCCESS;
-}
-
-LPWSTR CWiseFile::GetISO(bool fIncludePath)
-{
-	if (!CheckState(FWFS_ATTACHED))
-		return (LPWSTR) L"\0";
-
-	if (!fIncludePath)
-	{
-		return (LPWSTR) isoGetISOFlagsString((WORD)LOBYTE(m_wISOFlags));
-	}
-
-	return (LPWSTR) isoGetISOFlagsString(m_wISOFlags);
-}
-
 int CWiseFile::GetFlags(LPWSTR pszText)
 {
 	if ( !CheckState(FWFS_VERSION) )
@@ -1184,16 +1146,6 @@ int CWiseFile::GetFlags(LPWSTR pszText)
 	return ( (NULL==lstrcpy( pszText, m_szFlags )) ? lstrcb(m_szFlags) : FWF_SUCCESS );
 }
 
-int CWiseFile::CheckISO()
-{
-	if (!CheckState(FWFS_ATTACHED))
-		return FWF_ERR_INVALID;
-
-	m_wISOFlags = isoGetISOFlags(m_szPath, m_szName, m_szExt);
-
-	return FWF_SUCCESS;
-}
-
 bool GetLanguageName(UINT Language, LPWSTR pszBuf)
 {
 	if (NULL == pszBuf)
@@ -1278,9 +1230,7 @@ bool CWiseFile::GetFieldString(LPWSTR pszBuf, int iField, bool fOptions)
 		case 18: return (FWF_SUCCESS == GetCRC(pszBuf));
 		break;
 
-		case 19: return (FWF_SUCCESS == GetISO(pszBuf, fOptions));
-		break;
-
+		fOptions;
 		default:	return false;
 	}
 }
@@ -1396,7 +1346,6 @@ bool CWiseFile::Init()
 	m_dwType = 0;
 	m_dwFlags = 0;
 	m_dwCRC = 0;
-	m_wISOFlags = 0;
 
 	m_fDebugStripped = false;
 	m_fHasVersion = false;

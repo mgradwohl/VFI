@@ -47,7 +47,6 @@ CPageGeneral::CPageGeneral() : CPropertyPage(CPageGeneral::IDD)
 	//{{AFX_DATA_INIT(CPageGeneral)
 	m_fAudioCue = false;
 	m_strWave = "";
-	m_fUseISORoot = false;
 	m_fIncludePath = false;
 	m_fSavePrompt = FALSE;
 	m_strSavePath = "";
@@ -66,7 +65,6 @@ void CPageGeneral::DoDataExchange(CDataExchange* pDX)
 	DDX_Check(pDX, IDC_AUDIOCUE, m_fAudioCue);
 	DDX_Text(pDX, IDC_EDITWAVE, m_strWave);
 	DDV_MaxChars(pDX, m_strWave, 260);
-	DDX_Check(pDX, IDC_ISOINCLUDEPATH, m_fIncludePath);
 	DDX_Check(pDX, IDC_SAVEPROMPT, m_fSavePrompt);
 	DDX_Text(pDX, IDC_SAVEPATH, m_strSavePath);
 	//}}AFX_DATA_MAP
@@ -184,7 +182,7 @@ BOOL CPageColumn::OnInitDialog()
 		strLabel = " " + strLabel;
 		m_ctlColumns.AddString( strLabel );
 		m_ctlColumns.SetCheck( i, m_pci[i].IsVisible() ? 1 : 0  );
-		TRACE(L">>> CPageColumn::OnInitDialog %s, %d\r\n",strLabel, m_pci[i].IsVisible() ? 1 : 0);
+		TRACE(L">>> CPageColumn::OnInitDialog %s, %d\r\n",(LPCWSTR)strLabel, m_pci[i].IsVisible() ? 1 : 0);
 	}
 	
 	return TRUE;  // return TRUE unless you set the focus to a control
@@ -264,7 +262,7 @@ void CPageGeneral::OnKillFocusEditWave()
 		CString strError;
 		CString strTitle;
 		strTitle.LoadString(ERR_TITLE);
-		strError.FormatMessage(ERR_REENTERWAVE, m_strWave);
+		strError.FormatMessage(ERR_REENTERWAVE, (LPCWSTR)m_strWave);
 
 		ErrorMessageBox(AfxGetMainWnd()->GetSafeHwnd(),
 			GetLastError(),
@@ -296,7 +294,7 @@ void CPageGeneral::OnKillfocusSavepath()
 		CString strTitle;
 		strTitle.LoadString(ERR_TITLE);
 		CString strError;
-		strError.FormatMessage(ERR_REENTERPATH, m_strSavePath);
+		strError.FormatMessage(ERR_REENTERPATH, (LPCWSTR)m_strSavePath);
 		ErrorMessageBox(AfxGetMainWnd()->GetSafeHwnd(), GetLastError(), strTitle, strError);
 
 		m_strSavePath.Empty();

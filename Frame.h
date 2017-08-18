@@ -96,7 +96,6 @@ protected:
 	afx_msg void OnViewTooltips();
 	afx_msg void OnMyHelp();
 	afx_msg void OnEndSession(BOOL bEnding);
-	afx_msg void OnHelpISO();
 	afx_msg void OnHelpAttribs();
 	afx_msg void OnHelpFlags();
 	afx_msg void OnHelpType();

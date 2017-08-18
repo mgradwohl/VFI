@@ -55,7 +55,6 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND(ID_VIEW_TOOLTIPS, OnViewTooltips)
 	ON_COMMAND(ID_HELP, OnMyHelp)
 	ON_WM_ENDSESSION()
-	ON_COMMAND(ID_HELP_ISO, OnHelpISO)
 	ON_COMMAND(ID_HELP_ATTRIBS, OnHelpAttribs)
 	ON_COMMAND(ID_HELP_FILEFLAGS, OnHelpFlags)
 	ON_COMMAND(ID_HELP_FILETYPE, OnHelpType)
@@ -451,12 +450,6 @@ void CMainFrame::OnEndSession(BOOL bEnding)
 	pDoc->TerminateThreads();
 
 	CFrameWnd::OnEndSession(bEnding);
-}
-
-void CMainFrame::OnHelpISO() 
-{
-	CHelpDlg dlgHelp(this, IDR_RTF_ISO, false);
-	dlgHelp.DoModal();
 }
 
 void CMainFrame::OnHelpAttribs() 

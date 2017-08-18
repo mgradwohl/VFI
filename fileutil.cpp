@@ -27,13 +27,13 @@
 #include <stdlib.h>		// _tsplitpath
 
 #include <shlobj.h>
-	#pragma comment(lib, "shell32.lib")
+	//#pragma comment(lib, "shell32.lib")
 
 #include <shlwapi.h>
-	#pragma comment(lib, "shlwapi.lib")
+	//#pragma comment(lib, "shlwapi.lib")
 
 #include <winnetwk.h>
-	#pragma comment(lib, "mpr.lib")
+	//#pragma comment(lib, "mpr.lib")
 
 #include "str.h"
 #include "fileutil.h"

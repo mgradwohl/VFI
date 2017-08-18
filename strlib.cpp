@@ -21,33 +21,33 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR 
 // IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#ifndef WINVER
-	#define WINVER			0x0501
-#endif
-
-#ifndef _WIN32_WINNT
-	#define _WIN32_WINNT	0x0501
-#endif
-
-#ifndef _WIN32_IE
-	#define _WIN32_IE		0x0600
-#endif
-
-#ifndef STRICT
-	#define STRICT 1
-#endif
-
-#ifndef WIN32
-	#define WIN32
-#endif
-
-#ifndef VC_EXTRALEAN
-	#define VC_EXTRALEAN
-#endif
-
-#ifndef WIN32_LEAN_AND_MEAN
-	#define WIN32_LEAN_AND_MEAN
-#endif
+//#ifndef WINVER
+//	#define WINVER			0x0501
+//#endif
+//
+//#ifndef _WIN32_WINNT
+//	#define _WIN32_WINNT	0x0501
+//#endif
+//
+//#ifndef _WIN32_IE
+//	#define _WIN32_IE		0x0600
+//#endif
+//
+//#ifndef STRICT
+//	#define STRICT 1
+//#endif
+//
+//#ifndef WIN32
+//	#define WIN32
+//#endif
+//
+//#ifndef VC_EXTRALEAN
+//	#define VC_EXTRALEAN
+//#endif
+//
+//#ifndef WIN32_LEAN_AND_MEAN
+//	#define WIN32_LEAN_AND_MEAN
+//#endif
 
 #ifdef _UNICODE
 	#ifndef UNICODE

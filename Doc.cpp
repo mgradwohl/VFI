@@ -332,7 +332,7 @@ DWORD CMyDoc::RecurseDir( LPWSTR pszPath )
 		strFile = FileList.RemoveHead();
 		if (FALSE == this->AddFile(strFile))
 		{
-			strText.FormatMessage(ERR_FILEINUSE, strFile);
+			strText.FormatMessage(ERR_FILEINUSE, (LPCWSTR)strFile);
 			//UpdateStatus(strText);
 		}
 		theApp.ForwardMessages();
@@ -441,7 +441,6 @@ DWORD UpdateThreadInfo( LPVOID pParam )
 			TRACE(L"THREADINFO: setting %s\n",pFileInfo->GetFullPath());
 
 			pFileInfo->ReadVersionInfo();
-			pFileInfo->CheckISO();
 					
 			TRACE(L"THREADINFO: ChangeItemState\n");
 			pDoc->ChangeItemState(pFileInfo, FWFS_VERSION);
@@ -1057,16 +1056,6 @@ bool CMyDoc::GetRowString(CWiseFile& rFile, LPWSTR pszBuf)
 		}
 	}
 
-	// special case for ISO string
-	if (pci[19].IsVisible())
-	{
-		rFile.GetFieldString(pszText, 19, pView->m_fIncludePath);
-		lstrcat( pszBuf, pszText);
-		lstrcat( pszBuf, L"\t");
-	}
-	
-	LPWSTR pszTab = lstrrchr(pszBuf, NULL, '\t');
-	lstrcpy(pszTab, L"\0\0");//*pszTab = 0;
 	HeapFree(GetProcessHeap(), 0, (LPVOID) pszText);
 
 	return true;

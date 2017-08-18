@@ -86,7 +86,7 @@ public:
 
 	// Window stuff
 	LRESULT MyGetExStyle();
-	void MyModifyStyleEx( DWORD dwRemove, DWORD dwAdd);
+	void MyModifyStyleEx( LRESULT dwRemove, LRESULT dwAdd);
 	bool SetViewType(DWORD dwViewType);
 	DWORD GetViewType();
 	bool InitColumns();

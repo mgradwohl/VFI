@@ -39,7 +39,7 @@
 #include <windows.h>
 #include <shlwapi.h>
 
-#pragma comment(lib, "shlwapi.lib")
+//#pragma comment(lib, "shlwapi.lib")
 
 #include <lmcons.h>		// for UNLEN only
 

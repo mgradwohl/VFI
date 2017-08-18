@@ -32,23 +32,30 @@
 	#define STRICT
 #endif
 
-#ifndef WINVER                  // Specifies that the minimum required platform is Windows Vista.
-#define WINVER 0x0600           // Change this to the appropriate value to target other versions of Windows.
+/*
+#define _WIN32_WINNT	_WIN32_WINNT_WINBLUE //0x06000
+#define WINVER			_WIN32_WINNT_WINBLUE //0x0600
+#define	_WIN32_IE		_WIN32_IE_IE100 //0x0700
+#define	NTDDI_VERSION	NTDDI_WINBLUE //NTDDI_LONGHORN
+*/
+
+#ifndef WINVER						// Specifies that the minimum required platform is Windows Vista.
+#define WINVER _WIN32_WINNT_WINBLUE	//0x0600           // Change this to the appropriate value to target other versions of Windows.
 #endif
 
-#ifndef _WIN32_WINNT            // Specifies that the minimum required platform is Windows Vista.
-#define _WIN32_WINNT 0x0600     // Change this to the appropriate value to target other versions of Windows.
+#ifndef _WIN32_WINNT						// Specifies that the minimum required platform is Windows Vista.
+#define _WIN32_WINNT _WIN32_WINNT_WINBLUE	//0x0600     // Change this to the appropriate value to target other versions of Windows.
 #endif
 
 #ifndef _WIN32_WINDOWS          // Specifies that the minimum required platform is Windows 98.
 #define _WIN32_WINDOWS 0x0410   // Change this to the appropriate value to target Windows Me or later.
 #endif
 
-#ifndef _WIN32_IE               // Specifies that the minimum required platform is Internet Explorer 7.0.
-#define _WIN32_IE 0x0700        // Change this to the appropriate value to target other versions of IE.
+#ifndef _WIN32_IE					// Specifies that the minimum required platform is Internet Explorer 7.0.
+#define _WIN32_IE _WIN32_IE_IE100	//0x0700        // Change this to the appropriate value to target other versions of IE.
 #endif
 
-#define	NTDDI_VERSION	NTDDI_LONGHORN 
+#define	NTDDI_VERSION	NTDDI_WINBLUE	//NTDDI_LONGHORN 
 
 #ifdef	NOLISTVIEW
 #undef	NOLISTVIEW
@@ -86,7 +93,7 @@
 static const int SIZEMEG = 1048576;
 static const int SIZEBUF = 2 * SIZEMEG;
 
-static const int LIST_NUMCOLUMNS = 20;
+static const int LIST_NUMCOLUMNS = 19;
 static const int LIST_MAXHEADLENGTH	= (64 * sizeof(WCHAR));
 
 // Hints
