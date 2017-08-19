@@ -1,29 +1,28 @@
-// wndlib.cpp
-// mattgr
-// 3/27/2000
-
-#ifndef WINVER
-	#define WINVER			0x0501
-#endif
-
-#ifndef _WIN32_WINNT
-	#define _WIN32_WINNT	0x0501
-#endif
-
-#ifndef _WIN32_IE
-	#define _WIN32_IE		0x0600
-#endif
+// Visual File Information
+// Copyright (c) Microsoft Corporation
+// All rights reserved. 
+// 
+// MIT License
+// 
+// Permission is hereby granted, free of charge, to any person obtaining 
+// a copy of this software and associated documentation files (the ""Software""), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom 
+// the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included 
+// in all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED *AS IS*, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS 
+// OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR 
+// IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #ifndef STRICT
 	#define STRICT 1
-#endif
-
-#ifndef WIN32
-	#define WIN32
-#endif
-
-#ifndef WIN32_LEAN_AND_MEAN
-//	#define WIN32_LEAN_AND_MEAN
 #endif
 
 #ifdef _UNICODE
@@ -54,6 +53,27 @@
 #include <shlobj.h>
 #include "strlib.h"
 #include "wndlib.h"
+
+
+UINT32 UClamp(INT_PTR val)
+{
+	__int64 ret = val;
+	if (ret > _UI32_MAX)
+	{
+		ret = _UI32_MAX - 1;
+	}
+	return (UINT32)ret;
+}
+
+__int32 Clamp(INT_PTR val)
+{
+	__int64 ret = val;
+	if (ret > _I32_MAX)
+	{
+		ret = _I32_MAX - 1;
+	}
+	return (__int32)ret;
+}
 
 int Width(LPCRECT prc)
 {
@@ -160,7 +180,7 @@ void ChangeDialogFont(const HWND hWnd, const HFONT hFont, const int nFlag)
 		SetFont(hWndChild, hFont, false);
 		GetWindowRect(hWndChild, &rcWnd);
 		GetClassName(hWndChild, szBuf, 31);
-		if(0==lstrcmpi(szBuf, _T("COMBOBOX")))
+		if(0==lstrcmpiW(szBuf, L"COMBOBOX"))
 		{
 			RECT rc;
 			SendMessage(hWndChild, CB_GETDROPPEDCONTROLRECT,0,(LPARAM) &rc);
@@ -227,7 +247,7 @@ bool MoveWindowEx(const HWND hWnd, const WORD wAlign)
 		// move based on application window rect
 		if (NULL==hWndParent || !::IsWindow(hWndParent))
 		{
-			TRACE(_T("MoveWindowEx invalid main window, centering on desktop.\n"));
+			TRACE(L"MoveWindowEx invalid main window, centering on desktop.\n");
 			SystemParametersInfo(SPI_GETWORKAREA, 0, &rc, 0);
 		}
 		else
@@ -238,7 +258,6 @@ bool MoveWindowEx(const HWND hWnd, const WORD wAlign)
 	else
 	{
 		// move based on usable window rect
-		// SystemParametersInfo(SPI_GETWORKAREA, 0, &rc, 0);
 		HMONITOR hMon = ::MonitorFromWindow(hWnd, MONITOR_DEFAULTTONEAREST);
 		MONITORINFO mi;
 		ZeroMemory(&mi, sizeof(mi));
@@ -369,8 +388,8 @@ int ErrorMessageBox(const HINSTANCE hInst, const HWND hWnd, const DWORD dwError,
 bool SaveBox(const HWND hWnd, LPCWSTR pszTitle, LPCWSTR pszFilter, LPWSTR pszFile, const DWORD dwFlags)
 {
 	WCHAR szFile[MAX_PATH];
-	*szFile = _T('\0');
-	WCHAR szDesktop[TMAX_PATH];
+	*szFile = L'\0';
+	WCHAR szDesktop[MAX_PATH];
 	SHGetSpecialFolderPath(NULL, szDesktop, CSIDL_DESKTOPDIRECTORY, FALSE);
 
 	OPENFILENAME of;
@@ -395,7 +414,7 @@ bool OpenBox(const HWND hWnd, LPCWSTR pszTitle, LPCWSTR pszFilter, LPWSTR pszFil
 	OPENFILENAME of;
 	::ZeroMemory(&of, sizeof(OPENFILENAME));
 	WCHAR szFile[MAX_PATH];
-	*szFile = _T('\0');
+	*szFile = L'\0';
 	
 	if (NULL == pszFolder)
 	{
@@ -428,28 +447,29 @@ bool BrowseForFile(const HWND hWnd, LPCWSTR pszTitle, LPWSTR pszFolder)
 	BROWSEINFO bi;
 	ZeroMemory(&bi, sizeof(BROWSEINFO));
 	LPMALLOC pMalloc;
-	CoGetMalloc(MEMCTX_TASK, &pMalloc);
-	//SHGetMalloc(&pMalloc);
-
-	bi.hwndOwner = hWnd;
-	bi.lpszTitle = pszTitle;
-	bi.lpfn = NULL;
-	bi.pszDisplayName = pszFolder;
-	bi.ulFlags = BIF_BROWSEINCLUDEFILES | BIF_VALIDATE | BIF_EDITBOX |  BIF_USENEWUI |  BIF_NEWDIALOGSTYLE | BIF_STATUSTEXT | BIF_RETURNONLYFSDIRS;
-	bi.pidlRoot = NULL;
-
-	LPITEMIDLIST pidList = SHBrowseForFolder(&bi);
-	if (NULL == pidList)
+	if (SUCCEEDED(CoGetMalloc(MEMCTX_TASK, &pMalloc)))
 	{
-		return false;
-	}
+		bi.hwndOwner = hWnd;
+		bi.lpszTitle = pszTitle;
+		bi.lpfn = NULL;
+		bi.pszDisplayName = pszFolder;
+		bi.ulFlags = BIF_BROWSEINCLUDEFILES | BIF_VALIDATE | BIF_EDITBOX | BIF_USENEWUI | BIF_NEWDIALOGSTYLE | BIF_STATUSTEXT | BIF_RETURNONLYFSDIRS;
+		bi.pidlRoot = NULL;
 
-	if (TRUE == SHGetPathFromIDList(pidList, pszFolder))
-	{
-		pMalloc->Free(pidList);
+		LPITEMIDLIST pidList = SHBrowseForFolder(&bi);
+		if (NULL == pidList)
+		{
+			return false;
+		}
+
+		if (TRUE == SHGetPathFromIDList(pidList, pszFolder))
+		{
+			pMalloc->Free(pidList);
+		}
+		pMalloc->Release();
+		return true;
 	}
-	pMalloc->Release();
-	return true;
+	return false;
 }
 
 bool BrowseForFolder(const HWND hWnd, LPCWSTR pszTitle, LPWSTR pszFolder)
@@ -461,27 +481,29 @@ bool BrowseForFolder(const HWND hWnd, LPCWSTR pszTitle, LPWSTR pszFolder)
 	ZeroMemory(&bi, sizeof(BROWSEINFO));
 	LPMALLOC pMalloc;
 	//SHGetMalloc(&pMalloc);
-	CoGetMalloc(MEMCTX_TASK, &pMalloc);
-
-	bi.hwndOwner = hWnd;
-	bi.lpszTitle = pszTitle;
-	bi.lpfn = NULL;
-	bi.pszDisplayName = pszFolder;
-	bi.ulFlags = BIF_VALIDATE | BIF_EDITBOX |  BIF_USENEWUI |  BIF_NEWDIALOGSTYLE | BIF_STATUSTEXT | BIF_RETURNONLYFSDIRS;
-	bi.pidlRoot = NULL;
-
-	LPITEMIDLIST pidList = SHBrowseForFolder(&bi);
-	if (NULL == pidList)
+	if (SUCCEEDED(CoGetMalloc(MEMCTX_TASK, &pMalloc)))
 	{
-		pMalloc->Release();
-		return false;
-	}
+		bi.hwndOwner = hWnd;
+		bi.lpszTitle = pszTitle;
+		bi.lpfn = NULL;
+		bi.pszDisplayName = pszFolder;
+		bi.ulFlags = BIF_VALIDATE | BIF_EDITBOX | BIF_USENEWUI | BIF_NEWDIALOGSTYLE | BIF_STATUSTEXT | BIF_RETURNONLYFSDIRS;
+		bi.pidlRoot = NULL;
 
-	if (TRUE == SHGetPathFromIDList(pidList, pszFolder))
-	{
+		LPITEMIDLIST pidList = SHBrowseForFolder(&bi);
+		if (NULL == pidList)
+		{
+			pMalloc->Release();
+			return false;
+		}
+
+		if (TRUE == SHGetPathFromIDList(pidList, pszFolder))
+		{
 			pMalloc->Free(pidList);
-	}
+		}
 
-	pMalloc->Release();
-	return true;
+		pMalloc->Release();
+		return true;
+	}
+	return false;
 }

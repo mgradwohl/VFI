@@ -1,5 +1,27 @@
+// Visual File Information
+// Copyright (c) Microsoft Corporation
+// All rights reserved. 
+// 
+// MIT License
+// 
+// Permission is hereby granted, free of charge, to any person obtaining 
+// a copy of this software and associated documentation files (the ""Software""), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom 
+// the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included 
+// in all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED *AS IS*, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS 
+// OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR 
+// IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 // Frame.cpp : implementation of the CMainFrame class
-//
 
 #include "stdafx.h"
 #include "VFI.h"
@@ -32,7 +54,6 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND(ID_VIEW_TOOLTIPS, OnViewTooltips)
 	ON_COMMAND(ID_HELP, OnMyHelp)
 	ON_WM_ENDSESSION()
-	ON_COMMAND(ID_HELP_ISO, OnHelpISO)
 	ON_COMMAND(ID_HELP_ATTRIBS, OnHelpAttribs)
 	ON_COMMAND(ID_HELP_FILEFLAGS, OnHelpFlags)
 	ON_COMMAND(ID_HELP_FILETYPE, OnHelpType)
@@ -78,7 +99,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	if (CFrameWnd::OnCreate(lpCreateStruct) == -1)
 		return -1;
 	
-	// turn off all the redraw shit
+	// Turn off Redraw
     DWORD dwStyle = ::GetClassLong (m_hWnd, GCL_STYLE);
     ::SetClassLong (m_hWnd, GCL_STYLE, dwStyle & ~(CS_HREDRAW | CS_VREDRAW));
 
@@ -112,14 +133,6 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		return -1;
 	}
 
-	//if (!m_wndToolBar.CreateEx(this, TBSTYLE_FLAT, WS_CHILD | WS_VISIBLE | CBRS_TOP
-	//	| CBRS_GRIPPER | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC) ||
-	//	!m_wndToolBar.LoadToolBar(IDR_MAINFRAME))
-	//{
-	//	TRACE(L"Failed to create toolbar\n");
-	//	return -1;      // fail to create
-	//}
-
 	if (!m_wndToolBar.CreateEx(this, TBSTYLE_FLAT | TBSTYLE_TRANSPARENT , WS_CHILD | WS_VISIBLE | CBRS_TOP
 		| CBRS_GRIPPER | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC ) ||
 		!m_wndToolBar.LoadToolBar(IDR_MAINFRAME))
@@ -147,7 +160,6 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_ilToolBarGrey.Add(&bmd,(CBitmap*)NULL);
 
 	m_wndToolBar.GetToolBarCtrl().SetDisabledImageList(&m_ilToolBarGrey);
-
 
 	// Toolbar title
 	CString strToolTitle;
@@ -209,7 +221,6 @@ void CMainFrame::Dump(CDumpContext& dc) const
 {
 	CFrameWnd::Dump(dc);
 }
-
 #endif //_DEBUG
 
 void CMainFrame::OnViewTooltips() 
@@ -250,7 +261,10 @@ void CMainFrame::OnDropFiles(HDROP hDropInfo)
 {
 	CMyListView* pView = static_cast<CMyListView*> (GetActiveView());
 	ASSERT( pView );
-	pView->SendMessage(WM_DROPFILES, (WPARAM) hDropInfo, 0);
+	if (pView != nullptr)
+	{
+		pView->SendMessage(WM_DROPFILES, (WPARAM)hDropInfo, 0);
+	}
 }
 
 void CMainFrame::OnUpdateCount(CCmdUI* pCmdUI)
@@ -353,9 +367,12 @@ void CMainFrame::UpdateProgress()
 {
 	CMyDoc* pDoc = static_cast<CMyDoc*> (GetActiveDocument());
 	ASSERT (pDoc);
-	m_wndStatusBar.UpdateProgress(1, pDoc->m_dwDirtyInfo, pDoc->GetItemCount());
-	m_qwSize = pDoc->GetTotalSize();
-	m_wndStatusBar.UpdateProgress(2, (DWORD( (m_qwSize - pDoc->SizeRead()) ) >> 20), ((DWORD)m_qwSize >> 20) );
+	if (pDoc != nullptr)
+	{
+		m_wndStatusBar.UpdateProgress(1, pDoc->m_dwDirtyInfo, pDoc->GetItemCount());
+		m_qwSize = pDoc->GetTotalSize();
+		m_wndStatusBar.UpdateProgress(2, (DWORD((m_qwSize - pDoc->SizeRead())) >> 20), ((DWORD)m_qwSize >> 20));
+	}
 }
 
 void CALLBACK EXPORT CMainFrame::TimerProc(HWND hWnd, UINT nMsg, UINT nIDEvent, DWORD dwTime)
@@ -398,7 +415,6 @@ void CALLBACK EXPORT CMainFrame::TimerProc(HWND hWnd, UINT nMsg, UINT nIDEvent, 
 	ASSERT (pDoc);
 	
 	if (pDoc->IsDirty())
-	//	if ((pDoc->m_dwDirtyInfo>0) || (pDoc->m_dwDirtyCRC > 0)|| (pDoc->GetDirtyCount() > 0))
 	{
 		pDoc->ResumeAllThreads();
 	}
@@ -406,7 +422,6 @@ void CALLBACK EXPORT CMainFrame::TimerProc(HWND hWnd, UINT nMsg, UINT nIDEvent, 
 
 BOOL CMainFrame::PreTranslateMessage(MSG* pMsg) 
 {
-	
 	m_wndStatusBar.GetTip()->RelayEvent(pMsg);
 	return CFrameWnd::PreTranslateMessage(pMsg);
 }
@@ -422,12 +437,6 @@ void CMainFrame::OnEndSession(BOOL bEnding)
 	pDoc->TerminateThreads();
 
 	CFrameWnd::OnEndSession(bEnding);
-}
-
-void CMainFrame::OnHelpISO() 
-{
-	CHelpDlg dlgHelp(this, IDR_RTF_ISO, false);
-	dlgHelp.DoModal();
 }
 
 void CMainFrame::OnHelpAttribs() 

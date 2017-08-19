@@ -1,3 +1,26 @@
+// Visual File Information
+// Copyright (c) Microsoft Corporation
+// All rights reserved. 
+// 
+// MIT License
+// 
+// Permission is hereby granted, free of charge, to any person obtaining 
+// a copy of this software and associated documentation files (the ""Software""), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom 
+// the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included 
+// in all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED *AS IS*, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS 
+// OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR 
+// IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 // stdafx.h : include file for standard system include files,
 //  or project specific include files that are used frequently, but
 //      are changed infrequently
@@ -9,23 +32,30 @@
 	#define STRICT
 #endif
 
-#ifndef WINVER                  // Specifies that the minimum required platform is Windows Vista.
-#define WINVER 0x0600           // Change this to the appropriate value to target other versions of Windows.
+/*
+#define _WIN32_WINNT	_WIN32_WINNT_WINBLUE //0x06000
+#define WINVER			_WIN32_WINNT_WINBLUE //0x0600
+#define	_WIN32_IE		_WIN32_IE_IE100 //0x0700
+#define	NTDDI_VERSION	NTDDI_WINBLUE //NTDDI_LONGHORN
+*/
+
+#ifndef WINVER						// Specifies that the minimum required platform is Windows Vista.
+#define WINVER _WIN32_WINNT_WINBLUE	//0x0600           // Change this to the appropriate value to target other versions of Windows.
 #endif
 
-#ifndef _WIN32_WINNT            // Specifies that the minimum required platform is Windows Vista.
-#define _WIN32_WINNT 0x0600     // Change this to the appropriate value to target other versions of Windows.
+#ifndef _WIN32_WINNT						// Specifies that the minimum required platform is Windows Vista.
+#define _WIN32_WINNT _WIN32_WINNT_WINBLUE	//0x0600     // Change this to the appropriate value to target other versions of Windows.
 #endif
 
 #ifndef _WIN32_WINDOWS          // Specifies that the minimum required platform is Windows 98.
 #define _WIN32_WINDOWS 0x0410   // Change this to the appropriate value to target Windows Me or later.
 #endif
 
-#ifndef _WIN32_IE               // Specifies that the minimum required platform is Internet Explorer 7.0.
-#define _WIN32_IE 0x0700        // Change this to the appropriate value to target other versions of IE.
+#ifndef _WIN32_IE					// Specifies that the minimum required platform is Internet Explorer 7.0.
+#define _WIN32_IE _WIN32_IE_IE100	//0x0700        // Change this to the appropriate value to target other versions of IE.
 #endif
 
-#define	NTDDI_VERSION	NTDDI_LONGHORN 
+#define	NTDDI_VERSION	NTDDI_WINBLUE	//NTDDI_LONGHORN 
 
 #ifdef	NOLISTVIEW
 #undef	NOLISTVIEW
@@ -63,7 +93,7 @@
 static const int SIZEMEG = 1048576;
 static const int SIZEBUF = 2 * SIZEMEG;
 
-static const int LIST_NUMCOLUMNS = 20;
+static const int LIST_NUMCOLUMNS = 19;
 static const int LIST_MAXHEADLENGTH	= (64 * sizeof(WCHAR));
 
 // Hints

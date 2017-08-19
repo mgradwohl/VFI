@@ -1,3 +1,26 @@
+// Visual File Information
+// Copyright (c) Microsoft Corporation
+// All rights reserved. 
+// 
+// MIT License
+// 
+// Permission is hereby granted, free of charge, to any person obtaining 
+// a copy of this software and associated documentation files (the ""Software""), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom 
+// the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included 
+// in all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED *AS IS*, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS 
+// OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR 
+// IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 #ifndef WISEFILE_H
 #pragma once
 #ifdef _DEBUG
@@ -15,8 +38,6 @@ bool GetLanguageName(UINT Locale, LPWSTR pszBuf);
 
 //class CCodePage;
 #include "tcodepage.h"
-
-#include "isocheck.h"
 
 // file states
 enum FileStates
@@ -41,7 +62,6 @@ enum FileStates
 #define FWF_ERR_SPECIALPATH		-5;
 #define FWF_ERR_NOVERSION		-6
 #define FWF_ERR_LOWMEMORY		-7;
-#define FWF_ERR_ISO				-8;
 #define FWF_ERR_OTHER			-64;
 
 class CWiseFile : public CObject
@@ -159,11 +179,6 @@ public:
 	DWORD GetCRC()
 		{ return m_dwCRC; }
 
-	LPWSTR GetISO(bool fIncludePath);
-	int GetISO( LPWSTR pszText, bool fIncludePath );
-	WORD GetISO()
-		{ return m_wISOFlags; }
-
 	void SetState( WORD wState )
 		{ m_wFileState = wState; }
 
@@ -182,7 +197,6 @@ public:
 		{ m_dwCRC = dwCRC;}
 	// execute helpers
 	int ReadVersionInfo();
-	int CheckISO();
 
 #ifdef _DEBUG
 	virtual void Dump(CDumpContext& dc) const;
@@ -225,7 +239,6 @@ private:
 	DWORD		m_dwFlags;
 
 	DWORD		m_dwCRC;
-	WORD		m_wISOFlags;
 	WORD		m_wFileState;
 	
 	// Flags

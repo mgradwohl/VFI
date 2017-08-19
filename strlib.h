@@ -1,6 +1,25 @@
-// strlib.h
-// mattgr
-// 3/23/2000
+// Visual File Information
+// Copyright (c) Microsoft Corporation
+// All rights reserved. 
+// 
+// MIT License
+// 
+// Permission is hereby granted, free of charge, to any person obtaining 
+// a copy of this software and associated documentation files (the ""Software""), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom 
+// the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included 
+// in all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED *AS IS*, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS 
+// OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR 
+// IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #pragma once
 #ifndef STRLIB_H
@@ -9,26 +28,12 @@
 	#error StrLib requires C++ compilation (use a .cpp suffix)
 #endif
 
-//#ifndef _LIB
-//		#ifdef _DEBUG
-//			#pragma comment(lib, "strlibdu.lib")
-//		#else
-//			#pragma comment(lib, "strlibu.lib")
-//		#endif
-//#endif//_LIB
-
 #include <windows.h>
 #include <shlwapi.h>
-
-#pragma comment(lib, "shlwapi.lib")
-
 #include <lmcons.h>		// for UNLEN only
-
 #include <stdio.h>
 
-#ifndef QWORD
-	#define QWORD			DWORDLONG
-#endif
+#include "globals.h"
 
 // make sure that the CRT and Win32 are in-synch re: UNICODE and MBCS
 #ifdef UNICODE
@@ -43,50 +48,23 @@
 	#endif
 #endif
 
-#ifndef UNICODE
-	#ifndef MBCS
-		#define MBCS
-	#endif
-	#ifndef _MBCS
-		#define _MBCS
-	#endif
-#endif
-
-// define TCHAR the same way windows.h does
-#if !defined(__T)
-	#if defined(UNICODE)
-		#define __T(x)	L##x
-		#define TCHAR	WCHAR
-	#else
-		#define __T(x)	x
-		#define TCHAR	CHAR
-	#endif
-	// TCHAR helper macros
-	#define _T(x)       __T(x)
-	#define _TEXT(x)    __T(x)
-#endif
-
 // types
 typedef unsigned char* LPXSTR;
 typedef const unsigned char* LPCXSTR;
 
 #if defined(UNICODE)
-	#define TMAX_PATH	(_MAX_PATH)
-	#define TMAX_DRIVE	(_MAX_DRIVE)
-	#define TMAX_DIR	(_MAX_DIR)
-	#define TMAX_FNAME	(_MAX_FNAME)
-	#define TMAX_EXT	(_MAX_EXT)
-	#define TMAX_USERNAME ((UNLEN + 1))
-#else
-	#define TMAX_PATH	(_MAX_PATH*2)
-	#define TMAX_DRIVE	(_MAX_DRIVE*2)
-	#define TMAX_DIR	(_MAX_DIR*2)
-	#define TMAX_FNAME	(_MAX_FNAME*2)
-	#define TMAX_EXT	(_MAX_EXT*2)
-	#define TMAX_USERNAME ((UNLEN + 1) * 2)
+	#define MAX_DRIVE	(_MAX_DRIVE)
+	#define MAX_DIR	(_MAX_DIR)
+	#define MAX_FNAME	(_MAX_FNAME)
+	#define MAX_EXT	(_MAX_EXT)
+	#define MAX_USERNAME ((UNLEN + 1))
 #endif
 
-// Double these because in the worst case in an MBCS system, they are wide
+// QWORD
+#define QWORD			DWORDLONG
+#define LPQWORD			QWORD*
+#define MAKEDWORD(a, b)	((DWORD)(((WORD)(a)) | ((DWORD)((WORD)(b))) << 16))
+#define MAKEQWORD(a, b)	((QWORD)(((DWORD)(a)) | ((QWORD)((DWORD)(b))) << 32))
 
 // lccb
 // LCHAR count bytes
@@ -153,7 +131,6 @@ int mbstrcbn(LPCSTR psz, int cch);
 // Get number as a string
 bool int2str(LPWSTR pszDest, QWORD i);
 bool float2str(LPWSTR pszDest, double d);
-
 
 bool lstrcontains(LPCWSTR pszBuf, LPCWSTR pszSet);
 

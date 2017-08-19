@@ -1,13 +1,32 @@
+// Visual File Information
+// Copyright (c) Microsoft Corporation
+// All rights reserved. 
+// 
+// MIT License
+// 
+// Permission is hereby granted, free of charge, to any person obtaining 
+// a copy of this software and associated documentation files (the ""Software""), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom 
+// the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included 
+// in all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED *AS IS*, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS 
+// OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR 
+// IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 #include "stdafx.h"
 #include "resource.h"
 #include "globals.h"
 #include "WiseFile.h"
-
 #include "Imagehlp.h"
-	#pragma comment(lib, "Imagehlp.lib")
-
-#include "ISOCheck.h"
-	//#pragma comment(lib, "isocheck.lib")
+#include "strlib.h"
 
 #ifdef _DEBUG
 	#define new DEBUG_NEW
@@ -120,7 +139,6 @@ int CWiseFile::Attach(LPCWSTR pszFileSpec)
 	WCHAR szDrive[_MAX_DRIVE];
 	WCHAR szDir[_MAX_DIR];
 	LPWSTR pszDot;
-	//_tsplitpath( pszFileSpec, szDrive, szDir, m_szName, m_szExt );
 	_wsplitpath_s(pszFileSpec, szDrive, _MAX_DRIVE, szDir, _MAX_DIR, m_szName, _MAX_PATH, m_szExt, _MAX_PATH);
 
 	pszDot = CharNext(m_szExt);
@@ -152,7 +170,6 @@ const CWiseFile& CWiseFile::Copy(const CWiseFile& rwf)
 	m_dwAttribs = rwf.m_dwAttribs;
 	m_dwCRC = rwf.m_dwCRC;
 	m_dwFlags = rwf.m_dwFlags;
-	m_wISOFlags = rwf.m_wISOFlags;
 	m_dwOS = rwf.m_dwOS;
 	m_dwType = rwf.m_dwType;
 	m_qwFileVersion = rwf.m_qwFileVersion;
@@ -225,7 +242,7 @@ int CWiseFile::GetSize(LPWSTR pszText, bool bHex)
 	}
 	else
 	{
-		// I don't use StrFormatByteSize cause it wordifies shit
+		// Not using StrFormatByteSize because it wordifies everything
 		if (int2str(pszText, LODWORD(m_qwSize)))
 		{
 			return FWF_SUCCESS;
@@ -252,7 +269,7 @@ int CWiseFile::GetSize64(LPWSTR pszText, bool bHex)
 	}
 	else
 	{
-		// I don't use StrFormatByteSize cause it wordifies shit
+		// Not using StrFormatByteSize because it wordifies everything
 		if (int2str(pszText, m_qwSize))
 		{
 			return FWF_SUCCESS;
@@ -686,34 +703,17 @@ int CWiseFile::ReadVersionInfo()
 		return FWF_ERR_NOVERSION;
 	}
 
-#ifdef SPEEDTEST
-	// we'll go up to the next ^2
-	dwVerSize = 8192;
-
-#else
 	// this takes a long time to call, max size I've seen is 5476
 	dwVerSize = ::GetFileVersionInfoSize( szShortPath, &dwVerHandle);
-
 
 	if (dwVerSize < 1)
 		return FWF_ERR_NOVERSION;
 
-#ifdef TEST
-	WCHAR szBuf[256];
-	wsprintf(szBuf, L"GetFileVersionInfoSize %08lu\r\n", dwVerSize);
-	OutputDebugString(szBuf);
-#endif//TEST
-#endif
-
 	lpVerBuffer = (LPVOID) new BYTE[dwVerSize];
-	//CWiseFile*  pNewFile = (CWiseFile*) g_Heap.New(sizeof(CWiseFile));
-	//lpVerBuffer = (LPVOID) g_Heap.New(dwVerSize);
-	//lpVerBuffer = (LPVOID) HeapAlloc(g_Heap, HEAP_NO_SERIALIZE, dwVerSize);
 
 	if (NULL == lpVerBuffer )
 	{
 		delete [] lpVerBuffer;
-		//g_Heap.Delete(lpVerBuffer, dwVerSize);
 		return FWF_ERR_LOWMEMORY;
 	}
 
@@ -721,14 +721,12 @@ int CWiseFile::ReadVersionInfo()
 	if (! ::GetFileVersionInfo( szShortPath, dwVerHandle, dwVerSize, lpVerBuffer))
 	{
 		delete [] lpVerBuffer;
-		//g_Heap.Delete(lpVerBuffer, dwVerSize);
 		return FWF_ERR_NOVERSION;
 	}
 
 	if (! ::VerQueryValue(lpVerBuffer, L"\\", &lpVerData, &cbVerData))
 	{
 		delete [] lpVerBuffer;
-		//g_Heap.Delete(lpVerBuffer, dwVerSize);
 		return FWF_ERR_NOVERSION;
 	}
 
@@ -744,14 +742,12 @@ int CWiseFile::ReadVersionInfo()
 	if (!VerQueryValue(lpVerBuffer, L"\\VarFileInfo\\Translation", &lpVerData, &cbVerData))
 	{
 		delete [] lpVerBuffer;
-		//g_Heap.Delete(lpVerBuffer, dwVerSize);
 		return FWF_ERR_NOVERSION;
 	}
 
 	m_wLanguage = LOWORD(*(LPDWORD)lpVerData);
 	m_CodePage = HIWORD(*(LPDWORD)lpVerData);
 	delete [] lpVerBuffer;
-	//g_Heap.Delete(lpVerBuffer, dwVerSize);
 	
 	OrState(FWFS_VERSION);
 
@@ -1040,40 +1036,6 @@ int CWiseFile::GetAttribs( LPWSTR pszText )
 	return ( (NULL==lstrcpy( pszText, m_szAttribs )) ? lstrcb(m_szAttribs) : FWF_SUCCESS );
 }
 
-int CWiseFile::GetISO(LPWSTR pszText, bool fIncludePath)
-{
-	if (!CheckState(FWFS_ATTACHED))
-	{
-		lstrinit(pszText);
-		return FWF_ERR_INVALID;
-	}
-
-	if (fIncludePath)
-	{
-		lstrcpyW( pszText, isoGetISOFlagsString(m_wISOFlags));
-	}
-	else
-	{
-		lstrcpyW( pszText, isoGetISOFlagsString((WORD)LOBYTE(m_wISOFlags)));
-	}
-
-	TRACE(L"%u %s\n", m_wISOFlags, pszText);
-	return FWF_SUCCESS;
-}
-
-LPWSTR CWiseFile::GetISO(bool fIncludePath)
-{
-	if (!CheckState(FWFS_ATTACHED))
-		return (LPWSTR) L"\0";
-
-	if (!fIncludePath)
-	{
-		return (LPWSTR) isoGetISOFlagsString((WORD)LOBYTE(m_wISOFlags));
-	}
-
-	return (LPWSTR) isoGetISOFlagsString(m_wISOFlags);
-}
-
 int CWiseFile::GetFlags(LPWSTR pszText)
 {
 	if ( !CheckState(FWFS_VERSION) )
@@ -1161,16 +1123,6 @@ int CWiseFile::GetFlags(LPWSTR pszText)
 	return ( (NULL==lstrcpy( pszText, m_szFlags )) ? lstrcb(m_szFlags) : FWF_SUCCESS );
 }
 
-int CWiseFile::CheckISO()
-{
-	if (!CheckState(FWFS_ATTACHED))
-		return FWF_ERR_INVALID;
-
-	m_wISOFlags = isoGetISOFlags(m_szPath, m_szName, m_szExt);
-
-	return FWF_SUCCESS;
-}
-
 bool GetLanguageName(UINT Language, LPWSTR pszBuf)
 {
 	if (NULL == pszBuf)
@@ -1255,9 +1207,7 @@ bool CWiseFile::GetFieldString(LPWSTR pszBuf, int iField, bool fOptions)
 		case 18: return (FWF_SUCCESS == GetCRC(pszBuf));
 		break;
 
-		case 19: return (FWF_SUCCESS == GetISO(pszBuf, fOptions));
-		break;
-
+		fOptions;
 		default:	return false;
 	}
 }
@@ -1342,7 +1292,6 @@ int CWiseFile::ReadVersionInfoEx()
 	return FWF_SUCCESS;
 }
 
-
 bool CWiseFile::Init()
 {
 	lstrinit(m_szFullPath);
@@ -1373,7 +1322,6 @@ bool CWiseFile::Init()
 	m_dwType = 0;
 	m_dwFlags = 0;
 	m_dwCRC = 0;
-	m_wISOFlags = 0;
 
 	m_fDebugStripped = false;
 	m_fHasVersion = false;

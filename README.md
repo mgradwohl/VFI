@@ -1,20 +1,8 @@
-VFI
-===
+Visual File Information
+=======================
 
-install git for Windows at windows.github.com
+Visual File Information retrieves and generates file information. You can use this information for testing purposes to detect what files have changed in different versions of applications, or what the differences are between two seemingly identical machines. This information is also valuable to track different versions of resources that normally don't store version information. You can copy this information to the clipboard, or save it out to a tab-delimited text file.
 
-to clone, put the Clone URL in a git shell "git clone <URL"
+## What is a CRC:
+A CRC (Cyclic Redundancy Checking) Key is a Checksum based on published standards (RFC and ISO). Basically, for a stream of bytes, the CRC algorithm computes a distinct 32-bit key. If the bytes in the stream change, the key changes. This makes it very easy to detect changes in files. You generate the CRCs and compare them, if they have changed the file has changed.
 
-to get status, use git status
-
-to add a file, use git add <file> or git add <*.ext>
-
-use the .gitignore to help git ignore files that are local (like the visual studio generated stuff)
-
-to commit files, use git commit -m "brief commit description"
-
-to push files to the server, use git push
-
-to pull changes from the server, use get pull
-
-sometimes you have to pull before you can push

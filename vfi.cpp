@@ -1,3 +1,26 @@
+// Visual File Information
+// Copyright (c) Microsoft Corporation
+// All rights reserved. 
+// 
+// MIT License
+// 
+// Permission is hereby granted, free of charge, to any person obtaining 
+// a copy of this software and associated documentation files (the ""Software""), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom 
+// the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included 
+// in all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED *AS IS*, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS 
+// OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR 
+// IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 // VFI.cpp : Defines the class behaviors for the application.
 //
 
@@ -14,8 +37,6 @@
 #include "version.h"
 #include "helpdlg.h"
 #include "globals.h"
-
-//#define ARRAYSIZE(a)    (sizeof(a)/sizeof((a)[0]))
 
 int BSTRToLocal(LPWSTR pLocal, BSTR pWide, DWORD dwChars);
 int LocalToBSTR(BSTR pWide, LPWSTR pLocal, DWORD dwChars);
@@ -242,7 +263,7 @@ BOOL CMyApp::InitInstance()
 	m_pMainWnd->DragAcceptFiles();
 
 	// Show quick help
-	BOOL fShowQuickHelp = (1 == theApp.GetProfileInt( L"Preferences", L"ShowQuickHelp",1) );
+	BOOL fShowQuickHelp = false;// (1 == theApp.GetProfileInt(L"Preferences", L"ShowQuickHelp", 1));
 	if (fShowQuickHelp)
 	{
 		CHelpDlg dlgHelp(AfxGetMainWnd(), IDR_RTF_HELP, true);
@@ -251,13 +272,6 @@ BOOL CMyApp::InitInstance()
 		fShowQuickHelp = dlgHelp.m_fShowAgain;
 		WriteProfileInt( L"Preferences", L"ShowQuickHelp",fShowQuickHelp == TRUE ? 1 : 0);
 	}
-	//ShowHTMLBox();
-
-	// Compact the Heap (garbage collect)
-	// mattgr
-	// 2/10/07: probably not needed in a Vista world
-	//::HeapCompact(::GetProcessHeap(), 0);
-	//::SetProcessWorkingSetSize( ::GetCurrentProcess(), 0xFFFFFFFF, 0xFFFFFFFF);
 
 	return TRUE;
 }
@@ -268,11 +282,6 @@ BOOL CMyApp::InitInstance()
 class CAboutDlg : public CDialog
 {
 public:
-	bool ResizeDialog(bool fBigDialog = false);
-	void GrowDialog();
-	void ShrinkDialog();
-	bool UpdateMemoryInfo();
-	void Compact(bool fCompact = false);
 	CAboutDlg();
 
 // Dialog Data
@@ -283,7 +292,7 @@ public:
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CAboutDlg)
 	public:
-	virtual int DoModal();
+	virtual INT_PTR DoModal();
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	//}}AFX_VIRTUAL
@@ -299,8 +308,8 @@ private:
 	WORD m_wAlign;
 	int m_iBorder;
 	bool m_fBigDialog;
-	DWORD dwTotalPhys;
-	DWORD dwAvailPhys;
+	SIZE_T dwTotalPhys;
+	SIZE_T dwAvailPhys;
 public:
 };
 
@@ -347,7 +356,7 @@ bool CMyApp::ForwardMessages()
 				msg.message == WM_SYSCOMMAND ||
 				msg.message == WM_DESTROY )
             {
-                ::PostQuitMessage( msg.wParam );
+                ::PostQuitMessage( (int)msg.wParam );
 				return true;
 			}
 			::TranslateMessage( &msg );
@@ -358,7 +367,7 @@ bool CMyApp::ForwardMessages()
 	return false;
 }
 
-int CAboutDlg::DoModal() 
+INT_PTR CAboutDlg::DoModal() 
 {
 	return CDialog::DoModal();
 }
@@ -367,23 +376,15 @@ BOOL CAboutDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	//ChangeDialogFont(this, theApp.GetUIFont(), CDF_TOPLEFT);
-
 	MoveWindowEx(m_hWnd, MWX_APP | MWX_CENTER);
 	// find out how big the dialog is
 	CRect rcWnd;
 	GetWindowRect(&rcWnd);
 
 	// figure out the border size
-	CStatic* pCtl = static_cast<CStatic*> (GetDlgItem(IDC_MEMORY));
-	CRect rcCtl;
-	pCtl->GetWindowRect(&rcCtl);
-	m_iBorder = abs(rcWnd.bottom - rcCtl.bottom);
-
-	ResizeDialog(false);
 
 	// set the Title
-	pCtl = static_cast<CStatic*> (GetDlgItem(IDC_TITLE));
+	CStatic* pCtl = static_cast<CStatic*> (GetDlgItem(IDC_TITLE));
 	ASSERT(pCtl);
 	CString str;
 	str.FormatMessage(STR_TITLE, STAMPER_STR_PROD_VERSION, STAMPER_STR_FILE_VERSION);
@@ -394,51 +395,6 @@ BOOL CAboutDlg::OnInitDialog()
 	ASSERT(pCtl);
 	str.LoadString(STR_AUTHOR);
 	pCtl->SetWindowText(str);
-
-	// set the system info
-	CSystemInformation si;
-	WCHAR szOS[256];
-	WCHAR szCPU[256];
-	WCHAR szIE[256];
-	WCHAR szComCtl[256];
-	WCHAR szLanguage[256];
-	WCHAR szKeyboard[256];
-	WCHAR szCountry[256];
-	//WCHAR szEvents[256];
-
-	si.GetOSVersionString(szOS);
-	si.GetCPUDescription(szCPU);
-	si.GetIEVersionString(szIE);
-	si.GetComCtlVersionString(szComCtl);
-	si.GetLanguage(szLanguage, 256);
-	si.GetCountry(szCountry, 256);
-	si.GetKeyboardLayout(szKeyboard);
-
-	str.Format( L"%s\r\nCPU: %s\r\nCountry: %s\r\nLanguage: %s\r\nKeyboard: %s\r\nInternet Explorer: %s\r\nCommon Controls: %s",
-		szOS,
-		szCPU,
-		szCountry,
-		szLanguage,
-		szKeyboard,
-		szIE,
-		szComCtl);
-
-	pCtl = static_cast<CStatic*> (GetDlgItem(IDC_SYSINFO));
-	pCtl->SetWindowText(str);
-	
-	// set the Event information
-	CMainFrame* pFrame = static_cast<CMainFrame*> (AfxGetMainWnd());
-	CMyDoc* pDoc = static_cast<CMyDoc*> (pFrame->GetActiveDocument());
-	ASSERT (pDoc);
-	str.Format(L"Info Thread: %s\tCount: %u\r\nCRC Thread: %s\tCount: %u\r\nTerminate: %s",
-		g_eGoThreadInfo.Signaled() ? L"running" : L"paused", pDoc->m_dwDirtyInfo,
-		g_eGoThreadCRC.Signaled() ? L"running" : L"paused", pDoc->m_dwDirtyCRC,
-		g_eTermThreads.Signaled() ? L"yes" : L"no");
-
-	pCtl = static_cast<CStatic*> (GetDlgItem(IDC_EVENTINFO));
-	pCtl->SetWindowText(str);
-
-	Compact(false);
 
 	return TRUE;
 }
@@ -498,232 +454,5 @@ CFont* CMyApp::GetUIFont()
 
 void CAboutDlg::OnOK() 
 {
-	int key = ::GetAsyncKeyState(VK_SHIFT);
-	if ( 0xffff8001 == key)
-	{
-		Compact(false);
-		UpdateMemoryInfo();
-		ResizeDialog(!m_fBigDialog);
-		return;
-	}
-
-	key = ::GetAsyncKeyState(VK_CONTROL);
-	if ( 0xffff8001 == key)
-	{
-		Compact(true);
-		UpdateMemoryInfo();
-		return;
-	}
-
-	// fall thru if no special keys pressed
 	CDialog::OnOK();
-}
-
-void CAboutDlg::Compact(bool fCompact)
-{
-	if (fCompact)
-	{
-		::HeapCompact( ::GetProcessHeap(), 0 );
-		::SetProcessWorkingSetSize( ::GetCurrentProcess(), 0xFFFFFFFF, 0xFFFFFFFF );
-	}
-	
-	MEMORYSTATUS ms;
-	ZeroMemory( &ms, sizeof(MEMORYSTATUS) );
-	ms.dwLength = sizeof( MEMORYSTATUS );
-	GlobalMemoryStatus( &ms );
-
-	dwAvailPhys = ms.dwAvailPhys;
-	dwTotalPhys = ms.dwTotalPhys;
-}
-
-bool CAboutDlg::UpdateMemoryInfo()
-{
-	CStatic* pCtl = static_cast<CStatic*> (GetDlgItem(IDC_MEMORY));
-	ASSERT(pCtl);
-	if (!::IsWindow(m_hWnd) || !pCtl)
-	{
-		return false;
-	}
-
-	WCHAR szA[20];
-	WCHAR szT[20];
-	WCHAR szBuf[64];
-	StrFormatByteSize( dwAvailPhys, szA, 20 );
-	StrFormatByteSize( dwTotalPhys, szT, 20 );
-
-	wsprintf(szBuf, L"Total:\t%s\r\nAvail:\t%s\r\n", szT, szA);
-	pCtl->SetWindowText(szBuf);
-
-	// set the Event information
-	CMainFrame* pFrame = static_cast<CMainFrame*> (AfxGetMainWnd());
-	CMyDoc* pDoc = static_cast<CMyDoc*> (pFrame->GetActiveDocument());
-	ASSERT (pDoc);
-	CString str;
-	str.Format(L"Info Thread: %s\tCount: %u\r\nCRC Thread: %s\tCount: %u\r\nTerminate: %s",
-		g_eGoThreadInfo.Signaled() ? L"running" : L"paused", pDoc->m_dwDirtyInfo,
-		g_eGoThreadCRC.Signaled() ? L"running" : L"paused", pDoc->m_dwDirtyCRC,
-		g_eTermThreads.Signaled() ? L"yes" : L"no");
-
-	pCtl = static_cast<CStatic*> (GetDlgItem(IDC_EVENTINFO));
-	pCtl->SetWindowText(str);
-
-	return true;
-}
-
-void CAboutDlg::GrowDialog()
-{
-	// find out how big the dialog is
-	CRect rcWnd;
-	GetWindowRect(&rcWnd);
-
-	// IDC_AUTHOR
-	CStatic* pCtl1 = static_cast<CStatic*> (GetDlgItem(IDC_AUTHOR));
-	ASSERT (pCtl1);
-	CRect rc1;
-	pCtl1->GetWindowRect(&rc1);
-	// set full author string
-	CString str;
-	str.LoadString(STR_AUTHORFULL);
-	pCtl1->SetWindowText(str);
-
-	// IDC_SYSINFO
-	CStatic* pCtl2 = static_cast<CStatic*> (GetDlgItem(IDC_SYSINFO));
-	ASSERT (pCtl2);
-	CRect rc2;
-	pCtl2->GetWindowRect(&rc2);
-
-	// IDC_MEMORY
-	CStatic* pCtl3 = static_cast<CStatic*> (GetDlgItem(IDC_MEMORY));
-	ASSERT (pCtl3);
-	CRect rc3;
-	pCtl3->GetWindowRect(&rc3);
-
-	// IDC_EVENTINFO
-	CStatic* pCtl4 = static_cast<CStatic*> (GetDlgItem(IDC_EVENTINFO));
-	ASSERT (pCtl4);
-	CRect rc4;
-	pCtl4->GetWindowRect(&rc4);
-
-	// IDOK
-	CButton* pCtl5 = static_cast<CButton*> (GetDlgItem(IDOK));
-	ASSERT (pCtl5);
-	CRect rc5;
-	pCtl5->GetWindowRect(&rc5);
-
-	// resize the dialog
-	rcWnd.bottom =	rc1.bottom
-					+ 5
-					+ rc2.Height()
-					+ 5
-					+ rc3.Height()
-					+ 5
-					+ rc4.Height()
-					+ 10
-					+ rc5.Height()
-					+ m_iBorder;
-	
-	ScreenToClient(&rc1);
-	ScreenToClient(&rc2);
-	ScreenToClient(&rc3);
-	ScreenToClient(&rc4);
-	ScreenToClient(&rc5);
-
-	// move the controls
-	int i = rc2.Height();
-	rc2.top = rc1.bottom + 5;
-	rc2.bottom = rc2.top + i;
-	pCtl2->MoveWindow(&rc2, FALSE);
-	pCtl2->ShowWindow(SW_SHOWNORMAL);
-
-	i = rc3.Height();
-	rc3.top = rc2.bottom + 5;
-	rc3.bottom = rc3.top + i;
-	pCtl3->MoveWindow(&rc3, FALSE);
-	pCtl3->ShowWindow(SW_SHOWNORMAL);
-
-	i = rc4.Height();
-	rc4.top = rc3.bottom + 5;
-	rc4.bottom = rc4.top + i;
-	pCtl4->MoveWindow(&rc4, FALSE);
-	pCtl4->ShowWindow(SW_SHOWNORMAL);
-
-	i = rc5.Height();
-	rc5.top = rc4.bottom + 10;
-	rc5.bottom = rc5.top + i;
-	pCtl5->MoveWindow(&rc5, FALSE);
-	pCtl5->ShowWindow(SW_SHOWNORMAL);
-
-	m_fBigDialog = true;
-	MoveWindow(&rcWnd, TRUE);
-	CenterWindow();
-}
-
-void CAboutDlg::ShrinkDialog()
-{
-	// find out how big the dialog is
-	CRect rcWnd;
-	GetWindowRect(&rcWnd);
-
-	// IDC_AUTHOR
-	CStatic* pCtl1 = static_cast<CStatic*> (GetDlgItem(IDC_AUTHOR));
-	ASSERT (pCtl1);
-	CRect rc1;
-	pCtl1->GetWindowRect(&rc1);
-	// set author string
-	CString str;
-	str.LoadString(STR_AUTHOR);
-	pCtl1->SetWindowText(str);
-
-
-	// IDC_SYSINFO
-	CStatic* pCtl2 = static_cast<CStatic*> (GetDlgItem(IDC_SYSINFO));
-	ASSERT (pCtl2);
-	pCtl2->ShowWindow(SW_HIDE);
-
-	// IDC_MEMORY
-	CStatic* pCtl3 = static_cast<CStatic*> (GetDlgItem(IDC_MEMORY));
-	ASSERT (pCtl3);
-	pCtl3->ShowWindow(SW_HIDE);
-
-	// IDC_EVENTINFO
-	CStatic* pCtl4 = static_cast<CStatic*> (GetDlgItem(IDC_EVENTINFO));
-	ASSERT (pCtl4);
-	pCtl4->ShowWindow(SW_HIDE);
-
-	// IDOK
-	CButton* pCtl5 = static_cast<CButton*> (GetDlgItem(IDOK));
-	ASSERT (pCtl5);
-	CRect rc5;
-	pCtl5->GetWindowRect(&rc5);
-
-	// resize the dialog
-	rcWnd.bottom =	rc1.bottom
-					+ 10
-					+ rc5.Height()
-					+ m_iBorder;
-
-	ScreenToClient(&rc1);
-	ScreenToClient(&rc5);
-
-	int i = rc5.Height();
-	rc5.top = rc1.bottom + 10;
-	rc5.bottom = rc5.top + i;
-	pCtl5->MoveWindow(&rc5, FALSE);
-
-	m_fBigDialog = false;
-	MoveWindow(&rcWnd, TRUE);
-	CenterWindow();
-}
-
-bool CAboutDlg::ResizeDialog(bool fBigDialog)
-{
-	if (fBigDialog)
-	{
-		GrowDialog();
-	}
-	else
-	{
-		ShrinkDialog();
-	}
-	return m_fBigDialog;
 }

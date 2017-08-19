@@ -1,3 +1,26 @@
+// Visual File Information
+// Copyright (c) Microsoft Corporation
+// All rights reserved. 
+// 
+// MIT License
+// 
+// Permission is hereby granted, free of charge, to any person obtaining 
+// a copy of this software and associated documentation files (the ""Software""), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom 
+// the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included 
+// in all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED *AS IS*, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS 
+// OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR 
+// IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 #ifndef TEVENT_H
 #pragma once
 
@@ -28,7 +51,7 @@ public:
 	{
 		if (NULL != m_hEvent)
 		{
-			MYTRACE((LPCWSTR) _T("TEvent::~TEvent warning: Closing.\r\n"));
+			MYTRACE((LPCWSTR) L"TEvent::~TEvent warning: Closing.\r\n");
 			Close();
 		}
 	}
@@ -40,14 +63,14 @@ public:
 
 	bool Create(LPCWSTR pszName)
 	{
-		if (NULL == pszName || _T('\0') == *pszName)
+		if (NULL == pszName || L'\0' == *pszName)
 		{
 			return false;
 		}
 
 		if (NULL != m_hEvent)
 		{
-			MYTRACE((LPCWSTR) _T("TEvent::Create warning: Event handle already used.\r\n"));
+			MYTRACE(L"TEvent::Create warning: Event handle already used.\r\n");
 			return false;
 		}
 		
@@ -58,11 +81,11 @@ public:
 
 		if (GetLastError() == ERROR_ALREADY_EXISTS)
 		{
-			MYTRACE((LPCWSTR) _T("TEvent::Create warning: Event already exists.\r\n"));
+			MYTRACE((LPCWSTR) L"TEvent::Create warning: Event already exists.\r\n");
 		 	return false;
 		}
 
-		MYTRACE((LPCWSTR) _T("TEvent::Create: Event created successfully.\r\n"));
+		MYTRACE((LPCWSTR) L"TEvent::Create: Event created successfully.\r\n");
 		return (NULL != m_hEvent);
 	}
 
@@ -79,7 +102,7 @@ public:
 	{
 		if (! ::CloseHandle (m_hEvent))
 		{
-			MYTRACE((LPCWSTR) _T("TEvent::Close warning: CloseHandle failed.\r\n"));
+			MYTRACE(L"TEvent::Close warning: CloseHandle failed.\r\n");
 			return false;
 		}
 
@@ -91,7 +114,7 @@ public:
 	{
 		if (NULL == m_hEvent)
 		{
-			MYTRACE((LPCWSTR) _T("TEvent::Signaled warning: NULL Event.\r\n"));
+			MYTRACE(L"TEvent::Signaled warning: NULL Event.\r\n");
 			return false;
 		}
 
@@ -102,7 +125,7 @@ public:
 	{
 		if (NULL == m_hEvent)
 		{
-			MYTRACE((LPCWSTR) _T("TEvent::Signal warning: NULL Event.\r\n"));
+			MYTRACE(L"TEvent::Signal warning: NULL Event.\r\n");
 			return false;
 		}
 
@@ -113,7 +136,7 @@ public:
 	{
 		if (NULL == m_hEvent)
 		{
-			MYTRACE((LPCWSTR) _T("TEvent::Reset warning: NULL Event.\r\n"));
+			MYTRACE(L"TEvent::Reset warning: NULL Event.\r\n");
 			return false;
 		}
 
@@ -132,7 +155,7 @@ public:
 	{
 		if (NULL == m_hEvent)
 		{
-			MYTRACE((LPCWSTR) _T("TEvent::Wait warning: NULL Event.\r\n"));
+			MYTRACE(L"TEvent::Wait warning: NULL Event.\r\n");
 			return;
 		}
 

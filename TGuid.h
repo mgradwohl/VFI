@@ -1,9 +1,32 @@
+// Visual File Information
+// Copyright (c) Microsoft Corporation
+// All rights reserved. 
+// 
+// MIT License
+// 
+// Permission is hereby granted, free of charge, to any person obtaining 
+// a copy of this software and associated documentation files (the ""Software""), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom 
+// the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included 
+// in all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED *AS IS*, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS 
+// OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR 
+// IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 #ifndef GUID_H
 #pragma once
 
 #include <windows.h>
-#include "strlib.h"
 #include <objbase.h>
+//#include "strlib.h"
 
 #ifdef _DEBUG
 	#ifdef DEBUG_NEW
@@ -73,8 +96,7 @@ private:
 	void SetString()
 	{
 		WCHAR szFmt[104];
-		lstrcpy(szFmt, (LPCWSTR) _T("{%08lX-%04X-%04x-%02X%02X-%02X%02X%02X%02X%02X%02X}"));
-		//static const WCHAR szFmt[] = "{%08lX-%04X-%04x-%02X%02X-%02X%02X%02X%02X%02X%02X}";
+		lstrcpy(szFmt, (LPCWSTR) L"{%08lX-%04X-%04x-%02X%02X-%02X%02X%02X%02X%02X%02X}");
 		wsprintf(m_szGuid, szFmt, 
 			m_guid.Data1, m_guid.Data2, m_guid.Data3, 
 			m_guid.Data4[0], m_guid.Data4[1], m_guid.Data4[2], m_guid.Data4[3],

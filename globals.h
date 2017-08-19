@@ -1,22 +1,28 @@
-#define _WIN32_WINNT	0x0600
-#define WINVER			0x0600
-#define	_WIN32_IE		0x0700
-#define	NTDDI_VERSION	NTDDI_LONGHORN 
+// Visual File Information
+// Copyright (c) Microsoft Corporation
+// All rights reserved. 
+// 
+// MIT License
+// 
+// Permission is hereby granted, free of charge, to any person obtaining 
+// a copy of this software and associated documentation files (the ""Software""), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom 
+// the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included 
+// in all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED *AS IS*, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS 
+// OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR 
+// IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #ifndef STRICT
 	#define STRICT 1
-#endif
-
-#ifndef WIN32
-	#define WIN32
-#endif
-
-#ifndef VC_EXTRALEAN
-	#define VC_EXTRALEAN
-#endif
-
-#ifndef WIN32_LEAN_AND_MEAN
-	#define WIN32_LEAN_AND_MEAN
 #endif
 
 #ifdef _UNICODE
@@ -31,9 +37,8 @@
 	#endif
 #endif
 
-#include <windows.h>
-#include "tevent.h"
-//#include "FastHeap.hpp"
+#include "TEvent.h"
+
 extern DWORD  g_dwThreadCRC;
 extern HANDLE g_hThreadCRC;
 extern TEvent g_eGoThreadCRC;
@@ -58,3 +63,5 @@ extern DWORD g_dwChunk;
 	#else
 		#define ALERT(x, s)
 #endif
+
+

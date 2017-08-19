@@ -1,3 +1,26 @@
+// Visual File Information
+// Copyright (c) Microsoft Corporation
+// All rights reserved. 
+// 
+// MIT License
+// 
+// Permission is hereby granted, free of charge, to any person obtaining 
+// a copy of this software and associated documentation files (the ""Software""), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom 
+// the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included 
+// in all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED *AS IS*, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS 
+// OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR 
+// IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 // MyStatusBar.cpp : implementation file
 //
 
@@ -244,7 +267,7 @@ void CMyStatusBar::OnSize(UINT nType, int cx, int cy)
 	}
 }
 
-int CMyStatusBar::OnToolHitTest(CPoint point, TOOLINFO* pTI)
+INT_PTR CMyStatusBar::OnToolHitTest(CPoint point, TOOLINFO* pTI)
 {
 	ASSERT(FALSE);
 	CRect rc1;
@@ -257,13 +280,13 @@ int CMyStatusBar::OnToolHitTest(CPoint point, TOOLINFO* pTI)
 	if (rc1.PtInRect(point))
 	{
 		pTI->rect = rc1;
-		pTI->uId = (UINT)m_ctlProgress1.m_hWnd;
+		pTI->uId = (UINT_PTR)m_ctlProgress1.m_hWnd;
 		return 1;
 	}
 	if (rc2.PtInRect(point))
 	{
 		pTI->rect = rc2;
-		pTI->uId = (UINT)m_ctlProgress2.m_hWnd;
+		pTI->uId = (UINT_PTR)m_ctlProgress2.m_hWnd;
 		return 1;
 	}
 	return CStatusBar::OnToolHitTest(point, pTI);
@@ -277,26 +300,30 @@ BOOL CMyStatusBar::OnToolTipText( UINT id, NMHDR* pNMHDR, LRESULT* pResult )
 	TOOLTIPTEXTA* pTTTA = (TOOLTIPTEXTA*)pNMHDR;
 	TOOLTIPTEXTW* pTTTW = (TOOLTIPTEXTW*)pNMHDR;
 
-	CMyDoc* pDoc = GetFrame()->GetDocument();
-	ASSERT (pDoc);
-	DWORD dw = pDoc->GetItemCount();
 	WCHAR szTip[128];
 	WCHAR szRead[128];
 	WCHAR szTotal[128];
 
+	CMyDoc* pDoc = GetFrame()->GetDocument();
+	ASSERT(pDoc);
+	if (pDoc == nullptr)
+	{
+		return FALSE;
+	}
+	DWORD dw = pDoc->GetItemCount();
 	StrFormatByteSize64(pDoc->m_qwSize, szTotal, 128);
 	StrFormatByteSize64(pDoc->SizeRead(), szRead, 128);
-
-	UINT nID = pNMHDR->idFrom;
+	
+	UINT_PTR nID = pNMHDR->idFrom;
 
 	if (pNMHDR->code == TTN_NEEDTEXTA && (pTTTA->uFlags & TTF_IDISHWND) ||
 		pNMHDR->code == TTN_NEEDTEXTW && (pTTTW->uFlags & TTF_IDISHWND))
 	{
-		if (nID == (UINT)m_ctlProgress1.m_hWnd)
+		if (nID == (UINT_PTR)m_ctlProgress1.m_hWnd)
 		{
 			strfmt(AfxGetResourceHandle(), szTip, TIP_PROGRESS_INFO, dw - pDoc->m_dwDirtyInfo, dw);
 		}
-		if (nID == (UINT)m_ctlProgress2.m_hWnd)
+		if (nID == (UINT_PTR)m_ctlProgress2.m_hWnd)
 		{
 			strfmt(AfxGetResourceHandle(), szTip, TIP_PROGRESS_CRC, dw - pDoc->m_dwDirtyCRC, dw, szRead, szTotal);
 		}

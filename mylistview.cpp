@@ -1,15 +1,33 @@
+// Visual File Information
+// Copyright (c) Microsoft Corporation
+// All rights reserved. 
+// 
+// MIT License
+// 
+// Permission is hereby granted, free of charge, to any person obtaining 
+// a copy of this software and associated documentation files (the ""Software""), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom 
+// the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included 
+// in all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED *AS IS*, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS 
+// OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR 
+// IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 // mylistview.cpp : implementation of the CMyListView class
 //
 
 #include "stdafx.h"
-//#include <iostream.h>
-//#include <stdio.h>
 #include "filelib.h"
-//#include "fileutils.h"
 #include "wndlib.h"
 #include "globals.h"
-//#include <../cpputil/myfilebox.h>
-#include "sysinfo.h"
 
 #include "resource.h"
 #include "VFI.h"
@@ -21,14 +39,12 @@
 #include "timedlg.h"
 #include "progressbox.h"
 #include <mmsystem.h>
-	#pragma comment(lib, "winmm.lib")
 
 #ifdef _DEBUG
 	#define new DEBUG_NEW
 	#undef THIS_FILE
 	static CHAR THIS_FILE[] = __FILE__;
 #endif
-
 
 /////////////////////////////////////////////////////////////////////////////
 // CMyListView
@@ -115,7 +131,6 @@ void CMyListView::Dump(CDumpContext& dc) const
 
 CMyDoc* CMyListView::GetDocument()
 {
-	//ASSERT(m_pDocument->IsKindOf(RUNTIME_CLASS(CMyDoc)));
 	return static_cast<CMyDoc*> (m_pDocument);
 }
 #endif //_DEBUG
@@ -215,8 +230,6 @@ void CMyListView::OnInitialUpdate()
 		MyModifyStyleEx(0,m_dwExStyle );
 		g_eGoThreadCRC.Signal( true );
 
-		// SJ: need to do it before Mattgr's code since
-		// he modifies the command line
 		// Adds ability to use UNC paths and specify output file
 		// Does NO directory or file checking though... 
 		{
@@ -248,8 +261,6 @@ void CMyListView::OnInitialUpdate()
 		if (lstrcch(m_szFolder) > 0)
 		{
 			m_fAutomatic = true;
-			//CMyDoc* pDoc=GetDocument();
-			//ASSERT_VALID( pDoc );
 			pDoc->RecurseDir( m_szFolder );
 		}
 	}
@@ -288,7 +299,7 @@ bool CMyListView::AddItem(CWiseFile* pFileInfo)
 
 		CString strTitle;
 		strTitle.LoadString(ERR_TITLE);
-		strError.Format(ERR_ADDFILE_FAILED, strError, GetLastError() );
+		strError.Format(ERR_ADDFILE_FAILED, (LPCWSTR)strError, GetLastError() );
 
 		ErrorMessageBox(AfxGetMainWnd()->GetSafeHwnd(), GetLastError(), strTitle, strError);
 
@@ -304,7 +315,6 @@ bool CMyListView::AddItem(CWiseFile* pFileInfo)
 		}		
 	}
 
-	theApp.m_strISORoot=pFileInfo->GetPath();
 	return TRUE;
 }
 
@@ -312,7 +322,7 @@ void CMyListView::OnAddButtload()
 {
 	TRACE(L"CMyListView::OnAddButtload()\n");
 
-    WCHAR szFolder[MAX_PATH];
+	WCHAR szFolder[MAX_PATH];
 	if (BrowseForFolder(m_hWnd, L"Choose a folder, all files in the folder will be added to the list.", szFolder))
 	{
 		CMyDoc* pDoc=GetDocument();
@@ -388,7 +398,7 @@ void CMyListView::OnDropFiles(HDROP hDropInfo)
 		while ( fRun )
 		{
 			fRun = (TRUE == m_Find.FindNextFile()); 
- 			// if it's a directory, and it's not dots then add it to the path list
+			// if it's a directory, and it's not dots then add it to the path list
 			if ( m_Find.IsDirectory() && !m_Find.IsDots() )
 			{
 				PathList.AddTail( m_Find.GetFilePath() );
@@ -423,7 +433,7 @@ void CMyListView::OnDropFiles(HDROP hDropInfo)
 		while ( fRun )
 		{
 			fRun = (TRUE==m_Find.FindNextFile());
- 			// if it's a directory, and it's not dots then add it to the path list
+			// if it's a directory, and it's not dots then add it to the path list
 			if ( m_Find.IsDirectory() && !m_Find.IsDots() )
 			{
 				PathList.AddTail( m_Find.GetFilePath() );
@@ -444,9 +454,11 @@ void CMyListView::OnDropFiles(HDROP hDropInfo)
 	m_Find.Close();	
 
 	// now we know how many files there are, so we add them
-	strText.FormatMessage(STR_FILEADD, FileList.GetCount());
+	int count = Clamp(FileList.GetCount());
+	strText.FormatMessage(STR_FILEADD, count);
 	Box.SetWindowText(strText);
-	Box.m_ctlProgress.SetRange32(0, FileList.GetCount());
+	Box.m_ctlProgress.SetRange32(0, count);
+
 	CString strFile;
 	while ( !FileList.IsEmpty())
 	{
@@ -454,7 +466,7 @@ void CMyListView::OnDropFiles(HDROP hDropInfo)
 		strFile = FileList.RemoveHead();
 		if (FALSE == pDoc->AddFile(strFile))
 		{
-			strText.FormatMessage(ERR_FILEINUSE, strFile);
+			strText.FormatMessage(ERR_FILEINUSE, (LPCWSTR)strFile);
 			UpdateStatus(strText);
 		}
 
@@ -479,16 +491,8 @@ void CMyListView::OnGetDispInfo(NMHDR* pNMHDR, LRESULT* pResult)
 
 	if (pDispInfo->item.mask & LVIF_TEXT)
 	{
-		if(pDispInfo->item.iSubItem < 19)
-		{
-              pInfo->GetFieldString((LPWSTR)m_szItemText, pDispInfo->item.iSubItem, m_fIncludePath);
-              pDispInfo->item.pszText = (LPWSTR) m_szItemText;
-		}
-		else
-		{
-			// special case for ISO column (column 19)
-			pDispInfo->item.pszText = (LPWSTR) pInfo->GetISO(m_fIncludePath);
-		}
+		pInfo->GetFieldString((LPWSTR)m_szItemText, pDispInfo->item.iSubItem, m_fIncludePath);
+		pDispInfo->item.pszText = (LPWSTR) m_szItemText;
 	}
 	*pResult = 0;
 }
@@ -588,7 +592,7 @@ void CMyListView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 						// use the path generated
 						WCHAR szPath[MAX_PATH];
 						pDoc->GetFileName(szPath);
-                        pDoc->WriteFileEx(szPath);
+						pDoc->WriteFileEx(szPath);
 					}
 					else
 					{
@@ -782,11 +786,6 @@ int CALLBACK CMyListView::ListViewCompareProc(LPARAM lParam1, LPARAM lParam2, LP
 					iResult = DWordCompare(pFile1->GetCRC(), pFile2->GetCRC(), pView->m_fSortAscend);
 					break;
 				}
-			case 19:   // sort by ISO
-				{
-					iResult = DWordCompare(pFile1->GetISO(), pFile2->GetISO(), pView->m_fSortAscend);
-					break;
-				}
 			default:
 				iResult = 0;
 				break;
@@ -869,7 +868,7 @@ bool CMyListView::RestorePreferences()
 	m_pci[16].SetFormat(LVCFMT_LEFT);
 	m_pci[17].SetFormat(LVCFMT_LEFT);
 	m_pci[18].SetFormat(LVCFMT_LEFT);
-	m_pci[19].SetFormat(LVCFMT_LEFT);
+	//m_pci[19].SetFormat(LVCFMT_LEFT);
 
 	// some are fixed, some aren't
 	m_pci[4].SetFixedWidth(12);		// '_MM/DD/YYYY_'
@@ -888,7 +887,6 @@ bool CMyListView::RestorePreferences()
 	for (int i=0; i < LIST_NUMCOLUMNS; i++)
 	{
 		m_pci[i].SetLabelID(STR_COLUMN0 + i);
-		//m_pci[i].SetVisible(true);
 
 		strEntry.Format( L"%d",i);
 		strValue = theApp.GetProfileString(L"Columns",strEntry, L"50,1");
@@ -914,7 +912,7 @@ bool CMyListView::RestorePreferences()
 		CString strError;
 		CString strTitle;
 		strTitle.LoadString(ERR_TITLE);
-		strError.FormatMessage(ERR_WAVENOTFOUND, m_strWave);
+		strError.FormatMessage(ERR_WAVENOTFOUND, (LPCWSTR)m_strWave);
 		ErrorMessageBox(AfxGetMainWnd()->GetSafeHwnd(), GetLastError(), strTitle, strError);
 
 		m_strWave.Empty();
@@ -945,7 +943,7 @@ bool CMyListView::SavePreferences()
 		{
 			strValue.Format( L"%d, %d",theListCtrl.GetColumnWidth(i), m_pci[i].IsVisible() == TRUE ? 1 : 0 );
 		}
-		TRACE(L">>> CMyListView::SavePreferences\t%s\n",strValue);
+		TRACE(L">>> CMyListView::SavePreferences\t%s\n",(LPCWSTR)strValue);
 		theApp.WriteProfileString( L"Columns",strEntry,strValue);
 	}
 
@@ -1012,14 +1010,14 @@ void CMyListView::OnFileRename()
 {
 	SHFILEOPSTRUCT	shFileOp;
 
-    shFileOp.hwnd; 
-    shFileOp.wFunc; 
-    shFileOp.pFrom; 
-    shFileOp.pTo; 
-    shFileOp.fFlags; 
-    shFileOp.fAnyOperationsAborted; 
-    shFileOp.hNameMappings; 
-    shFileOp.lpszProgressTitle; 
+	shFileOp.hwnd; 
+	shFileOp.wFunc; 
+	shFileOp.pFrom; 
+	shFileOp.pTo; 
+	shFileOp.fFlags; 
+	shFileOp.fAnyOperationsAborted; 
+	shFileOp.hNameMappings; 
+	shFileOp.lpszProgressTitle; 
  }
 
 void CMyListView::OnFileTouch() 
@@ -1130,7 +1128,7 @@ bool CMyListView::DeleteItem( CObject* pObject)
 
 	ZeroMemory( &lvfi, sizeof(lvfi));
 	lvfi.flags=LVFI_PARAM;
-	lvfi.lParam=(LONG) pObject;
+	lvfi.lParam=(LPARAM) pObject;
 	iItem=theListCtrl.FindItem( &lvfi, -1);
 	if ( -1 == iItem)
 	{
@@ -1211,13 +1209,17 @@ int CMyListView::FindVisibleItem(CObject* pObject)
 		lvi.iItem = iItem;
 		if (TRUE == theListCtrl.GetItem(&lvi))
 		{
-			if ( (DWORD)pObject == (DWORD)lvi.lParam )
+			if ( (LPARAM)pObject == (LPARAM)lvi.lParam )
 			{
 				return iItem;
 			}
 		}
 	}
-	TRACE(L"FindVisibleItem found item %d.\n",iItem);
+
+	//
+	CWiseFile* pFileInfo = reinterpret_cast<CWiseFile*> (theListCtrl.GetItemData(iItem));
+	ASSERT(pFileInfo);
+	TRACE(L"FindVisibleItem found item %s.\n", pFileInfo->GetFullPath());
 	return -1;
 }
 
@@ -1348,10 +1350,10 @@ void CMyListView::OnDestroy()
 	CListView::OnDestroy();
 }
 
-void CMyListView::MyModifyStyleEx( DWORD dwRemove, DWORD dwAdd)
+void CMyListView::MyModifyStyleEx( LRESULT dwRemove, LRESULT dwAdd)
 {
 	CListCtrl& theListCtrl=GetListCtrl();
-	DWORD dwExStyle = theListCtrl.SendMessage (LVM_GETEXTENDEDLISTVIEWSTYLE);
+	LRESULT dwExStyle = theListCtrl.SendMessage (LVM_GETEXTENDEDLISTVIEWSTYLE);
 	dwExStyle |= dwAdd;
 	dwExStyle &= ~dwRemove;
 	theListCtrl.SendMessage (LVM_SETEXTENDEDLISTVIEWSTYLE, 0, dwExStyle);
@@ -1535,11 +1537,11 @@ int CMyListView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	
 	HWND hWnd = GetListCtrl().GetSafeHwnd();
 
-    DWORD dwStyle = ::GetClassLong (m_hWnd, GCL_STYLE);
-    ::SetClassLong (m_hWnd, GCL_STYLE, dwStyle & ~(CS_HREDRAW | CS_VREDRAW));
+	DWORD dwStyle = ::GetClassLong (m_hWnd, GCL_STYLE);
+	::SetClassLong (m_hWnd, GCL_STYLE, dwStyle & ~(CS_HREDRAW | CS_VREDRAW));
 
-    dwStyle = ::GetClassLong (hWnd, GCL_STYLE);
-    ::SetClassLong (hWnd, GCL_STYLE, dwStyle & ~(CS_HREDRAW | CS_VREDRAW));
+	dwStyle = ::GetClassLong (hWnd, GCL_STYLE);
+	::SetClassLong (hWnd, GCL_STYLE, dwStyle & ~(CS_HREDRAW | CS_VREDRAW));
 
 	return 0;
 }
@@ -1827,7 +1829,7 @@ bool CMyListView::FillBuffer(bool fAllRows, bool fAllFields)
 	CWiseFile* pInfo = NULL;
 	int iItem = 0;
 	int c = 0;
-    int j = 0;
+	int j = 0;
 	POSITION pos;
 
 	CloseBuffer();
@@ -1892,9 +1894,12 @@ bool CMyListView::FillBuffer(bool fAllRows, bool fAllFields)
 			pInfo = reinterpret_cast<CWiseFile*> (theListCtrl.GetItemData(j));
 			ASSERT (pInfo);
 
-			pDoc->GetRowString( *pInfo, pszItem );
-			lstrcat( m_pBuf, pszItem );
-			lstrcat( m_pBuf, L"\r\n" );
+			if (pInfo != nullptr)
+			{
+				pDoc->GetRowString(*pInfo, pszItem);
+				lstrcat(m_pBuf, pszItem);
+				lstrcat(m_pBuf, L"\r\n");
+			}
 		}
 	}
 	else
@@ -1936,7 +1941,7 @@ LPWSTR CMyListView::GetBuffer()
 	return m_pBuf;
 }
 
-DWORD CMyListView::GetBufferSize()
+SIZE_T CMyListView::GetBufferSize()
 {
 	return GlobalSize(m_hBuf);
 }

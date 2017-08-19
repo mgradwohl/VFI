@@ -1,10 +1,32 @@
+// Visual File Information
+// Copyright (c) Microsoft Corporation
+// All rights reserved. 
+// 
+// MIT License
+// 
+// Permission is hereby granted, free of charge, to any person obtaining 
+// a copy of this software and associated documentation files (the ""Software""), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom 
+// the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included 
+// in all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED *AS IS*, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS 
+// OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR 
+// IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 // MyPropPage1.cpp : implementation file
 //
 #include "stdafx.h"
 #include "VFI.h"
 #include "resource.h"
 #include "MyPropPage1.h"
-//#include <../cpputil/myfilebox.h>
 
 #ifdef _DEBUG
 	#define new DEBUG_NEW
@@ -24,7 +46,6 @@ CPageGeneral::CPageGeneral() : CPropertyPage(CPageGeneral::IDD)
 	//{{AFX_DATA_INIT(CPageGeneral)
 	m_fAudioCue = false;
 	m_strWave = "";
-	m_fUseISORoot = false;
 	m_fIncludePath = false;
 	m_fSavePrompt = FALSE;
 	m_strSavePath = "";
@@ -43,7 +64,6 @@ void CPageGeneral::DoDataExchange(CDataExchange* pDX)
 	DDX_Check(pDX, IDC_AUDIOCUE, m_fAudioCue);
 	DDX_Text(pDX, IDC_EDITWAVE, m_strWave);
 	DDV_MaxChars(pDX, m_strWave, 260);
-	DDX_Check(pDX, IDC_ISOINCLUDEPATH, m_fIncludePath);
 	DDX_Check(pDX, IDC_SAVEPROMPT, m_fSavePrompt);
 	DDX_Text(pDX, IDC_SAVEPATH, m_strSavePath);
 	//}}AFX_DATA_MAP
@@ -72,8 +92,6 @@ CPageColumn::CPageColumn() : CPropertyPage(CPageColumn::IDD)
 {
 	m_fInitialized=FALSE;
 	m_pci = NULL;
-	//{{AFX_DATA_INIT(CPageColumn)
-	//}}AFX_DATA_INIT
 }
 
 CPageColumn::~CPageColumn()
@@ -115,7 +133,10 @@ void CPageGeneral::OnAudiocue()
 	CButton* pCheck = static_cast<CButton*> (GetDlgItem(IDC_AUDIOCUE));
 	ASSERT (pCheck);
 
-	m_fAudioCue= pCheck->GetCheck();
+	if (pCheck != nullptr)
+	{
+		m_fAudioCue = pCheck->GetCheck();
+	}
 
 	CButton* pBrowse = static_cast<CButton*> (GetDlgItem(IDC_BROWSEWAVE));
 	ASSERT (pBrowse);
@@ -158,7 +179,7 @@ BOOL CPageColumn::OnInitDialog()
 		strLabel = " " + strLabel;
 		m_ctlColumns.AddString( strLabel );
 		m_ctlColumns.SetCheck( i, m_pci[i].IsVisible() ? 1 : 0  );
-		TRACE(L">>> CPageColumn::OnInitDialog %s, %d\r\n",strLabel, m_pci[i].IsVisible() ? 1 : 0);
+		TRACE(L">>> CPageColumn::OnInitDialog %s, %d\r\n",(LPCWSTR)strLabel, m_pci[i].IsVisible() ? 1 : 0);
 	}
 	
 	return TRUE;  // return TRUE unless you set the focus to a control
@@ -169,7 +190,7 @@ CColumnInfo* CPageColumn::GetColumnInfo()
 	return m_pci;
 }
 
-int CPageColumn::DoModal() 
+INT_PTR CPageColumn::DoModal() 
 {
 	for( int i=0; i < LIST_NUMCOLUMNS; i++ )
 	{
@@ -238,7 +259,7 @@ void CPageGeneral::OnKillFocusEditWave()
 		CString strError;
 		CString strTitle;
 		strTitle.LoadString(ERR_TITLE);
-		strError.FormatMessage(ERR_REENTERWAVE, m_strWave);
+		strError.FormatMessage(ERR_REENTERWAVE, (LPCWSTR)m_strWave);
 
 		ErrorMessageBox(AfxGetMainWnd()->GetSafeHwnd(),
 			GetLastError(),
@@ -270,7 +291,7 @@ void CPageGeneral::OnKillfocusSavepath()
 		CString strTitle;
 		strTitle.LoadString(ERR_TITLE);
 		CString strError;
-		strError.FormatMessage(ERR_REENTERPATH, m_strSavePath);
+		strError.FormatMessage(ERR_REENTERPATH, (LPCWSTR)m_strSavePath);
 		ErrorMessageBox(AfxGetMainWnd()->GetSafeHwnd(), GetLastError(), strTitle, strError);
 
 		m_strSavePath.Empty();

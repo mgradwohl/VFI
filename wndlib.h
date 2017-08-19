@@ -1,6 +1,25 @@
-// wndlib.h
-// mattgr
-// 3/27/2000
+// Visual File Information
+// Copyright (c) Microsoft Corporation
+// All rights reserved. 
+// 
+// MIT License
+// 
+// Permission is hereby granted, free of charge, to any person obtaining 
+// a copy of this software and associated documentation files (the ""Software""), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom 
+// the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included 
+// in all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED *AS IS*, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS 
+// OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR 
+// IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #pragma once
 #ifndef WNDLIB_H
@@ -9,24 +28,7 @@
 	#error WndLib requires C++ compilation (use a .cpp suffix)
 #endif
 
-//#ifndef _LIB
-//		#ifdef _DEBUG
-//			#pragma comment(lib, "wndlibdu.lib")
-//		#else
-//			#pragma comment(lib, "wndlibu.lib")
-//		#endif
-//#endif//_LIB
-
 #include <windows.h>
-
-// QWORD
-#define QWORD			DWORDLONG
-#define LPQWORD			QWORD*
-#define MAKEDWORD(a, b)	((DWORD)(((WORD)(a)) | ((DWORD)((WORD)(b))) << 16))
-#define MAKEQWORD(a, b)	((QWORD)(((DWORD)(a)) | ((QWORD)((DWORD)(b))) << 32))
-//#define LODWORD(l)		((DWORD)(l))
-//#define HIDWORD(l)		((DWORD)(((QWORD)(l) >> 32) & 0xFFFFFFFF))
-
 // MoveWindowEx flags
 enum { CDF_CENTER, CDF_TOPLEFT, CDF_NONE };
 
@@ -41,6 +43,8 @@ enum { CDF_CENTER, CDF_TOPLEFT, CDF_NONE };
 #define MWX_NW		0x0008	// 0000 0000  0000 1000
 #define MWX_APP		0x8000	// 1000 0000  0000 0000
 
+UINT32 UClamp(INT_PTR val);
+__int32 Clamp(INT_PTR val);
 int Width(LPCRECT prc);
 int Height(LPCRECT prc);
 int Height(const HWND hWnd);
