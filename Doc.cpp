@@ -178,8 +178,6 @@ BOOL CMyDoc::OnSaveDocument(LPCWSTR lpszPathName)
 	if (!SaveBox(AfxGetMainWnd()->m_hWnd, szTitle, szFilter, szPath, OFN_OVERWRITEPROMPT))
 		return FALSE;
 
-	//SetPathName( szPath, FALSE );
-	
 	if (WriteFileEx(szPath))
 	{
 		return TRUE;
@@ -203,7 +201,6 @@ BOOL CMyDoc::SaveModified()
 	TRACE(L"CMyDoc::SaveModified()\n");
 	CMainFrame* pFrame = static_cast<CMainFrame*> (theApp.GetMainWnd());
 	CMyListView* pView = static_cast<CMyListView*> (pFrame->GetActiveView());
-	//ASSERT(pView->IsKindOf(RUNTIME_CLASS(CMyListView)));
 
 	if (!pView->PromptToSave())
 	{
@@ -652,7 +649,6 @@ void CMyDoc::DeleteKillList()
 		try
 		{
 			delete pFileInfo;
-			//g_Heap.Delete(pFileInfo);
 		}
 		catch(...)
 		{
@@ -683,13 +679,9 @@ BOOL CMyDoc::AddFile(LPCWSTR pszFilename)
 	}
 
 	// Allocate memory for the fileinfo
-	//CWiseFile*  pNewFile = (CWiseFile*) g_Heap.New(sizeof(CWiseFile));
 	CWiseFile* pNewFile = new CWiseFile;
 	ASSERT (pNewFile);
 	
-	//if you uncomment the following line, we crash when we exit
-	//ZeroMemory(pNewFile, sizeof(CWiseFile));
-
 	if (FWF_SUCCESS != pNewFile->Attach( pszFilename))
 	{
 		delete pNewFile;

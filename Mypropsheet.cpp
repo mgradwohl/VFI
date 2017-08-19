@@ -22,7 +22,6 @@
 // IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 // MyPropSheet.cpp : implementation file
-//
 
 #include "stdafx.h"
 #include "wndlib.h"
@@ -72,8 +71,6 @@ BOOL CMyPropSheet::OnInitDialog()
 {
 	BOOL fRet=CPropertySheet::OnInitDialog();
 
-	//ChangeDialogFont(this, theApp.GetUIFont(), CDF_CENTER);
-
 	// change the font for each page
 	CPropertyPage* pPage = NULL;
 	for (int i = 0; i < GetPageCount (); i++)
@@ -81,8 +78,6 @@ BOOL CMyPropSheet::OnInitDialog()
 		VERIFY (SetActivePage(i));
 		pPage = GetActivePage();
 		ASSERT (pPage);
-		//ChangeDialogFont(pPage, theApp.GetUIFont(), CDF_CENTER);
-
 	}
 
 	// set the default page active

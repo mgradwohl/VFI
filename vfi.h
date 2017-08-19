@@ -28,9 +28,7 @@
 	#error include 'stdafx.h' before including this file for PCH
 #endif
 
-#include "tevent.h"
 #include "strlib.h"
-
 #include "resource.h"
 #include "wisefile.h"
 

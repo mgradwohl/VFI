@@ -308,7 +308,6 @@ inline void CMyListView::OnUpdateEditCopy(CCmdUI* pCmdUI)
 {
 	CListCtrl& theListCtrl = GetListCtrl();
 	pCmdUI->Enable(theListCtrl.GetSelectedCount() > 0);	
-	//pCmdUI->Enable(false);
 }
 
 inline int CMyListView::TimeCompare( CTime time1, CTime time2, bool fSortAscending )

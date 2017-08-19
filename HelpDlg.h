@@ -38,7 +38,6 @@ public:
 	bool m_fShowCheck;
 	bool LoadRTF();
 	bool LoadRTF(UINT nID);
-//	CHelpDlg(CWnd* pParent = NULL);   // standard constructor
 	CHelpDlg(CWnd* pParent = NULL, UINT nHelpID = 0, bool fShowCheck = false);
 
 // Dialog Data

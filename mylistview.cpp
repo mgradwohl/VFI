@@ -25,13 +25,9 @@
 //
 
 #include "stdafx.h"
-//#include <iostream.h>
-//#include <stdio.h>
 #include "filelib.h"
-//#include "fileutils.h"
 #include "wndlib.h"
 #include "globals.h"
-//#include <../cpputil/myfilebox.h>
 
 #include "resource.h"
 #include "VFI.h"
@@ -43,14 +39,12 @@
 #include "timedlg.h"
 #include "progressbox.h"
 #include <mmsystem.h>
-	//#pragma comment(lib, "winmm.lib")
 
 #ifdef _DEBUG
 	#define new DEBUG_NEW
 	#undef THIS_FILE
 	static CHAR THIS_FILE[] = __FILE__;
 #endif
-
 
 /////////////////////////////////////////////////////////////////////////////
 // CMyListView
@@ -137,7 +131,6 @@ void CMyListView::Dump(CDumpContext& dc) const
 
 CMyDoc* CMyListView::GetDocument()
 {
-	//ASSERT(m_pDocument->IsKindOf(RUNTIME_CLASS(CMyDoc)));
 	return static_cast<CMyDoc*> (m_pDocument);
 }
 #endif //_DEBUG
@@ -237,8 +230,6 @@ void CMyListView::OnInitialUpdate()
 		MyModifyStyleEx(0,m_dwExStyle );
 		g_eGoThreadCRC.Signal( true );
 
-		// SJ: need to do it before Mattgr's code since
-		// he modifies the command line
 		// Adds ability to use UNC paths and specify output file
 		// Does NO directory or file checking though... 
 		{
@@ -270,8 +261,6 @@ void CMyListView::OnInitialUpdate()
 		if (lstrcch(m_szFolder) > 0)
 		{
 			m_fAutomatic = true;
-			//CMyDoc* pDoc=GetDocument();
-			//ASSERT_VALID( pDoc );
 			pDoc->RecurseDir( m_szFolder );
 		}
 	}
@@ -897,7 +886,6 @@ bool CMyListView::RestorePreferences()
 	for (int i=0; i < LIST_NUMCOLUMNS; i++)
 	{
 		m_pci[i].SetLabelID(STR_COLUMN0 + i);
-		//m_pci[i].SetVisible(true);
 
 		strEntry.Format( L"%d",i);
 		strValue = theApp.GetProfileString(L"Columns",strEntry, L"50,1");
