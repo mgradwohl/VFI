@@ -27,7 +27,6 @@
 #include "VFI.h"
 #include "resource.h"
 #include "MyPropPage1.h"
-//#include <../cpputil/myfilebox.h>
 
 #ifdef _DEBUG
 	#define new DEBUG_NEW
@@ -93,8 +92,6 @@ CPageColumn::CPageColumn() : CPropertyPage(CPageColumn::IDD)
 {
 	m_fInitialized=FALSE;
 	m_pci = NULL;
-	//{{AFX_DATA_INIT(CPageColumn)
-	//}}AFX_DATA_INIT
 }
 
 CPageColumn::~CPageColumn()

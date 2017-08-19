@@ -22,7 +22,6 @@
 // IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 // Frame.cpp : implementation of the CMainFrame class
-//
 
 #include "stdafx.h"
 #include "VFI.h"
@@ -134,14 +133,6 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		return -1;
 	}
 
-	//if (!m_wndToolBar.CreateEx(this, TBSTYLE_FLAT, WS_CHILD | WS_VISIBLE | CBRS_TOP
-	//	| CBRS_GRIPPER | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC) ||
-	//	!m_wndToolBar.LoadToolBar(IDR_MAINFRAME))
-	//{
-	//	TRACE(L"Failed to create toolbar\n");
-	//	return -1;      // fail to create
-	//}
-
 	if (!m_wndToolBar.CreateEx(this, TBSTYLE_FLAT | TBSTYLE_TRANSPARENT , WS_CHILD | WS_VISIBLE | CBRS_TOP
 		| CBRS_GRIPPER | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC ) ||
 		!m_wndToolBar.LoadToolBar(IDR_MAINFRAME))
@@ -169,7 +160,6 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_ilToolBarGrey.Add(&bmd,(CBitmap*)NULL);
 
 	m_wndToolBar.GetToolBarCtrl().SetDisabledImageList(&m_ilToolBarGrey);
-
 
 	// Toolbar title
 	CString strToolTitle;
@@ -231,7 +221,6 @@ void CMainFrame::Dump(CDumpContext& dc) const
 {
 	CFrameWnd::Dump(dc);
 }
-
 #endif //_DEBUG
 
 void CMainFrame::OnViewTooltips() 
@@ -426,7 +415,6 @@ void CALLBACK EXPORT CMainFrame::TimerProc(HWND hWnd, UINT nMsg, UINT nIDEvent, 
 	ASSERT (pDoc);
 	
 	if (pDoc->IsDirty())
-	//	if ((pDoc->m_dwDirtyInfo>0) || (pDoc->m_dwDirtyCRC > 0)|| (pDoc->GetDirtyCount() > 0))
 	{
 		pDoc->ResumeAllThreads();
 	}
@@ -434,7 +422,6 @@ void CALLBACK EXPORT CMainFrame::TimerProc(HWND hWnd, UINT nMsg, UINT nIDEvent, 
 
 BOOL CMainFrame::PreTranslateMessage(MSG* pMsg) 
 {
-	
 	m_wndStatusBar.GetTip()->RelayEvent(pMsg);
 	return CFrameWnd::PreTranslateMessage(pMsg);
 }

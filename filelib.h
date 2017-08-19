@@ -28,15 +28,8 @@
 	#error FileLib requires C++ compilation (use a .cpp suffix)
 #endif
 
-//#ifndef _LIB
-//		#ifdef _DEBUG
-//			#pragma comment(lib, "filelibdu.lib")
-//		#else
-//			#pragma comment(lib, "filelibu.lib")
-//		#endif
-//#endif//_LIB
-
 #include <windows.h>
+#include "strlib.h"
 
 bool CreateFolder(LPCWSTR pszFolder);
 bool GetTempFolder(LPWSTR pszFolder);

@@ -21,29 +21,9 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR 
 // IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-//#ifndef WINVER
-//	#define WINVER			0x0501
-//#endif
-//
-//#ifndef _WIN32_WINNT
-//	#define _WIN32_WINNT	0x0501
-//#endif
-//
-//#ifndef _WIN32_IE
-//	#define _WIN32_IE		0x0600
-//#endif
-
 #ifndef STRICT
 	#define STRICT 1
 #endif
-
-//#ifndef WIN32
-//	#define WIN32
-//#endif
-//
-//#ifndef WIN32_LEAN_AND_MEAN
-////	#define WIN32_LEAN_AND_MEAN
-//#endif
 
 #ifdef _UNICODE
 	#ifndef UNICODE
@@ -75,25 +55,25 @@
 #include "wndlib.h"
 
 
-		UINT32 UClamp(INT_PTR val)
-		{
-			__int64 ret = val;
-			if (ret > _UI32_MAX)
-			{
-				ret = _UI32_MAX - 1;
-			}
-			return (UINT32)ret;
-		}
+UINT32 UClamp(INT_PTR val)
+{
+	__int64 ret = val;
+	if (ret > _UI32_MAX)
+	{
+		ret = _UI32_MAX - 1;
+	}
+	return (UINT32)ret;
+}
 
-		__int32 Clamp(INT_PTR val)
-		{
-			__int64 ret = val;
-			if (ret > _I32_MAX)
-			{
-				ret = _I32_MAX - 1;
-			}
-			return (__int32)ret;
-		}
+__int32 Clamp(INT_PTR val)
+{
+	__int64 ret = val;
+	if (ret > _I32_MAX)
+	{
+		ret = _I32_MAX - 1;
+	}
+	return (__int32)ret;
+}
 
 int Width(LPCRECT prc)
 {
@@ -200,7 +180,7 @@ void ChangeDialogFont(const HWND hWnd, const HFONT hFont, const int nFlag)
 		SetFont(hWndChild, hFont, false);
 		GetWindowRect(hWndChild, &rcWnd);
 		GetClassName(hWndChild, szBuf, 31);
-		if(0==lstrcmpiW(szBuf, _T("COMBOBOX")))
+		if(0==lstrcmpiW(szBuf, L"COMBOBOX"))
 		{
 			RECT rc;
 			SendMessage(hWndChild, CB_GETDROPPEDCONTROLRECT,0,(LPARAM) &rc);
@@ -267,7 +247,7 @@ bool MoveWindowEx(const HWND hWnd, const WORD wAlign)
 		// move based on application window rect
 		if (NULL==hWndParent || !::IsWindow(hWndParent))
 		{
-			TRACE(_T("MoveWindowEx invalid main window, centering on desktop.\n"));
+			TRACE(L"MoveWindowEx invalid main window, centering on desktop.\n");
 			SystemParametersInfo(SPI_GETWORKAREA, 0, &rc, 0);
 		}
 		else
@@ -278,7 +258,6 @@ bool MoveWindowEx(const HWND hWnd, const WORD wAlign)
 	else
 	{
 		// move based on usable window rect
-		// SystemParametersInfo(SPI_GETWORKAREA, 0, &rc, 0);
 		HMONITOR hMon = ::MonitorFromWindow(hWnd, MONITOR_DEFAULTTONEAREST);
 		MONITORINFO mi;
 		ZeroMemory(&mi, sizeof(mi));
@@ -409,8 +388,8 @@ int ErrorMessageBox(const HINSTANCE hInst, const HWND hWnd, const DWORD dwError,
 bool SaveBox(const HWND hWnd, LPCWSTR pszTitle, LPCWSTR pszFilter, LPWSTR pszFile, const DWORD dwFlags)
 {
 	WCHAR szFile[MAX_PATH];
-	*szFile = _T('\0');
-	WCHAR szDesktop[TMAX_PATH];
+	*szFile = L'\0';
+	WCHAR szDesktop[MAX_PATH];
 	SHGetSpecialFolderPath(NULL, szDesktop, CSIDL_DESKTOPDIRECTORY, FALSE);
 
 	OPENFILENAME of;
@@ -435,7 +414,7 @@ bool OpenBox(const HWND hWnd, LPCWSTR pszTitle, LPCWSTR pszFilter, LPWSTR pszFil
 	OPENFILENAME of;
 	::ZeroMemory(&of, sizeof(OPENFILENAME));
 	WCHAR szFile[MAX_PATH];
-	*szFile = _T('\0');
+	*szFile = L'\0';
 	
 	if (NULL == pszFolder)
 	{
