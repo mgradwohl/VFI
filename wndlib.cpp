@@ -54,7 +54,6 @@
 #include "strlib.h"
 #include "wndlib.h"
 
-
 UINT32 UClamp(INT_PTR val)
 {
 	__int64 ret = val;
@@ -480,7 +479,6 @@ bool BrowseForFolder(const HWND hWnd, LPCWSTR pszTitle, LPWSTR pszFolder)
 	BROWSEINFO bi;
 	ZeroMemory(&bi, sizeof(BROWSEINFO));
 	LPMALLOC pMalloc;
-	//SHGetMalloc(&pMalloc);
 	if (SUCCEEDED(CoGetMalloc(MEMCTX_TASK, &pMalloc)))
 	{
 		bi.hwndOwner = hWnd;

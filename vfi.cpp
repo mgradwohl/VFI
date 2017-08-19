@@ -51,38 +51,14 @@ int LocalToBSTR(BSTR pWide, LPWSTR pLocal, DWORD dwChars);
 int BSTRToLocal(LPWSTR pLocal, BSTR pWide, DWORD dwChars)
 {
 	*pLocal = 0;
-	
-#ifdef UNICODE
 	lstrcpyn(pLocal, pWide, dwChars);
-#else
-	WideCharToMultiByte( CP_ACP, 
-		0, 
-		pWide, 
-		-1, 
-		pLocal, 
-		dwChars, 
-		NULL, 
-		NULL);
-#endif
-	
 	return lstrcch(pLocal);
 }
 
 int LocalToBSTR(BSTR pWide, LPWSTR pLocal, DWORD dwChars)
 {
 	*pWide = 0;
-	
-#ifdef UNICODE
 	lstrcpyn(pWide, pLocal, dwChars);
-#else
-	MultiByteToWideChar( CP_ACP, 
-		0, 
-		pLocal, 
-		-1, 
-		pWide, 
-		dwChars); 
-#endif
-	
 	return lstrlenW(pWide);
 }
 
@@ -263,7 +239,7 @@ BOOL CMyApp::InitInstance()
 	m_pMainWnd->DragAcceptFiles();
 
 	// Show quick help
-	BOOL fShowQuickHelp = false;// (1 == theApp.GetProfileInt(L"Preferences", L"ShowQuickHelp", 1));
+	BOOL fShowQuickHelp = (1 == theApp.GetProfileInt(L"Preferences", L"ShowQuickHelp", 1));
 	if (fShowQuickHelp)
 	{
 		CHelpDlg dlgHelp(AfxGetMainWnd(), IDR_RTF_HELP, true);
