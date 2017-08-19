@@ -263,7 +263,7 @@ BOOL CMyApp::InitInstance()
 	m_pMainWnd->DragAcceptFiles();
 
 	// Show quick help
-	BOOL fShowQuickHelp = (1 == theApp.GetProfileInt( L"Preferences", L"ShowQuickHelp",1) );
+	BOOL fShowQuickHelp = false;// (1 == theApp.GetProfileInt(L"Preferences", L"ShowQuickHelp", 1));
 	if (fShowQuickHelp)
 	{
 		CHelpDlg dlgHelp(AfxGetMainWnd(), IDR_RTF_HELP, true);
