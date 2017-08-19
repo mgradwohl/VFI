@@ -73,7 +73,6 @@ public:
 	BOOL ResumeAllThreads();
 	void RemoveAllDirty();
 	DWORD RecurseDir( LPWSTR pszPath);
-	//DWORD GetFiles (LPWSTR pszPath, LPWSTR pszFileName);
 	
 	int GetDirtyCount()
 	{
@@ -126,7 +125,6 @@ public:
 // Implementation
 public:
 	bool GetFileName(LPWSTR pszFile);
-	//bool WriteFile(LPCWSTR pszFile);
 	bool WriteFileEx(LPCWSTR pszFile);
 	void Shutdown();
 	inline bool IsDirty()
