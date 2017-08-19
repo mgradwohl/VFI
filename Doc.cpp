@@ -31,7 +31,6 @@
 #include "Doc.h"
 #include "ProgressBox.h"
 #include "wisefile.h"
-//#include "FastHeap.hpp"
 
 #include "filelib.h"
 #include "wndlib.h"
@@ -167,8 +166,8 @@ BOOL CMyDoc::OnSaveDocument(LPCWSTR lpszPathName)
 	}
 
 	WCHAR szPath[MAX_PATH];
-
 	GetFileName(szPath);
+
 	// Create A Common File Dialog, with the Desktop Folder as the default
 	WCHAR szFilter[1024];
 	WCHAR szTitle[128];
@@ -244,10 +243,8 @@ DWORD CMyDoc::RecurseDir( LPWSTR pszPath )
 
 	CFileFind m_Find;
 	CStringList PathList;
-	// jj
 	CString strText;
 	CStringList FileList;
-	// end jj
 	WCHAR szSearch[MAX_PATH];
 	BOOL fRun=FALSE;
 	
@@ -330,7 +327,6 @@ DWORD CMyDoc::RecurseDir( LPWSTR pszPath )
 		if (FALSE == this->AddFile(strFile))
 		{
 			strText.FormatMessage(ERR_FILEINUSE, (LPCWSTR)strFile);
-			//UpdateStatus(strText);
 		}
 		theApp.ForwardMessages();
 		if (g_eTermThreads.Signaled())
@@ -685,7 +681,6 @@ BOOL CMyDoc::AddFile(LPCWSTR pszFilename)
 	if (FWF_SUCCESS != pNewFile->Attach( pszFilename))
 	{
 		delete pNewFile;
-		//g_Heap.Delete(pNewFile);
 		ASSERT(false);
 		return FALSE;
 	}
@@ -747,27 +742,6 @@ BOOL CMyDoc::AddToMain( CWiseFile* pFileInfo )
 		m_FileList.AddTail( pFileInfo );
 	m_sLock.Unlock();
 
-#ifdef TEST
-	if (m_qwSize < 0)
-	{
-		ASSERT(false);
-		m_qwSize = 0;
-	}
-
-	if (m_qwSizeRead < 0)
-	{
-		ASSERT(false);
-		m_qwSizeRead = 0;
-	}
-
-	if (m_FileList.GetCount() < 0)
-	{
-		ASSERT(false);
-		m_qwSize = 0;
-		m_qwSizeRead = 0;
-	}
-#endif
-	
 	m_qwSize += pFileInfo->GetSize();
 	return TRUE;
 }
@@ -873,7 +847,7 @@ void CMyDoc::TerminateThreads()
 	
 	if (g_hThreadCRC)
 	{
-		// Wait for CRC Thread to DIE
+		// Wait for CRC thread to terminate
 		for (i=0; i< THREAD_TRY; i++)
 		{
 			TRACE(L"THREADMAIN: CRC thread terminating\n");
@@ -894,7 +868,7 @@ void CMyDoc::TerminateThreads()
 	Box.m_ctlProgress.SetPos(0);
 	if (g_hThreadInfo)
 	{
-		// Wait for Info Thread to DIE
+		// Wait for Info thread to terminate
 		for (i=0; i<THREAD_TRY; i++)
 		{
 			TRACE(L"THREADMAIN: Info thread terminating\n");
@@ -925,7 +899,6 @@ void CMyDoc::OnCloseDocument()
 {
 	TRACE(L"THREADMAIN: OnCloseDocument()\n");
 	m_fLastTime=TRUE;
-	//CDocument::OnCloseDocument();
 	
 	// COPIED FROM DOCCORE.CPP documentation is incorrect
 	// clean up contents of document before destroying the document itself
@@ -988,7 +961,6 @@ bool CMyDoc::GetHeaderString(LPWSTR pszBuf)
 	// Get the View
 	CMainFrame* pFrame = static_cast<CMainFrame*> (theApp.GetMainWnd());
 	CMyListView* pView = static_cast<CMyListView*> (pFrame->GetActiveView());
-	//ASSERT(pView->IsKindOf(RUNTIME_CLASS(CMyListView)));
 	CColumnInfo* pci= pView->GetColumnInfo();
 	if (NULL == pci)
 	{
@@ -1026,7 +998,6 @@ bool CMyDoc::GetRowString(CWiseFile& rFile, LPWSTR pszBuf)
 	// Get the View
 	CMainFrame* pFrame = static_cast<CMainFrame*> (theApp.GetMainWnd());
 	CMyListView* pView = static_cast<CMyListView*> (pFrame->GetActiveView());
-	//ASSERT(pView->IsKindOf(RUNTIME_CLASS(CMyListView)));
 	CColumnInfo* pci = pView->GetColumnInfo();
 	DWORD cbItem = sizeof(rFile);
 	LPWSTR pszText = (LPWSTR) HeapAlloc(GetProcessHeap(), 0, (cbItem + 1) );
@@ -1079,15 +1050,12 @@ void InitCRCMemory()
 		
 		//TODO: Research the ideal size for this buffer
 		TRACE(L">>> InitCRCMemory. Chunk Size %lu\n", g_dwChunk);
-		//g_pBuf = (LPBYTE) g_HeapCRC.New(g_dwChunk);
-
 		g_pBuf = (LPBYTE) HeapAlloc(GetProcessHeap(), 0, g_dwChunk);
 	}
 
 	if (NULL == g_pBuf)
 	{
 		ALERT(true, L"HeapAlloc failure.");
-		//g_dwChunk = 0;
 	}
 
 	return;
@@ -1233,9 +1201,7 @@ DWORD UpdateThreadCRC( LPVOID pParam )
 
 			if (pFileInfo->CheckState(FWFS_CRC_COMPLETE))
 			{
-				// don't need ot add it to the dirty, cause if we got here, it has a version
-				// and doesn't need a CRC.
-				//pDoc->AddToDirty(pFileInfo);
+				// don't need to add it to the dirty, cause if we got here, it has a version and doesn't need a CRC.
 				TRACE(L"THREADCRC:  %s already has a CRC\n", pFileInfo->GetFullPath());
 				break;
 			}
@@ -1322,7 +1288,6 @@ DWORD UpdateThreadCRC( LPVOID pParam )
 
 			// the file has version information and has CRC information
 			// so it does not need to be added to the dirty list
-			//pDoc->AddToDirty(pFileInfo);
 		} // while files still need CRCs
 
 		// this point is only reached if the while loop above cannot find a file that it needs to work on
@@ -1367,7 +1332,6 @@ bool CMyDoc::GetFileName(LPWSTR pszFile)
 	// User Default Folder
 	CMainFrame* pFrame = static_cast<CMainFrame*> (theApp.GetMainWnd());
 	CMyListView* pView = static_cast<CMyListView*> (pFrame->GetActiveView());
-	//ASSERT(pView->IsKindOf(RUNTIME_CLASS(CMyListView)));
 	if (!pView->m_strSavePath.IsEmpty() && DoesFolderExist(pView->m_strSavePath))
 	{
 		lstrcpy(szPath, pView->m_strSavePath);
@@ -1444,7 +1408,7 @@ bool CMyDoc::WriteFileEx(LPCWSTR pszFile)
 	if (INVALID_HANDLE_VALUE == hFile)
 		return false;
 
-// do the work here
+	// do the work here
 	CWiseFile* pInfo = NULL;
 	int c = 0;
 	int j = 0;

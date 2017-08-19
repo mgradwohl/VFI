@@ -21,53 +21,25 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR 
 // IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-//#ifndef WINVER
-//	#define WINVER			0x0501
+//#ifdef _UNICODE
+//	#ifndef UNICODE
+//		#define UNICODE         // UNICODE is used by Windows headers
+//	#endif
 //#endif
 //
-//#ifndef _WIN32_WINNT
-//	#define _WIN32_WINNT	0x0501
+//#ifdef UNICODE
+//	#ifndef _UNICODE
+//		#define _UNICODE        // _UNICODE is used by C-runtime/MFC headers
+//	#endif
 //#endif
 //
-//#ifndef _WIN32_IE
-//	#define _WIN32_IE		0x0600
+//#ifdef _DEBUG
+//	#ifdef DEBUG_NEW
+//		#define new DEBUG_NEW
+//		#undef THIS_FILE
+//		static WCHAR THIS_FILE[] = __FILE__;
+//	#endif
 //#endif
-
-#ifndef STRICT
-	#define STRICT 1
-#endif
-
-//#ifndef WIN32
-//	#define WIN32
-//#endif
-//
-//#ifndef VC_EXTRALEAN
-//	#define VC_EXTRALEAN
-//#endif
-//
-//#ifndef WIN32_LEAN_AND_MEAN
-//	#define WIN32_LEAN_AND_MEAN
-//#endif
-
-#ifdef _UNICODE
-	#ifndef UNICODE
-		#define UNICODE         // UNICODE is used by Windows headers
-	#endif
-#endif
-
-#ifdef UNICODE
-	#ifndef _UNICODE
-		#define _UNICODE        // _UNICODE is used by C-runtime/MFC headers
-	#endif
-#endif
-
-#ifdef _DEBUG
-	#ifdef DEBUG_NEW
-		#define new DEBUG_NEW
-		#undef THIS_FILE
-		static WCHAR THIS_FILE[] = __FILE__;
-	#endif
-#endif
 
 #ifndef TRACE
 	#define TRACE(x) OutputDebugString(x)
@@ -460,46 +432,6 @@ bool PathIsWritable(LPCWSTR pszPath)
 	return true;
 }
 
-#if 0
-bool NukeFolder(LPCWSTR pszFolder)
-{
-	if (NULL == pszFolder || lstrlen(pszFolder) < 1)
-		return false;
-	if (!DoesFolderExist(pszFolder))
-		return false;
-
-	WIN32_FIND_DATA fd;
-	ZeroMemory(&fd, sizeof(fd));
-
-	WCHAR szBuf[MAX_FNAME];
-	lstrcpy(szBuf, pszFolder);
-	PathAppend(szBuf, __T("*.*"));
-
-	HANDLE hFind = FindFirstFileEx( pszFolder, 
-		FindExInfoStandard, 
-		&fd, 
-		FindExSearchLimitToDirectories, 
-		NULL, 
-		0 );
-
-	if (INVALID_HANDLE_VALUE == hFind)
-	{
-		FindClose(hFind);
-		return false;
-	}
-
-	while (0 != ::FindNextFile(hFind, &fd))
-	{
-		// you found a folder
-		// add it to the list
-		// remove all the files in it
-		// then remove it
-	}
-	FindClose(hFind);
-	return true;
-}
-#endif
-
 bool PathGetLongName(LPCWSTR pszShortPath, LPWSTR pszLongPath)
 {
 	LPSHELLFOLDER psfDesktop = NULL;
@@ -509,17 +441,8 @@ bool PathGetLongName(LPCWSTR pszShortPath, LPWSTR pszLongPath)
 	HRESULT hr = SHGetDesktopFolder(&psfDesktop);
 
 	OLECHAR olePath[MAX_PATH];
-#ifndef _UNICODE
-	MultiByteToWideChar( CP_ACP, 
-						 MB_PRECOMPOSED, 
-						 pszShortPath, 
-						 -1, 
-						 olePath,
-						 sizeof(olePath));
 
-#else
 	lstrcpyW(olePath, pszShortPath);
-#endif
 	hr = psfDesktop->ParseDisplayName(NULL, NULL, olePath, &chEaten, &pidlShellItem, NULL);
 	psfDesktop->Release();
 
@@ -638,7 +561,7 @@ bool PathGetContainingFolder(LPWSTR pszFileSpec)
 		return false;
 	}
 
-	// c:\windows\suckit\bang.tmp should return "suckit" so, it's just
+	// c:\windows\foo\bar.tmp should return "foo" so, it's just
 	// what's between the last '\\' and the one before it
 
 	PathRemoveFileSpec(pszFileSpec);
@@ -655,7 +578,7 @@ __int64 SetFilePointer64 (HANDLE hf, __int64 distance, DWORD MoveMethod)
 
    if (li.LowPart == INVALID_SET_FILE_POINTER && GetLastError() != NO_ERROR)
    {
-      li.QuadPart = -1;
+	  li.QuadPart = -1;
    }
 
    return li.QuadPart;
