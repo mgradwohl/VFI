@@ -68,6 +68,5 @@ private:
 	CRITICAL_SECTION m_cs;
 };
 
-#ifndef//TCRITICALSECTION_H
 #define TCRITICALSECTION_H
-
+#endif//TCRITICALSECTION_H
