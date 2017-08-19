@@ -38,8 +38,6 @@
 #include "helpdlg.h"
 #include "globals.h"
 
-//#define ARRAYSIZE(a)    (sizeof(a)/sizeof((a)[0]))
-
 int BSTRToLocal(LPWSTR pLocal, BSTR pWide, DWORD dwChars);
 int LocalToBSTR(BSTR pWide, LPWSTR pLocal, DWORD dwChars);
 
@@ -265,7 +263,7 @@ BOOL CMyApp::InitInstance()
 	m_pMainWnd->DragAcceptFiles();
 
 	// Show quick help
-	BOOL fShowQuickHelp = (1 == theApp.GetProfileInt( L"Preferences", L"ShowQuickHelp",1) );
+	BOOL fShowQuickHelp = false;// (1 == theApp.GetProfileInt(L"Preferences", L"ShowQuickHelp", 1));
 	if (fShowQuickHelp)
 	{
 		CHelpDlg dlgHelp(AfxGetMainWnd(), IDR_RTF_HELP, true);
@@ -274,13 +272,6 @@ BOOL CMyApp::InitInstance()
 		fShowQuickHelp = dlgHelp.m_fShowAgain;
 		WriteProfileInt( L"Preferences", L"ShowQuickHelp",fShowQuickHelp == TRUE ? 1 : 0);
 	}
-	//ShowHTMLBox();
-
-	// Compact the Heap (garbage collect)
-	// mattgr
-	// 2/10/07: probably not needed in a Vista world
-	//::HeapCompact(::GetProcessHeap(), 0);
-	//::SetProcessWorkingSetSize( ::GetCurrentProcess(), 0xFFFFFFFF, 0xFFFFFFFF);
 
 	return TRUE;
 }
@@ -384,8 +375,6 @@ INT_PTR CAboutDlg::DoModal()
 BOOL CAboutDlg::OnInitDialog() 
 {
 	CDialog::OnInitDialog();
-
-	//ChangeDialogFont(this, theApp.GetUIFont(), CDF_TOPLEFT);
 
 	MoveWindowEx(m_hWnd, MWX_APP | MWX_CENTER);
 	// find out how big the dialog is

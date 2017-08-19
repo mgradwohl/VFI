@@ -25,8 +25,8 @@
 #pragma once
 
 #include <windows.h>
-#include "strlib.h"
 #include <objbase.h>
+//#include "strlib.h"
 
 #ifdef _DEBUG
 	#ifdef DEBUG_NEW
@@ -96,8 +96,7 @@ private:
 	void SetString()
 	{
 		WCHAR szFmt[104];
-		lstrcpy(szFmt, (LPCWSTR) _T("{%08lX-%04X-%04x-%02X%02X-%02X%02X%02X%02X%02X%02X}"));
-		//static const WCHAR szFmt[] = "{%08lX-%04X-%04x-%02X%02X-%02X%02X%02X%02X%02X%02X}";
+		lstrcpy(szFmt, (LPCWSTR) L"{%08lX-%04X-%04x-%02X%02X-%02X%02X%02X%02X%02X%02X}");
 		wsprintf(m_szGuid, szFmt, 
 			m_guid.Data1, m_guid.Data2, m_guid.Data3, 
 			m_guid.Data4[0], m_guid.Data4[1], m_guid.Data4[2], m_guid.Data4[3],

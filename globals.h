@@ -21,27 +21,9 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR 
 // IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-// moved to stdafx.h
-//#define _WIN32_WINNT	_WIN32_WINNT_WINBLUE //0x06000
-//#define WINVER			_WIN32_WINNT_WINBLUE //0x0600
-//#define	_WIN32_IE		_WIN32_IE_IE100 //0x0700
-//#define	NTDDI_VERSION	NTDDI_WINBLUE //NTDDI_LONGHORN 
-
 #ifndef STRICT
 	#define STRICT 1
 #endif
-
-//#ifndef WIN32
-//	#define WIN32
-//#endif
-//
-//#ifndef VC_EXTRALEAN
-//	#define VC_EXTRALEAN
-//#endif
-//
-//#ifndef WIN32_LEAN_AND_MEAN
-//	#define WIN32_LEAN_AND_MEAN
-//#endif
 
 #ifdef _UNICODE
 	#ifndef UNICODE
@@ -55,9 +37,8 @@
 	#endif
 #endif
 
-#include <windows.h>
-#include "tevent.h"
-//#include "FastHeap.hpp"
+#include "TEvent.h"
+
 extern DWORD  g_dwThreadCRC;
 extern HANDLE g_hThreadCRC;
 extern TEvent g_eGoThreadCRC;
@@ -82,4 +63,5 @@ extern DWORD g_dwChunk;
 	#else
 		#define ALERT(x, s)
 #endif
+
 

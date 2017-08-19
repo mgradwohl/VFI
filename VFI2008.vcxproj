@@ -242,10 +242,8 @@
     <ClInclude Include="Mypropsheet.h" />
     <ClInclude Include="MyStatusBar.h" />
     <ClInclude Include="ProgressBox.h" />
-    <ClInclude Include="qword.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="str.h" />
     <ClInclude Include="strlib.h" />
     <ClInclude Include="TCodePage.h" />
     <ClInclude Include="TCriticalSection.h" />
@@ -296,7 +294,6 @@
     <ClCompile Include="MyStatusBar.cpp" />
     <ClCompile Include="ProgressBox.cpp" />
     <ClCompile Include="STDAFX.CPP" />
-    <ClCompile Include="str.cpp" />
     <ClCompile Include="strlib.cpp" />
     <ClCompile Include="Timedlg.cpp" />
     <ClCompile Include="vfi.cpp" />

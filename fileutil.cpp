@@ -29,7 +29,7 @@
 #include <shlwapi.h>
 #include <winnetwk.h>
 
-#include "str.h"
+#include "strlib.h"
 #include "fileutil.h"
 
 #ifdef _DEBUG
@@ -43,8 +43,6 @@
 #ifndef TRACE
 	#define TRACE(x) OutputDebugString(x)
 #endif
-
-#define TMAX_USERNAME (UNLEN + 1)
 	
 bool CreateFolder(LPCWSTR pszFolder)
 {
@@ -53,7 +51,7 @@ bool CreateFolder(LPCWSTR pszFolder)
 
 bool GetTempFolder(LPWSTR pszFolder)
 {
-	return (0 != GetTempPath(TMAX_PATH, pszFolder));
+	return (0 != GetTempPath(MAX_PATH, pszFolder));
 }
 
 bool GetWindowsFolder(LPWSTR pszFolder)
@@ -105,7 +103,7 @@ bool GetProgramFilesFolder(LPWSTR pszFolder)
 
 bool GetUserName(LPWSTR pszUserName)
 {
-	DWORD dwLen = TMAX_USERNAME;
+	DWORD dwLen = MAX_USERNAME;
 	return (FALSE != GetUserName(pszUserName, &dwLen));
 }
 
@@ -154,9 +152,9 @@ bool PathGetFolder(LPCWSTR pszFileName, LPWSTR pszFolder)
 		return false;
 	}
 
-	WCHAR szDrive[TMAX_DRIVE];
-	WCHAR szDir[TMAX_DIR];
-	_wsplitpath_s(pszFileName, szDrive, TMAX_DRIVE, szDir, TMAX_DIR, NULL, 0, NULL, 0);
+	WCHAR szDrive[MAX_DRIVE];
+	WCHAR szDir[MAX_DIR];
+	_wsplitpath_s(pszFileName, szDrive, MAX_DRIVE, szDir, MAX_DIR, NULL, 0, NULL, 0);
 	//_tsplitpath( pszFileName, szDrive, szDir, NULL, NULL );
 
 	lstrcpy(pszFolder, szDrive);
@@ -173,9 +171,9 @@ bool PathGetFileName(LPCWSTR pszFileSpec, LPWSTR pszFile)
 		return false;
 	}
 
-	WCHAR szFile[TMAX_FNAME];
-	WCHAR szExt[TMAX_EXT];
-	_wsplitpath_s(pszFileSpec, NULL, 0, NULL, 0, szFile, TMAX_FNAME, szExt, TMAX_EXT);
+	WCHAR szFile[MAX_FNAME];
+	WCHAR szExt[MAX_EXT];
+	_wsplitpath_s(pszFileSpec, NULL, 0, NULL, 0, szFile, MAX_FNAME, szExt, MAX_EXT);
 	//_tsplitpath( pszFileSpec, NULL, NULL, szFile, szExt);
 
 	lstrcpy(pszFile, szFile);
@@ -191,11 +189,11 @@ bool GetModuleFolder(HINSTANCE hInst, LPWSTR pszFolder)
 		return false;
 	}
 
-	::GetModuleFileName(hInst, pszFolder, TMAX_PATH);
+	::GetModuleFileName(hInst, pszFolder, MAX_PATH);
 
-	WCHAR szDrive[TMAX_DRIVE];
-	WCHAR szDir[TMAX_DIR];
-	_tsplitpath_s( pszFolder, szDrive, TMAX_DRIVE, szDir, TMAX_DIR, NULL, 0, NULL, 0 );
+	WCHAR szDrive[MAX_DRIVE];
+	WCHAR szDir[MAX_DIR];
+	_wsplitpath_s( pszFolder, szDrive, MAX_DRIVE, szDir, MAX_DIR, NULL, 0, NULL, 0 );
 
 	lstrcpy(pszFolder, szDrive);
 	lstrcat(pszFolder, szDir);
@@ -205,22 +203,22 @@ bool GetModuleFolder(HINSTANCE hInst, LPWSTR pszFolder)
 
 bool GetLogFolder(LPCWSTR pszAppname, LPWSTR pszFolder)
 {
-	if (IsBadWritePtr(pszFolder, TMAX_PATH))
+	if (IsBadWritePtr(pszFolder, MAX_PATH))
 	{
-		TRACE(L"GetLogFolder pszFolder needs to hold TMAX_PATH characters\r\n");
+		TRACE(L"GetLogFolder pszFolder needs to hold MAX_PATH characters\r\n");
 		return false;
 	}
 
 	HKEY hKey;
 	DWORD dwType = REG_SZ;
-	DWORD dwSize = TMAX_PATH;
+	DWORD dwSize = MAX_PATH;
 
 	// open the key
 	if (ERROR_SUCCESS != RegOpenKeyEx(HKEY_LOCAL_MACHINE,
 		L"Software\\Microsoft\\Microsoft Games\\Logs", 0, KEY_READ, &hKey))
 		goto USE_TEMP;
 
-	WCHAR szModule[TMAX_FNAME];
+	WCHAR szModule[MAX_FNAME];
 	if (NULL == pszAppname || lstrlen(pszAppname) < 1)
 	{
 		GetModuleName(GetModuleHandle(NULL), szModule);
@@ -231,7 +229,7 @@ bool GetLogFolder(LPCWSTR pszAppname, LPWSTR pszFolder)
 	}
 		
 	// read the app specific folder
-	dwSize = TMAX_PATH;
+	dwSize = MAX_PATH;
 	if (ERROR_SUCCESS != (RegQueryValueEx(hKey, szModule, NULL, &dwType, (LPBYTE)pszFolder, &dwSize)))
 		goto USE_TEMP;
 
@@ -260,7 +258,7 @@ bool GetLogFolder(LPCWSTR pszAppname, LPWSTR pszFolder)
 
 USE_DEFAULT:
 	// if the default key doesn't exist, try to use the temp folder
-	dwSize = TMAX_PATH;
+	dwSize = MAX_PATH;
 	if (ERROR_SUCCESS != (RegQueryValueEx(hKey, L"", NULL, &dwType, (LPBYTE)pszFolder, &dwSize)))
 		goto USE_TEMP;
 	if (lstrlen(pszFolder) < 1)
@@ -295,7 +293,7 @@ DONE:
 
 bool GetLogFileName(LPCWSTR pszFolder, LPCWSTR pszPrefix, LPCSTR pszPostfix, LPWSTR pszFilename)
 {
-	WCHAR szUserName[TMAX_USERNAME];
+	WCHAR szUserName[MAX_USERNAME];
 	WCHAR szDate[11];
 	WCHAR szTime[5];
 
@@ -338,17 +336,17 @@ bool GetModuleName(HINSTANCE hInst, LPWSTR pszName)
 		return false;
 	}
 
-	if (0 == ::GetModuleFileName(hInst, pszName, TMAX_PATH))
+	if (0 == ::GetModuleFileName(hInst, pszName, MAX_PATH))
 		return false;
-
-	_tsplitpath_s( pszName, NULL, 0, NULL, 0, pszName, TMAX_PATH, NULL, 0 );
+	
+	_wsplitpath_s( pszName, NULL, 0, NULL, 0, pszName, MAX_PATH, NULL, 0 );
 
 	return true;
 }
 
 bool PathIsLocal(LPCWSTR pszPath)
 {
-	WCHAR szBuf[TMAX_PATH];
+	WCHAR szBuf[MAX_PATH];
 	lstrcpy(szBuf, pszPath);
 
 	if (NULL == szBuf)
@@ -367,7 +365,7 @@ bool PathIsLocal(LPCWSTR pszPath)
 	}
 
 	// if it's on a UNC share
-	if (0 == lstrcmpn(szBuf, _T("\\\\"), 2))
+	if (0 == lstrcmpn(szBuf, L"\\\\", 2))
 	{
 		return false;
 	}
@@ -392,7 +390,7 @@ bool PathIsWritable(LPCWSTR pszPath)
 	if (!DoesFolderExist(pszPath))
 		return false;
 
-	WCHAR szBuf[TMAX_PATH];
+	WCHAR szBuf[MAX_PATH];
 	lstrcpy(szBuf, pszPath);
 	PathAppend(szBuf, L"MattGr.tmp");
 	if (DoesFileExist(szBuf))
@@ -424,9 +422,9 @@ bool NukeFolder(LPCWSTR pszFolder)
 	WIN32_FIND_DATA fd;
 	ZeroMemory(&fd, sizeof(fd));
 
-	WCHAR szBuf[TMAX_FNAME];
+	WCHAR szBuf[MAX_FNAME];
 	lstrcpy(szBuf, pszFolder);
-	PathAppend(szBuf, _T("*.*"));
+	PathAppend(szBuf, __T("*.*"));
 
 	HANDLE hFind = FindFirstFileEx( pszFolder, 
 		FindExInfoStandard, 

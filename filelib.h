@@ -29,6 +29,7 @@
 #endif
 
 #include <windows.h>
+#include "strlib.h"
 
 bool CreateFolder(LPCWSTR pszFolder);
 bool GetTempFolder(LPWSTR pszFolder);

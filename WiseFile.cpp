@@ -25,9 +25,8 @@
 #include "resource.h"
 #include "globals.h"
 #include "WiseFile.h"
-
 #include "Imagehlp.h"
-	//#pragma comment(lib, "Imagehlp.lib")
+#include "strlib.h"
 
 #ifdef _DEBUG
 	#define new DEBUG_NEW
@@ -140,7 +139,6 @@ int CWiseFile::Attach(LPCWSTR pszFileSpec)
 	WCHAR szDrive[_MAX_DRIVE];
 	WCHAR szDir[_MAX_DIR];
 	LPWSTR pszDot;
-	//_tsplitpath( pszFileSpec, szDrive, szDir, m_szName, m_szExt );
 	_wsplitpath_s(pszFileSpec, szDrive, _MAX_DRIVE, szDir, _MAX_DIR, m_szName, _MAX_PATH, m_szExt, _MAX_PATH);
 
 	pszDot = CharNext(m_szExt);
@@ -705,34 +703,17 @@ int CWiseFile::ReadVersionInfo()
 		return FWF_ERR_NOVERSION;
 	}
 
-#ifdef SPEEDTEST
-	// we'll go up to the next ^2
-	dwVerSize = 8192;
-
-#else
 	// this takes a long time to call, max size I've seen is 5476
 	dwVerSize = ::GetFileVersionInfoSize( szShortPath, &dwVerHandle);
-
 
 	if (dwVerSize < 1)
 		return FWF_ERR_NOVERSION;
 
-#ifdef TEST
-	WCHAR szBuf[256];
-	wsprintf(szBuf, L"GetFileVersionInfoSize %08lu\r\n", dwVerSize);
-	OutputDebugString(szBuf);
-#endif//TEST
-#endif
-
 	lpVerBuffer = (LPVOID) new BYTE[dwVerSize];
-	//CWiseFile*  pNewFile = (CWiseFile*) g_Heap.New(sizeof(CWiseFile));
-	//lpVerBuffer = (LPVOID) g_Heap.New(dwVerSize);
-	//lpVerBuffer = (LPVOID) HeapAlloc(g_Heap, HEAP_NO_SERIALIZE, dwVerSize);
 
 	if (NULL == lpVerBuffer )
 	{
 		delete [] lpVerBuffer;
-		//g_Heap.Delete(lpVerBuffer, dwVerSize);
 		return FWF_ERR_LOWMEMORY;
 	}
 
@@ -740,14 +721,12 @@ int CWiseFile::ReadVersionInfo()
 	if (! ::GetFileVersionInfo( szShortPath, dwVerHandle, dwVerSize, lpVerBuffer))
 	{
 		delete [] lpVerBuffer;
-		//g_Heap.Delete(lpVerBuffer, dwVerSize);
 		return FWF_ERR_NOVERSION;
 	}
 
 	if (! ::VerQueryValue(lpVerBuffer, L"\\", &lpVerData, &cbVerData))
 	{
 		delete [] lpVerBuffer;
-		//g_Heap.Delete(lpVerBuffer, dwVerSize);
 		return FWF_ERR_NOVERSION;
 	}
 
@@ -763,14 +742,12 @@ int CWiseFile::ReadVersionInfo()
 	if (!VerQueryValue(lpVerBuffer, L"\\VarFileInfo\\Translation", &lpVerData, &cbVerData))
 	{
 		delete [] lpVerBuffer;
-		//g_Heap.Delete(lpVerBuffer, dwVerSize);
 		return FWF_ERR_NOVERSION;
 	}
 
 	m_wLanguage = LOWORD(*(LPDWORD)lpVerData);
 	m_CodePage = HIWORD(*(LPDWORD)lpVerData);
 	delete [] lpVerBuffer;
-	//g_Heap.Delete(lpVerBuffer, dwVerSize);
 	
 	OrState(FWFS_VERSION);
 
@@ -1314,7 +1291,6 @@ int CWiseFile::ReadVersionInfoEx()
 	FreeLibrary(h);
 	return FWF_SUCCESS;
 }
-
 
 bool CWiseFile::Init()
 {

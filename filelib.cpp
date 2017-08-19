@@ -61,7 +61,7 @@ bool CreateFolder(LPCWSTR pszFolder)
 
 bool GetTempFolder(LPWSTR pszFolder)
 {
-	return (0 != GetTempPath(TMAX_PATH, pszFolder));
+	return (0 != GetTempPath(MAX_PATH, pszFolder));
 }
 
 bool GetWindowsFolder(LPWSTR pszFolder)
@@ -173,7 +173,7 @@ bool GetModuleFolder(HINSTANCE hInst, LPWSTR pszFolder)
 		return false;
 	}
 
-	::GetModuleFileName(hInst, pszFolder, TMAX_PATH);
+	::GetModuleFileName(hInst, pszFolder, MAX_PATH);
 
 	PathGetFolder(pszFolder);
 	return true;
@@ -181,22 +181,22 @@ bool GetModuleFolder(HINSTANCE hInst, LPWSTR pszFolder)
 
 bool GetLogFolder(LPCWSTR pszAppname, LPWSTR pszFolder)
 {
-	if (IsBadWritePtr(pszFolder, TMAX_PATH))
+	if (IsBadWritePtr(pszFolder, MAX_PATH))
 	{
-		TRACE(_T("GetLogFolder pszFolder needs to hold TMAX_PATH characters\r\n"));
+		TRACE(L"GetLogFolder pszFolder needs to hold MAX_PATH characters\r\n");
 		return false;
 	}
 
 	HKEY hKey;
 	DWORD dwType = REG_SZ;
-	DWORD dwSize = TMAX_PATH;
+	DWORD dwSize = MAX_PATH;
 
 	// open the key
 	if (ERROR_SUCCESS != RegOpenKeyEx(HKEY_LOCAL_MACHINE,
-		_T("Software\\Microsoft\\Microsoft Games\\Logs"), 0, KEY_READ, &hKey))
+		L"Software\\Microsoft\\Microsoft Games\\Logs", 0, KEY_READ, &hKey))
 		goto USE_TEMP;
 
-	WCHAR szModule[TMAX_FNAME];
+	WCHAR szModule[MAX_FNAME];
 	if (NULL == pszAppname || lstrlen(pszAppname) < 1)
 	{
 		GetModuleName(GetModuleHandle(NULL), szModule);
@@ -207,7 +207,7 @@ bool GetLogFolder(LPCWSTR pszAppname, LPWSTR pszFolder)
 	}
 		
 	// read the app specific folder
-	dwSize = TMAX_PATH;
+	dwSize = MAX_PATH;
 	if (ERROR_SUCCESS != (RegQueryValueEx(hKey, szModule, NULL, &dwType, (LPBYTE)pszFolder, &dwSize)))
 		goto USE_TEMP;
 
@@ -218,7 +218,7 @@ bool GetLogFolder(LPCWSTR pszAppname, LPWSTR pszFolder)
 	// if the folder doesn't exist, try to use the default
 	if (!DoesFolderExist(pszFolder))
 	{
-		TRACE(_T("GetLogFolder remote path does not exist\r\n"));
+		TRACE(L"GetLogFolder remote path does not exist\r\n");
 		goto USE_DEFAULT;
 	}
 
@@ -226,30 +226,30 @@ bool GetLogFolder(LPCWSTR pszAppname, LPWSTR pszFolder)
 	// if the folder isn't writable, try to use the default
 	if (!PathIsWritable(pszFolder))
 	{
-		TRACE(_T("GetLogFolder remote path not writable\r\n"));
+		TRACE(L"GetLogFolder remote path not writable\r\n");
 		goto USE_DEFAULT;
 	}
 
 	RegCloseKey(hKey);
-	TRACE(_T("GetLogFolder using app specific folder\r\n"));
+	TRACE(L"GetLogFolder using app specific folder\r\n");
 	goto DONE;
 
 USE_DEFAULT:
 	// if the default key doesn't exist, try to use the temp folder
-	dwSize = TMAX_PATH;
-	if (ERROR_SUCCESS != (RegQueryValueEx(hKey, _T(""), NULL, &dwType, (LPBYTE)pszFolder, &dwSize)))
+	dwSize = MAX_PATH;
+	if (ERROR_SUCCESS != (RegQueryValueEx(hKey, L"", NULL, &dwType, (LPBYTE)pszFolder, &dwSize)))
 		goto USE_TEMP;
 	if (lstrlen(pszFolder) < 1)
 		goto USE_TEMP;
-	TRACE(_T("GetLogFolder using default folder\r\n"));
+	TRACE(L"GetLogFolder using default folder\r\n");
 	RegCloseKey(hKey);
 	goto DONE;
 
 USE_TEMP:
-	TRACE(_T("GetLogFolder using temp folder\r\n"));
+	TRACE(L"GetLogFolder using temp folder\r\n");
 	if (!GetTempFolder(pszFolder))
 	{
-		TRACE(_T("GetLogFolder could not get temp folder\r\n"));
+		TRACE(L"GetLogFolder could not get temp folder\r\n");
 		return false;
 	}
 	RegCloseKey(hKey);
@@ -259,10 +259,10 @@ DONE:
 	PathAddBackslash(pszFolder);
 	if (!DoesFolderExist(pszFolder))
 	{
-		TRACE(_T("GetLogFolder creating folder\r\n"));
+		TRACE(L"GetLogFolder creating folder\r\n");
 		if (!CreateFolder(pszFolder))
 		{
-			TRACE(_T("GetLogFolder could not create folder\r\n"));
+			TRACE(L"GetLogFolder could not create folder\r\n");
 			return false;
 		}
 	}
@@ -271,7 +271,7 @@ DONE:
 
 bool GetLogFileName(LPCWSTR pszFolder, LPCWSTR pszPrefix, LPCWSTR pszPostfix, LPWSTR pszFilename, LPWSTR pszExt)
 {
-	WCHAR szUserName[TMAX_USERNAME];
+	WCHAR szUserName[MAX_USERNAME];
 	WCHAR szDate[11];
 	WCHAR szTime[5];
 
@@ -281,17 +281,17 @@ bool GetLogFileName(LPCWSTR pszFolder, LPCWSTR pszPrefix, LPCWSTR pszPostfix, LP
 	if (!MyGetUserName(szUserName))
 		return false;
 
-	if (0 == ::GetDateFormat(::GetThreadLocale(), 0, &st, _T("yyyy-MM-dd"), szDate, 11))
+	if (0 == ::GetDateFormat(::GetThreadLocale(), 0, &st, L"yyyy-MM-dd", szDate, 11))
 		return false;
 
-	if (0 == ::GetTimeFormat(::GetThreadLocale(), 0, &st, _T("HHmm"), szTime, 5))
+	if (0 == ::GetTimeFormat(::GetThreadLocale(), 0, &st, L"HHmm", szTime, 5))
 		return false;
 
 	WCHAR szFilename[MAX_PATH];
 	for (int i = 0; i < 999; i++)
 	{
-		szFilename[0] = _T('\0');
-		wsprintf(szFilename, _T("%s%s_%s_%s_%s_%03lu_%s.%s"),
+		szFilename[0] = L'\0';
+		wsprintf(szFilename, L"%s%s_%s_%s_%s_%03lu_%s.%s",
 			pszFolder,
 			pszPrefix,
 			szUserName,
@@ -319,7 +319,7 @@ bool GetModuleName(HINSTANCE hInst, LPWSTR pszName)
 		return false;
 	}
 
-	if (0 == ::GetModuleFileName(hInst, pszName, TMAX_PATH))
+	if (0 == ::GetModuleFileName(hInst, pszName, MAX_PATH))
 		return false;
 
 	PathGetFileName(pszName);
@@ -358,16 +358,16 @@ bool PathIsLocal(LPCWSTR pszPath)
 	}
 
 	// if it's on a UNC share
-	if (0 == lstrcmpn(pszBuf, _T("\\\\"), 2))
+	if (0 == lstrcmpn(pszBuf, L"\\\\", 2))
 	{
 		// maybe it's this machine
-		if (lstrcmpni(pszBuf, _T("\\\\localhost\\"), 12))
+		if (lstrcmpni(pszBuf, L"\\\\localhost\\", 12))
 		{
 			delete [] pszBuf;
 			return true;
 		}
 
-		if (lstrcmpn(pszBuf, _T("\\\\127.0.0.1\\"), 12))
+		if (lstrcmpn(pszBuf, L"\\\\127.0.0.1\\", 12))
 		{
 			delete [] pszBuf;
 			return true;
@@ -411,9 +411,9 @@ bool PathIsWritable(LPCWSTR pszPath)
 	if (!DoesFolderExist(pszPath))
 		return false;
 
-	WCHAR szBuf[TMAX_PATH];
+	WCHAR szBuf[MAX_PATH];
 	lstrcpy(szBuf, pszPath);
-	PathAppend(szBuf, _T("MattGr.tmp"));
+	PathAppend(szBuf, L"MattGr.tmp");
 	if (DoesFileExist(szBuf))
 	{
 		if (!DeleteFile(szBuf))
@@ -440,7 +440,8 @@ bool PathGetLongName(LPCWSTR pszShortPath, LPWSTR pszLongPath)
 
 	HRESULT hr = SHGetDesktopFolder(&psfDesktop);
 
-	OLECHAR olePath[TMAX_PATH];
+	OLECHAR olePath[MAX_PATH];
+
 	lstrcpyW(olePath, pszShortPath);
 	hr = psfDesktop->ParseDisplayName(NULL, NULL, olePath, &chEaten, &pidlShellItem, NULL);
 	psfDesktop->Release();
@@ -485,17 +486,17 @@ bool PathIsRootOnly(LPCWSTR pszPath)
 	if (lstrcch(pch) > 3)
 		return false;
 
-	if (*pch == _T('\\'))
+	if (*pch == L'\\')
 	{
 		// it's a UNC and I don't handle those right now
 		return false;
 	}
 
 	pch = CharNext(pch);
-	if (*pch == _T(':'))
+	if (*pch == L':')
 	{
 		pch = CharNext(pch);
-		if (*pch == _T('\\'))
+		if (*pch == L'\\')
 		{
 			return true;
 		}
@@ -511,10 +512,10 @@ LPWSTR PathGetRootName(LPWSTR pszPath)
 	LPWSTR pch = (LPWSTR) pszPath;
 	LPWSTR pch2 = (LPWSTR) pszPath;
 
-	if (*pch == _T('\\'))
+	if (*pch == L'\\')
 	{
 		pch = CharNext(pch);
-		if(*pch != _T('\\'))
+		if(*pch != L'\\')
 		{
 			// not a UNC
 			return NULL;
@@ -523,12 +524,12 @@ LPWSTR PathGetRootName(LPWSTR pszPath)
 		// walk to the next '\\'
 		pch = CharNext(pch);
 		pch2 = pch;
-		while ( (*pch2 != _T('\0')) && (*pch2 != _T('\\')) )
+		while ( (*pch2 != L'\0') && (*pch2 != L'\\') )
 		{
 			pch2 = CharNext(pch2);
 		}
 
-		*pch2 = _T('\0');
+		*pch2 = L'\0';
 
 		pszPath = pch;
 		return pch;
@@ -536,13 +537,13 @@ LPWSTR PathGetRootName(LPWSTR pszPath)
 
 	// should be a drive letter
 	pch2 = CharNext(pch);
-	if(*pch2 != _T(':'))
+	if(*pch2 != L':')
 	{
 		// not a drive letter
 		return NULL;
 	}
 	
-	*pch2 = _T('\0');
+	*pch2 = L'\0';
 
 	pszPath = pch;
 	return pch;

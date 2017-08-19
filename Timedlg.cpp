@@ -115,9 +115,6 @@ BOOL CTimeDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	//ChangeDialogFont(this, theApp.GetUIFont(), CDF_CENTER);
-
-	//HWND hWnd = GetDlgItem(IDC_DATEPICK)->GetSafeHwnd();
 	CRect rc1, rc2;
 	CWnd* pWnd = GetDlgItem(IDC_DATEPICK);
 	int x = 0;
@@ -131,7 +128,6 @@ BOOL CTimeDlg::OnInitDialog()
 		pWnd->MoveWindow( x, rc2.top, rc2.Width(), rc2.Height(), FALSE);
 	}
 
-	//TRACE(L"CTimeDlg::OnOK\tMin Width:%d, Min Height:%d\r\n", rc.right, rc.bottom);
 	pWnd = GetDlgItem(IDC_TIMEPICK);
 	if (NULL != pWnd)
 	{

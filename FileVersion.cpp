@@ -27,11 +27,7 @@
 
 #include "filelib.h"
 #include "strlib.h"
-
-//#include "../stdafx.h"
 #include "FileVersion.h"
-
-//#pragma comment(lib, "version.lib")
 
 #ifdef _DEBUG
 	#undef THIS_FILE
