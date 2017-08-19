@@ -57,7 +57,7 @@ public:
 
 // Implementation
 protected:
-	static DWORD CALLBACK EditStreamInCallBack(DWORD dwCookie, LPBYTE pbBuff, LONG cb, LONG* pcb);
+	static DWORD CALLBACK EditStreamInCallBack(DWORD_PTR dwCookie, LPBYTE pbBuff, LONG cb, LONG* pcb);
 	// Generated message map functions
 	//{{AFX_MSG(CHelpDlg)
 	virtual BOOL OnInitDialog();

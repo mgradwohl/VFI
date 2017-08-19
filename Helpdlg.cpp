@@ -93,7 +93,7 @@ bool CHelpDlg::LoadRTF(UINT nID)
 }
 
 
-DWORD CALLBACK CHelpDlg::EditStreamInCallBack(DWORD dwCookie, LPBYTE pbBuff, LONG cb, LONG* pcb)
+DWORD CALLBACK CHelpDlg::EditStreamInCallBack(DWORD_PTR dwCookie, LPBYTE pbBuff, LONG cb, LONG* pcb)
 {
 	CMemFile* pFile = reinterpret_cast<CMemFile*> (dwCookie);
 	ASSERT(pFile != NULL);
