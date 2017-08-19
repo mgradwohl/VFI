@@ -676,8 +676,8 @@ END
 STRINGTABLE
 BEGIN
     STR_KB                  "KB"
-    STR_AUTHORFULL          "Visual File Information\r\nCopyright (c) Microsoft Corporation. All rights reserved."
-    STR_AUTHOR              "Copyright (c) Microsoft Corporation. All rights reserved."
+    STR_AUTHORFULL          "Visual File Information\r\n"
+    STR_AUTHOR              "Copyright © Microsoft Corporation. All rights reserved."
     STR_OPENTITLE           "Choose file(s) to add."
     STR_BROWSESAVE          "Choose a folder to use as your default save path."
     STR_FILESAVING          "Visual File Information -- Saving File..."
