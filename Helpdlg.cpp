@@ -67,8 +67,6 @@ BOOL CHelpDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	//ChangeDialogFont(this, theApp.GetUIFont(), CDF_CENTER);
-
 	CWnd* pWnd = GetDlgItem(IDC_DISPLAYAGAIN);
 	if (m_fShowCheck)
 	{

@@ -352,10 +352,10 @@ BOOL CAboutDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	MoveWindowEx(m_hWnd, MWX_APP | MWX_CENTER);
+	//MoveWindowEx(m_hWnd, MWX_APP | MWX_CENTER);
 	// find out how big the dialog is
-	CRect rcWnd;
-	GetWindowRect(&rcWnd);
+	//CRect rcWnd;
+	//GetWindowRect(&rcWnd);
 
 	// figure out the border size
 
