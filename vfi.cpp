@@ -263,7 +263,7 @@ BOOL CMyApp::InitInstance()
 	m_pMainWnd->DragAcceptFiles();
 
 	// Show quick help
-	BOOL fShowQuickHelp = false;// (1 == theApp.GetProfileInt(L"Preferences", L"ShowQuickHelp", 1));
+	BOOL fShowQuickHelp = (1 == theApp.GetProfileInt(L"Preferences", L"ShowQuickHelp", 1));
 	if (fShowQuickHelp)
 	{
 		CHelpDlg dlgHelp(AfxGetMainWnd(), IDR_RTF_HELP, true);
@@ -376,10 +376,10 @@ BOOL CAboutDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	MoveWindowEx(m_hWnd, MWX_APP | MWX_CENTER);
+	//MoveWindowEx(m_hWnd, MWX_APP | MWX_CENTER);
 	// find out how big the dialog is
-	CRect rcWnd;
-	GetWindowRect(&rcWnd);
+	//CRect rcWnd;
+	//GetWindowRect(&rcWnd);
 
 	// figure out the border size
 
