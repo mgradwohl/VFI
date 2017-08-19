@@ -56,46 +56,49 @@ bool GetTempFolder(LPWSTR pszFolder)
 
 bool GetWindowsFolder(LPWSTR pszFolder)
 {
-	pszFolder;
-	return false; //( TRUE == SHGetSpecialFolderPath(NULL, pszFolder, CSIDL_WINDOWS, FALSE));
+	return (S_OK == SHGetKnownFolderPath(FOLDERID_Windows, 0, NULL, &pszFolder));
 }
 
 bool GetDesktopFolder(LPWSTR pszFolder)
 {
-	return ( TRUE == SHGetSpecialFolderPath(NULL, pszFolder, CSIDL_DESKTOPDIRECTORY, FALSE));
+	//return ( TRUE == SHGetSpecialFolderPath(NULL, pszFolder, CSIDL_DESKTOPDIRECTORY, FALSE));
+	return (S_OK == SHGetFolderPath(NULL, CSIDL_DESKTOPDIRECTORY, NULL, SHGFP_TYPE_CURRENT, pszFolder));
 }
 
 bool GetSystemFolder(LPWSTR pszFolder)
 {
-	pszFolder;
-	return false; //( TRUE == SHGetSpecialFolderPath(NULL, pszFolder, CSIDL_SYSTEM, FALSE));
+	//return false; //( TRUE == SHGetSpecialFolderPath(NULL, pszFolder, CSIDL_SYSTEM, FALSE));
+	return (S_OK == SHGetFolderPath(NULL, CSIDL_SYSTEM, NULL, SHGFP_TYPE_CURRENT, pszFolder));
 }
 
 bool GetRecycleFolder(LPWSTR pszFolder)
 {
 	return ( TRUE == SHGetSpecialFolderPath(NULL, pszFolder, CSIDL_BITBUCKET, FALSE));
+	//return (S_OK == SHGetFolderPath(NULL, CSIDL_BITBUCKET, NULL, SHGFP_TYPE_CURRENT, pszFolder));
 }
 
 bool GetDocumentsFolder(LPWSTR pszFolder)
 {
-	return ( TRUE == SHGetSpecialFolderPath(NULL, pszFolder, CSIDL_PERSONAL, FALSE));
+	//return ( TRUE == SHGetSpecialFolderPath(NULL, pszFolder, CSIDL_PERSONAL, FALSE));
+	return (S_OK == SHGetFolderPath(NULL, CSIDL_PERSONAL, NULL, SHGFP_TYPE_CURRENT, pszFolder));
 }
 
 bool GetFontFolder(LPWSTR pszFolder)
 {
 	return ( TRUE == SHGetSpecialFolderPath(NULL, pszFolder, CSIDL_FONTS, FALSE));
+	//return (S_OK == SHGetFolderPath(NULL, CSIDL_FONTS, NULL, SHGFP_TYPE_CURRENT, pszFolder));
 }
 
 bool GetProfileFolder(LPWSTR pszFolder)
 {
-	pszFolder;
-	return false; //( TRUE == SHGetSpecialFolderPath(NULL, pszFolder, CSIDL_PROFILE, FALSE));
+	return ( TRUE == SHGetSpecialFolderPath(NULL, pszFolder, CSIDL_PROFILE, FALSE));
 }
 
 bool GetProgramFilesFolder(LPWSTR pszFolder)
 {
-	pszFolder;
-	return false; //( TRUE == SHGetSpecialFolderPath(NULL, pszFolder, CSIDL_PROGRAM_FILES, FALSE));
+	//return ( TRUE == SHGetSpecialFolderPath(NULL, pszFolder, CSIDL_PROGRAM_FILES, FALSE));
+	return (S_OK == SHGetFolderPath(NULL, CSIDL_PROGRAM_FILES, NULL, SHGFP_TYPE_CURRENT, pszFolder));
+
 }
 
 bool GetUserName(LPWSTR pszUserName)
