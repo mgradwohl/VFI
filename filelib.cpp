@@ -77,13 +77,7 @@
 #include <shlobj.h>
 #include <shlwapi.h>
 #include <shellapi.h>
-
-//#pragma comment(lib, "shell32.lib")
-//#pragma comment(lib, "shlwapi.lib")
-
 #include <winnetwk.h>
-
-//#pragma comment(lib, "mpr.lib")
 
 #include "strlib.h"
 #include "filelib.h"

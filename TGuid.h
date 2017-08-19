@@ -26,7 +26,6 @@
 
 #include <windows.h>
 #include <objbase.h>
-//#include "strlib.h"
 
 #ifdef _DEBUG
 	#ifdef DEBUG_NEW

@@ -29,6 +29,7 @@
 #endif
 
 #include <windows.h>
+
 // MoveWindowEx flags
 enum { CDF_CENTER, CDF_TOPLEFT, CDF_NONE };
 

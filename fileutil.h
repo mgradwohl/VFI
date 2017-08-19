@@ -25,7 +25,6 @@
 #ifndef FILEUTIL_H
 
 #include <windows.h>
-//#include <tchar.h>
 
 #ifdef  __cplusplus
 extern "C" {

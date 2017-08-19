@@ -22,7 +22,6 @@
 // IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <windows.h>
-//#include "globals.h"
 #include "TEvent.h"
 
 DWORD  g_dwThreadCRC = 0;

@@ -27,7 +27,6 @@
 	#define new DEBUG_NEW
 #endif
 
-
 void InitCRCMemory();
 void FreeCRCMemory();
 
