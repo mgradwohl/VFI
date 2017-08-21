@@ -248,7 +248,9 @@ DWORD CMyDoc::RecurseDir( LPWSTR pszPath )
 	WCHAR szSearch[MAX_PATH];
 	BOOL fRun=FALSE;
 	
+#pragma warning(suppress: 6031)
 	strText.LoadString(STR_FILECOUNTING);
+
 	CProgressBox Box;
 	Box.Create(AfxGetMainWnd(), MWX_APP | MWX_CENTER);
 	Box.SetWindowText(strText);
@@ -835,6 +837,7 @@ void CMyDoc::TerminateThreads()
 	
 	int i=0;
 	CString strText;
+#pragma warning(suppress: 6031)
 	strText.LoadString(STR_THREADSTOP);
 	
 	CProgressBox Box;
@@ -1004,6 +1007,7 @@ bool CMyDoc::GetRowString(CWiseFile& rFile, LPWSTR pszBuf)
 	if (pszText == nullptr)
 	{
 		ASSERT(pszText);
+		return false;
 	}
 
 	*pszBuf = 0;
@@ -1030,14 +1034,14 @@ void InitCRCMemory()
 {
 	if ((NULL == g_pBuf) || (0 == g_dwChunk))
 	{
-		MEMORYSTATUS ms;
-		ZeroMemory( &ms, sizeof(MEMORYSTATUS) );
-		ms.dwLength=sizeof(MEMORYSTATUS);
-		GlobalMemoryStatus( &ms );
+		MEMORYSTATUSEX ms;
+		ZeroMemory( &ms, sizeof(MEMORYSTATUSEX) );
+		ms.dwLength=sizeof(MEMORYSTATUSEX);
+		GlobalMemoryStatusEx( &ms );
 		DWORD dwIdeal;
 
 		g_dwChunk = 0;
-		dwIdeal = (DWORD) (ms.dwAvailPhys / 10);
+		dwIdeal = (DWORD) (ms.ullAvailPhys / 10);
 		while (g_dwChunk < dwIdeal)
 		{
 			g_dwChunk += SIZEMEG;
@@ -1421,6 +1425,7 @@ bool CMyDoc::WriteFileEx(LPCWSTR pszFile)
 		return false;
 	}
 	CString	strText;
+#pragma warning(suppress: 6031)
 	strText.LoadString(STR_FILESAVING);
 	CProgressBox Box;
 	Box.Create(AfxGetMainWnd(), MWX_APP | MWX_CENTER);

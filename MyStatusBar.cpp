@@ -174,6 +174,7 @@ void CMyStatusBar::SetPaneSize( UINT nPaneID, UINT nStringID )
 
 	CString strCount;
 	strCount.Empty();
+#pragma warning(suppress: 6031)
 	strCount.LoadString(nStringID);
 	CSize sz = pdc->GetTextExtent(strCount);
 	if (hOldFont!=NULL) 
@@ -295,26 +296,28 @@ INT_PTR CMyStatusBar::OnToolHitTest(CPoint point, TOOLINFO* pTI)
 BOOL CMyStatusBar::OnToolTipText( UINT id, NMHDR* pNMHDR, LRESULT* pResult )
 {
 	id;
-//	#define _countof(array) (sizeof(array)/sizeof(array[0]))
-	ASSERT(pNMHDR->code == TTN_NEEDTEXTA || pNMHDR->code == TTN_NEEDTEXTW);
-	TOOLTIPTEXTA* pTTTA = (TOOLTIPTEXTA*)pNMHDR;
-	TOOLTIPTEXTW* pTTTW = (TOOLTIPTEXTW*)pNMHDR;
-
-	WCHAR szTip[128];
-	WCHAR szRead[128];
-	WCHAR szTotal[128];
-
 	CMyDoc* pDoc = GetFrame()->GetDocument();
 	ASSERT(pDoc);
 	if (pDoc == nullptr)
 	{
 		return FALSE;
 	}
+	ASSERT(pNMHDR->code == TTN_NEEDTEXTA || pNMHDR->code == TTN_NEEDTEXTW);
+	TOOLTIPTEXTA* pTTTA = (TOOLTIPTEXTA*)pNMHDR;
+	TOOLTIPTEXTW* pTTTW = (TOOLTIPTEXTW*)pNMHDR;
+
+	WCHAR szRead[128];
+	WCHAR szTotal[128];
+
+
 	DWORD dw = pDoc->GetItemCount();
 	StrFormatByteSize64(pDoc->m_qwSize, szTotal, 128);
 	StrFormatByteSize64(pDoc->SizeRead(), szRead, 128);
 	
 	UINT_PTR nID = pNMHDR->idFrom;
+
+	WCHAR szTip[128];
+	szTip[0] = '\0';
 
 	if (pNMHDR->code == TTN_NEEDTEXTA && (pTTTA->uFlags & TTF_IDISHWND) ||
 		pNMHDR->code == TTN_NEEDTEXTW && (pTTTW->uFlags & TTF_IDISHWND))
@@ -327,23 +330,15 @@ BOOL CMyStatusBar::OnToolTipText( UINT id, NMHDR* pNMHDR, LRESULT* pResult )
 		{
 			strfmt(AfxGetResourceHandle(), szTip, TIP_PROGRESS_CRC, dw - pDoc->m_dwDirtyCRC, dw, szRead, szTotal);
 		}
+		wcscat_s(szTip, 128, L"\0");
 
-#ifndef _UNICODE
-	if (pNMHDR->code == TTN_NEEDTEXTA)
-		lstrcpyn(pTTTA->szText, szTip, _countof(pTTTA->szText));
-	else
-		_mbstowcsz(pTTTW->szText, szTip, _countof(pTTTW->szText));
-#else
-	if (pNMHDR->code == TTN_NEEDTEXTA)
-		_wcstombsz(pTTTA->szText, szTip, _countof(pTTTA->szText));
-	else
-		lstrcpyn(pTTTW->szText, szTip, _countof(pTTTW->szText));
-#endif
+		if (pNMHDR->code == TTN_NEEDTEXTW)
+			wcsncpy_s(pTTTW->szText, 128, szTip, _countof(pTTTW->szText));
+
 		*pResult = 0;
-
 		// bring the tooltip window above other popup windows
 		::SetWindowPos(pNMHDR->hwndFrom, HWND_TOP, 0, 0, 0, 0,
-			SWP_NOACTIVATE|SWP_NOSIZE|SWP_NOMOVE|SWP_NOOWNERZORDER);
+			SWP_NOACTIVATE | SWP_NOSIZE | SWP_NOMOVE | SWP_NOOWNERZORDER);
 
 		return TRUE;
 	}

@@ -21,25 +21,6 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR 
 // IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-//#ifdef _UNICODE
-//	#ifndef UNICODE
-//		#define UNICODE         // UNICODE is used by Windows headers
-//	#endif
-//#endif
-//
-//#ifdef UNICODE
-//	#ifndef _UNICODE
-//		#define _UNICODE        // _UNICODE is used by C-runtime/MFC headers
-//	#endif
-//#endif
-//
-//#ifdef _DEBUG
-//	#ifdef DEBUG_NEW
-//		#define new DEBUG_NEW
-//		#undef THIS_FILE
-//		static WCHAR THIS_FILE[] = __FILE__;
-//	#endif
-//#endif
 
 #ifndef TRACE
 	#define TRACE(x) OutputDebugString(x)
@@ -49,7 +30,6 @@
 #include <shlobj.h>
 #include <shlwapi.h>
 #include <shellapi.h>
-#include <winnetwk.h>
 
 #include "strlib.h"
 #include "filelib.h"
@@ -181,7 +161,7 @@ bool GetModuleFolder(HINSTANCE hInst, LPWSTR pszFolder)
 
 bool GetLogFolder(LPCWSTR pszAppname, LPWSTR pszFolder)
 {
-	if (IsBadWritePtr(pszFolder, MAX_PATH))
+	if (IsBadWritePtr(pszFolder, MAX_PATH) || pszFolder == nullptr)
 	{
 		TRACE(L"GetLogFolder pszFolder needs to hold MAX_PATH characters\r\n");
 		return false;
@@ -288,7 +268,7 @@ bool GetLogFileName(LPCWSTR pszFolder, LPCWSTR pszPrefix, LPCWSTR pszPostfix, LP
 		return false;
 
 	WCHAR szFilename[MAX_PATH];
-	for (int i = 0; i < 999; i++)
+	for (unsigned int i = 0; i < 999; i++)
 	{
 		szFilename[0] = L'\0';
 		wsprintf(szFilename, L"%s%s_%s_%s_%s_%03lu_%s.%s",
@@ -329,50 +309,28 @@ bool GetModuleName(HINSTANCE hInst, LPWSTR pszName)
 
 bool PathIsLocal(LPCWSTR pszPath)
 {
-	if (NULL == pszPath)
+	if (pszPath == nullptr)
 	{
 		return false;
 	}
 
-	if (lstrcch(pszPath) < 1)
-	{
+	if (PathIsNetworkPath(pszPath))
 		return false;
-	}
 
-	LPWSTR pszBuf = new WCHAR[lstrcb(pszPath) + lccb];
-	if (NULL == pszBuf)
+	LPWSTR pszBuf = new WCHAR[MAX_PATH];
+	if (pszBuf == nullptr)
 	{
 		return false;
 	}
-	lstrcpy(pszBuf, pszPath);
+	wcscpy_s(pszBuf, MAX_PATH, pszPath);
 
 	// removes .. and . and stuff like that
-	PathCanonicalize(pszBuf, pszBuf);
 	PathStripToRoot(pszBuf);
+	PathRemoveBackslash(pszBuf);
 
 	if (!PathIsRoot(pszBuf))
 	{
 		// not an absolute
-		delete [] pszBuf;
-		return false;
-	}
-
-	// if it's on a UNC share
-	if (0 == lstrcmpn(pszBuf, L"\\\\", 2))
-	{
-		// maybe it's this machine
-		if (lstrcmpni(pszBuf, L"\\\\localhost\\", 12))
-		{
-			delete [] pszBuf;
-			return true;
-		}
-
-		if (lstrcmpn(pszBuf, L"\\\\127.0.0.1\\", 12))
-		{
-			delete [] pszBuf;
-			return true;
-		}
-		
 		delete [] pszBuf;
 		return false;
 	}
@@ -384,25 +342,7 @@ bool PathIsLocal(LPCWSTR pszPath)
 		return false;
 	}
 
-	DWORD dwSize = 0;
-	LPWSTR pszRemote = NULL;
-	WNetGetConnection(pszBuf, pszRemote, &dwSize);
-
-	pszRemote = new WCHAR[(dwSize + 1)];
-	if (NULL == pszRemote)
-	{
-		delete [] pszBuf;
-		return false;
-	}
-	if (WN_SUCCESS == WNetGetConnection(pszBuf, pszRemote, &dwSize))
-	{
-		delete [] pszBuf;
-		delete [] pszRemote;
-		return false;
-	}
-
 	delete [] pszBuf;
-	delete [] pszRemote;
 	return true;
 }
 
@@ -435,36 +375,34 @@ bool PathIsWritable(LPCWSTR pszPath)
 bool PathGetLongName(LPCWSTR pszShortPath, LPWSTR pszLongPath)
 {
 	LPSHELLFOLDER psfDesktop = NULL;
-	ULONG chEaten = 0;
-	LPITEMIDLIST pidlShellItem = NULL;
-
-	HRESULT hr = SHGetDesktopFolder(&psfDesktop);
-
-	OLECHAR olePath[MAX_PATH];
-
-	lstrcpyW(olePath, pszShortPath);
-	hr = psfDesktop->ParseDisplayName(NULL, NULL, olePath, &chEaten, &pidlShellItem, NULL);
-	psfDesktop->Release();
-
-	if (FAILED(hr))
+	if (S_OK != SHGetDesktopFolder(&psfDesktop))
 	{
-		// If we couldn't get an ID list for short pathname, it must not exist.      
 		return false;
 	}
-	else
+
+	LPITEMIDLIST pidlShellItem = NULL;
+	OLECHAR olePath[MAX_PATH];
+	wcscpy_s(olePath, MAX_PATH, pszShortPath);
+
+	ULONG chEaten = 0;
+	if (S_OK != psfDesktop->ParseDisplayName(NULL, NULL, olePath, &chEaten, &pidlShellItem, NULL))
 	{
-		// We did get an ID list, convert it to a long pathname
-		if (!SHGetPathFromIDList(pidlShellItem, pszLongPath))
-			return false;
-
-		// Free the ID list allocated by ParseDisplayName
-		LPMALLOC pMalloc = NULL;
-		if (E_FAIL == SHGetMalloc(&pMalloc))
-			return false;
-
-		pMalloc->Free(pidlShellItem);
-		pMalloc->Release();
+		psfDesktop->Release();
+		return false;
 	}
+	psfDesktop->Release();
+
+	// We did get an ID list, convert it to a long pathname
+	if (!SHGetPathFromIDList(pidlShellItem, pszLongPath))
+		return false;
+
+	// Free the ID list allocated by ParseDisplayName
+	LPMALLOC pMalloc = NULL;
+	if (E_FAIL == SHGetMalloc(&pMalloc))
+		return false;
+
+	pMalloc->Free(pidlShellItem);
+	pMalloc->Release();
 
 	return true;
 }

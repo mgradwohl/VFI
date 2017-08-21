@@ -38,8 +38,8 @@
 #include "helpdlg.h"
 #include "globals.h"
 
-int BSTRToLocal(LPWSTR pLocal, BSTR pWide, DWORD dwChars);
-int LocalToBSTR(BSTR pWide, LPWSTR pLocal, DWORD dwChars);
+size_t BSTRToLocal(LPWSTR pLocal, BSTR pWide, DWORD dwChars);
+size_t LocalToBSTR(BSTR pWide, LPWSTR pLocal, DWORD dwChars);
 
 #ifdef _DEBUG
 	#define new DEBUG_NEW
@@ -48,18 +48,24 @@ int LocalToBSTR(BSTR pWide, LPWSTR pLocal, DWORD dwChars);
 #endif
 
 
-int BSTRToLocal(LPWSTR pLocal, BSTR pWide, DWORD dwChars)
+size_t BSTRToLocal(LPWSTR pLocal, BSTR pWide, DWORD dwChars)
 {
+	if (pLocal == nullptr)
+		return 0;
+
 	*pLocal = 0;
-	lstrcpyn(pLocal, pWide, dwChars);
-	return lstrcch(pLocal);
+	wcscpy_s(pLocal, dwChars, pWide);
+	return wcslen(pLocal);
 }
 
-int LocalToBSTR(BSTR pWide, LPWSTR pLocal, DWORD dwChars)
+size_t LocalToBSTR(BSTR pWide, LPWSTR pLocal, DWORD dwChars)
 {
+	if (pWide == nullptr)
+		return 0;
+
 	*pWide = 0;
-	lstrcpyn(pWide, pLocal, dwChars);
-	return lstrlenW(pWide);
+	wcscpy_s(pWide, dwChars, pLocal);
+	return wcslen(pWide);
 }
 
 void ChangeDialogFont(CWnd* pWnd, CFont* pFont, int nFlag)
@@ -369,6 +375,7 @@ BOOL CAboutDlg::OnInitDialog()
 	// set the Author
 	pCtl = static_cast<CStatic*> (GetDlgItem(IDC_AUTHOR));
 	ASSERT(pCtl);
+#pragma warning(suppress: 6031)
 	str.LoadString(STR_AUTHOR);
 	pCtl->SetWindowText(str);
 
@@ -379,6 +386,7 @@ BOOL CAboutDlg::OnInitDialog()
 BOOL CMyApp::FirstInstance()
 {
 	CString strEvent;
+#pragma warning(suppress: 6031)
 	strEvent.LoadString(AFX_IDS_APP_TITLE);
 	strEvent += "::SingleInstanceEvent";
 	if (m_eOneTime.Create(strEvent))
@@ -393,6 +401,7 @@ BOOL CMyApp::SetFocusToPrevInstance()
 	CWnd* pWndPrev;
 	CWnd* pWndChild;
 	CString strWndTitle;
+#pragma warning(suppress: 6031)
 	strWndTitle.LoadString(AFX_IDS_APP_TITLE);
 
 	pWndPrev = CWnd::FindWindow(NULL, strWndTitle);

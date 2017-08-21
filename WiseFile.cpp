@@ -264,7 +264,7 @@ int CWiseFile::GetSize64(LPWSTR pszText, bool bHex)
 
 	if (bHex)
 	{
-		wsprintf(pszText, L"%16x", m_qwSize);
+		wsprintf(pszText, L"%16Ix", m_qwSize);
 		return FWF_SUCCESS;
 	}
 	else
@@ -1067,10 +1067,12 @@ int CWiseFile::GetFlags(LPWSTR pszText)
 	{
 		if (m_fDebugStripped)
 		{
+#pragma warning(suppress: 6031)
 			str.LoadString(STR_FLAG_DEBUG_STRIPPED);
 		}
 		else
 		{
+#pragma warning(suppress: 6031)
 			str.LoadString(STR_FLAG_DEBUG);
 		}
 		lstrcat(m_szFlags, str);
@@ -1078,30 +1080,35 @@ int CWiseFile::GetFlags(LPWSTR pszText)
 	}
 	if (m_dwFlags & VS_FF_PRERELEASE)
 	{
+#pragma warning(suppress: 6031)
 		str.LoadString(STR_FLAG_PRERELEASE);
 		lstrcat(m_szFlags, str);
 		lstrcat(m_szFlags, szSep);
 	}
 	if (m_dwFlags & VS_FF_PATCHED)
 	{
+#pragma warning(suppress: 6031)
 		str.LoadString(STR_FLAG_PATCHED);
 		lstrcat(m_szFlags, str);
 		lstrcat(m_szFlags, szSep);
 	}
 	if (m_dwFlags & VS_FF_PRIVATEBUILD)
 	{
+#pragma warning(suppress: 6031)
 		str.LoadString(STR_FLAG_PRIVATEBUILD);
 		lstrcat(m_szFlags, str);
 		lstrcat(m_szFlags, szSep);
 	}
 	if (m_dwFlags & VS_FF_INFOINFERRED)
 	{
+#pragma warning(suppress: 6031)
 		str.LoadString(STR_FLAG_INFOINFERRED);
 		lstrcat(m_szFlags, str);
 		lstrcat(m_szFlags, szSep);
 	}
 	if (m_dwFlags & VS_FF_SPECIALBUILD)
 	{
+#pragma warning(suppress: 6031)
 		str.LoadString(STR_FLAG_SPECIALBUILD);
 		lstrcat(m_szFlags, str);
 		lstrcat(m_szFlags, szSep);
@@ -1242,10 +1249,18 @@ int CWiseFile::ReadVersionInfoEx()
 		FreeLibrary(h);
 		return FWF_ERR_NOVERSION;
 	}
+
 	UINT xcb = ::GetFileVersionInfoSize(m_szFullPath, 0);
 	ASSERT(cb == xcb);
 
-	LPBYTE pb = (BYTE*) ::LockResource(::LoadResource(h, hrsrc));
+	HGLOBAL hglobal = ::LoadResource(h, hrsrc);
+	if (hglobal == NULL)
+	{
+		FreeLibrary(h);
+		return FWF_ERR_NOVERSION;
+	}
+
+	LPBYTE pb = (BYTE*) ::LockResource(hglobal);
 	if (NULL == pb)
 	{
 		FreeLibrary(h);

@@ -216,8 +216,10 @@ void CMyListView::OnInitialUpdate()
 		if ((NULL == g_pBuf) || (g_dwChunk < 1 ))
 		{
 			CString strError;
+#pragma warning(suppress: 6031)
 			strError.LoadString(ERR_NOMEMORY);
 			CString strTitle;
+#pragma warning(suppress: 6031)
 			strTitle.LoadString(ERR_TITLE);
 			ErrorMessageBox(AfxGetMainWnd()->GetSafeHwnd(), GetLastError(), strTitle, strError);
 
@@ -298,6 +300,7 @@ bool CMyListView::AddItem(CWiseFile* pFileInfo)
 		}
 
 		CString strTitle;
+#pragma warning(suppress: 6031)
 		strTitle.LoadString(ERR_TITLE);
 		strError.Format(ERR_ADDFILE_FAILED, (LPCWSTR)strError, GetLastError() );
 
@@ -355,6 +358,7 @@ void CMyListView::OnDropFiles(HDROP hDropInfo)
 	CProgressBox Box;
 	Box.Create(this, MWX_APP | MWX_CENTER);
 
+#pragma warning(suppress: 6031)
 	strText.LoadString(STR_FILECOUNTING);
 	Box.SetWindowText(strText);
 
@@ -883,14 +887,14 @@ bool CMyListView::RestorePreferences()
 	m_pci[12].SetFixedWidth(19);	// _xx.xxxx.xxxx.xxxx_ product version
 	m_pci[18].SetFixedWidth(10);	// CRC
 
-	int t1,t2;
+	unsigned int t1,t2;
 	for (int i=0; i < LIST_NUMCOLUMNS; i++)
 	{
 		m_pci[i].SetLabelID(STR_COLUMN0 + i);
 
 		strEntry.Format( L"%d",i);
 		strValue = theApp.GetProfileString(L"Columns",strEntry, L"50,1");
-		_stscanf_s(strValue, L"%u, %u", &t1, &t2);
+		swscanf_s(strValue, L"%u, %u", &t1, &t2);
 		m_pci[i].SetWidth(t1);
 		m_pci[i].SetVisible(t2==1);
 	}
@@ -911,6 +915,7 @@ bool CMyListView::RestorePreferences()
 	{
 		CString strError;
 		CString strTitle;
+#pragma warning(suppress: 6031)
 		strTitle.LoadString(ERR_TITLE);
 		strError.FormatMessage(ERR_WAVENOTFOUND, (LPCWSTR)m_strWave);
 		ErrorMessageBox(AfxGetMainWnd()->GetSafeHwnd(), GetLastError(), strTitle, strError);
@@ -1027,8 +1032,10 @@ void CMyListView::OnFileTouch()
 	if (theListCtrl.GetSelectedCount() == 0)
 	{
 		CString strTitle;
+#pragma warning(suppress: 6031)
 		strTitle.LoadString(ERR_TITLE);
 		CString strError;
+#pragma warning(suppress: 6031)
 		strError.LoadString(ERR_NOTOUCH);
 		ErrorMessageBox(AfxGetMainWnd()->GetSafeHwnd(), GetLastError(), strTitle, strError);
 		return;
@@ -1293,7 +1300,7 @@ void CMyListView::OnFileAdd()
 
 	// selected multiple files
 	// first thing in the list is the folder
-	lstrcpy(szTitle, szBuf);
+	wcscpy_s(szTitle, MAX_PATH, szBuf);
 
 	// walk past the folder
 	LPWSTR pchFile = szBuf;
@@ -1317,6 +1324,7 @@ void CMyListView::OnFileAdd()
 	{
 		CString strText;
 		Box.Create(this, MWX_APP | MWX_CENTER);
+#pragma warning(suppress: 6031)
 		strText.LoadString(STR_FILEADD);
 		Box.SetWindowText(strText);
 		Box.m_ctlProgress.SetPos(0);
@@ -1911,8 +1919,12 @@ bool CMyListView::FillBuffer(bool fAllRows, bool fAllFields)
 		{
 			iItem = theListCtrl.GetNextSelectedItem(pos);
 			pInfo = reinterpret_cast<CWiseFile*> (theListCtrl.GetItemData(iItem));
-			ASSERT (pInfo);
-
+			if (pInfo == nullptr)
+			{
+				ASSERT(pInfo);
+				delete[] pszItem;
+				return false;
+			}
 			pDoc->GetRowString( *pInfo, pszItem );
 			lstrcat( m_pBuf, pszItem );
 			lstrcat( m_pBuf, L"\r\n" );
@@ -1966,6 +1978,7 @@ void CMyListView::ShowCmdHelp()
 #endif
 
 		CString strTitle;
+#pragma warning(suppress: 6031)
 		strTitle.LoadString(ERR_TITLE);
 		CString strError;
 		strError.FormatMessage(ERR_BADCOMMANDLINE, m_szFolder);

@@ -179,7 +179,8 @@ void ChangeDialogFont(const HWND hWnd, const HFONT hFont, const int nFlag)
 		SetFont(hWndChild, hFont, false);
 		GetWindowRect(hWndChild, &rcWnd);
 		GetClassName(hWndChild, szBuf, 31);
-		if(0==lstrcmpiW(szBuf, L"COMBOBOX"))
+
+		if (0 == _wcsicmp(szBuf, L"COMBOBOX"))
 		{
 			RECT rc;
 			SendMessage(hWndChild, CB_GETDROPPEDCONTROLRECT,0,(LPARAM) &rc);

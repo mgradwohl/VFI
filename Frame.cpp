@@ -163,6 +163,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	// Toolbar title
 	CString strToolTitle;
+#pragma warning(suppress: 6031)
 	strToolTitle.LoadString(STR_TITLE_TOOLS);
 	m_wndToolBar.SetWindowText(strToolTitle);
 

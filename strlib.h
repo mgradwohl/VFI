@@ -134,7 +134,7 @@ bool float2str(LPWSTR pszDest, double d);
 
 bool lstrcontains(LPCWSTR pszBuf, LPCWSTR pszSet);
 
-int lstrcount(LPCWSTR pszBuf, TCHAR chFind);
+int lstrcount(LPCWSTR pszBuf, WCHAR chFind);
 
 bool isquote(LPWSTR pszBuf);
 bool lmb2w(LPCSTR pszIn, LPWSTR pszOut, int cchOut);
