@@ -707,29 +707,29 @@ int CALLBACK CMyListView::ListViewCompareProc(LPARAM lParam1, LPARAM lParam2, LP
 				}
 			case 6:     // sort by Date
 				{
-					CTime time1( *pFile1->GetDateCreation() );
-					CTime time2( *pFile2->GetDateCreation() );
+					CTime time1(*pFile1->GetDateLastWrite());
+					CTime time2(*pFile2->GetDateLastWrite());
 					iResult = TimeCompare(time1, time2, pView->m_fSortAscend);
 					break;
 				}
 			case 7:     // sort by Time
 				{
-					CTime time1( *pFile1->GetTimeCreation() );
-					CTime time2( *pFile2->GetTimeCreation() );
+					CTime time1(*pFile1->GetTimeLastWrite());
+					CTime time2(*pFile2->GetTimeLastWrite());
 					iResult = TimeCompare(time1, time2, pView->m_fSortAscend);
 					break;
 				}
 			case 8:     // sort by Date
 				{
-					CTime time1( *pFile1->GetDateCreation() );
-					CTime time2( *pFile2->GetDateCreation() );
+					CTime time1(*pFile1->GetDateLastAccess());
+					CTime time2(*pFile2->GetDateLastAccess());
 					iResult = TimeCompare(time1, time2, pView->m_fSortAscend);
 					break;
 				}
 			case 9:     // sort by Time
 				{
-					CTime time1( *pFile1->GetTimeCreation() );
-					CTime time2( *pFile2->GetTimeCreation() );
+					CTime time1(*pFile1->GetTimeLastAccess());
+					CTime time2(*pFile2->GetTimeLastAccess());
 					iResult = TimeCompare(time1, time2, pView->m_fSortAscend);
 					break;
 				}

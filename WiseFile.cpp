@@ -859,6 +859,42 @@ LPSYSTEMTIME CWiseFile::GetTimeCreation( bool fLocal )
 	return &m_stUTCCreation;
 }
 
+LPSYSTEMTIME CWiseFile::GetDateLastAccess(bool fLocal)
+{
+	if (fLocal)
+	{
+		return &m_stLocalLastAccess;
+	}
+	return &m_stUTCLastAccess;
+}
+
+LPSYSTEMTIME CWiseFile::GetTimeLastAccess(bool fLocal)
+{
+	if (fLocal)
+	{
+		return &m_stLocalLastAccess;
+	}
+	return &m_stUTCLastAccess;
+}
+
+LPSYSTEMTIME CWiseFile::GetDateLastWrite(bool fLocal)
+{
+	if (fLocal)
+	{
+		return &m_stLocalLastWrite;
+	}
+	return &m_stUTCLastWrite;
+}
+
+LPSYSTEMTIME CWiseFile::GetTimeLastWrite(bool fLocal)
+{
+	if (fLocal)
+	{
+		return &m_stLocalLastWrite;
+	}
+	return &m_stUTCLastWrite;
+}
+
 int CWiseFile::GetTimeCreation (LPWSTR pszText, bool fLocal)
 {
 	if (!CheckState(FWFS_ATTACHED))
