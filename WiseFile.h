@@ -98,7 +98,7 @@ public:
 	LPWSTR GetPath()
 		{ return m_szPath; }
 
- 	int GetName( LPWSTR pszText )
+	int GetName( LPWSTR pszText )
 		{ return ( (NULL == lstrcpy( pszText, m_szName )) ? lstrcb(m_szName) : FWF_SUCCESS ); }
 	LPWSTR GetName()
 		{ return m_szName; }

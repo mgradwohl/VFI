@@ -200,10 +200,10 @@ void ChangeDialogFont(const HWND hWnd, const HFONT hFont, const int nFlag)
 
 HFONT GetMessageFont()
 {
-    NONCLIENTMETRICS ncm;
-    ZeroMemory(&ncm, sizeof(NONCLIENTMETRICS));
-    ncm.cbSize = sizeof(NONCLIENTMETRICS);
-    SystemParametersInfo( SPI_GETNONCLIENTMETRICS, sizeof(NONCLIENTMETRICS), &ncm, 0);
+	NONCLIENTMETRICS ncm;
+	ZeroMemory(&ncm, sizeof(NONCLIENTMETRICS));
+	ncm.cbSize = sizeof(NONCLIENTMETRICS);
+	SystemParametersInfo( SPI_GETNONCLIENTMETRICS, sizeof(NONCLIENTMETRICS), &ncm, 0);
 	return CreateFontIndirect(&ncm.lfMessageFont);
 }
 
@@ -214,21 +214,21 @@ void CenterWindow(const HWND hWndParent, const HWND hWnd)
 
 	RECT rcWnd;
 	RECT rcMon;
-    GetWindowRect(hWnd, &rcWnd);
+	GetWindowRect(hWnd, &rcWnd);
 
 	MONITORINFO mi;
-    mi.cbSize = sizeof(mi);
-    GetMonitorInfo(MonitorFromWindow(hWnd, MONITOR_DEFAULTTONEAREST), &mi);
+	mi.cbSize = sizeof(mi);
+	GetMonitorInfo(MonitorFromWindow(hWnd, MONITOR_DEFAULTTONEAREST), &mi);
 
-    rcMon = mi.rcMonitor; // or mi.rcWork
+	rcMon = mi.rcMonitor; // or mi.rcWork
 
-    rcWnd.left   = rcMon.left + ((rcMon.right  - rcMon.left) - 
-                                 (rcWnd.right  - rcWnd.left)) / 2;
-    rcWnd.top    = rcMon.top  + ((rcMon.bottom - rcMon.top)  - 
-                                 (rcWnd.bottom - rcWnd.top)) / 2;
+	rcWnd.left   = rcMon.left + ((rcMon.right  - rcMon.left) - 
+								 (rcWnd.right  - rcWnd.left)) / 2;
+	rcWnd.top    = rcMon.top  + ((rcMon.bottom - rcMon.top)  - 
+								 (rcWnd.bottom - rcWnd.top)) / 2;
 
-    SetWindowPos(hWnd, NULL, rcWnd.left, rcWnd.top, 
-                 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
+	SetWindowPos(hWnd, NULL, rcWnd.left, rcWnd.top, 
+				 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
 }
 
 bool MoveWindowEx(const HWND hWnd, const WORD wAlign)
@@ -394,15 +394,15 @@ bool SaveBox(const HWND hWnd, LPCWSTR pszTitle, LPCWSTR pszFilter, LPWSTR pszFil
 	OPENFILENAME of;
 	::ZeroMemory(&of, sizeof(OPENFILENAME));
 
-    of.lStructSize = sizeof(OPENFILENAME); 
-    of.hwndOwner = hWnd; 
-    of.hInstance = GetModuleHandle(NULL); 
-    of.lpstrFilter = pszFilter;	//TEXT("Executable\0*.EXE\0Dynamic Link Library\0*.DLL\0Movie\0*.AVI\0\0"); 
-    of.lpstrFile = pszFile; 
-    of.nMaxFile = MAX_PATH; 
-    of.lpstrInitialDir = szDesktop;
-    of.lpstrTitle = pszTitle;
-    of.Flags = dwFlags | OFN_LONGNAMES | OFN_ENABLESIZING | OFN_HIDEREADONLY | OFN_EXPLORER | OFN_NONETWORKBUTTON; 
+	of.lStructSize = sizeof(OPENFILENAME); 
+	of.hwndOwner = hWnd; 
+	of.hInstance = GetModuleHandle(NULL); 
+	of.lpstrFilter = pszFilter;	//TEXT("Executable\0*.EXE\0Dynamic Link Library\0*.DLL\0Movie\0*.AVI\0\0"); 
+	of.lpstrFile = pszFile; 
+	of.nMaxFile = MAX_PATH; 
+	of.lpstrInitialDir = szDesktop;
+	of.lpstrTitle = pszTitle;
+	of.Flags = dwFlags | OFN_LONGNAMES | OFN_ENABLESIZING | OFN_HIDEREADONLY | OFN_EXPLORER | OFN_NONETWORKBUTTON; 
  
 	return (0 != GetSaveFileName(&of));
 }
@@ -417,23 +417,23 @@ bool OpenBox(const HWND hWnd, LPCWSTR pszTitle, LPCWSTR pszFilter, LPWSTR pszFil
 	
 	if (NULL == pszFolder)
 	{
-        WCHAR szDesktop[MAX_PATH];
+		WCHAR szDesktop[MAX_PATH];
 		SHGetSpecialFolderPath(NULL, szDesktop, CSIDL_DESKTOPDIRECTORY, FALSE);
-	    of.lpstrInitialDir = szDesktop;
+		of.lpstrInitialDir = szDesktop;
 	}
 	else
 	{
-	    of.lpstrInitialDir = pszFolder;
+		of.lpstrInitialDir = pszFolder;
 	}
 
-    of.lStructSize = sizeof(OPENFILENAME); 
-    of.hwndOwner = hWnd; 
-    of.hInstance = GetModuleHandle(NULL); 
-    of.lpstrFilter = pszFilter;	//TEXT("Executable\0*.EXE\0Dynamic Link Library\0*.DLL\0Movie\0*.AVI\0\0"); 
-    of.lpstrFile = pszFile; 
-    of.nMaxFile = MAX_PATH; 
-    of.lpstrTitle = pszTitle;
-    of.Flags = dwFlags | OFN_DONTADDTORECENT | OFN_LONGNAMES | OFN_ENABLESIZING | OFN_EXPLORER | OFN_NONETWORKBUTTON; 
+	of.lStructSize = sizeof(OPENFILENAME); 
+	of.hwndOwner = hWnd; 
+	of.hInstance = GetModuleHandle(NULL); 
+	of.lpstrFilter = pszFilter;	//TEXT("Executable\0*.EXE\0Dynamic Link Library\0*.DLL\0Movie\0*.AVI\0\0"); 
+	of.lpstrFile = pszFile; 
+	of.nMaxFile = MAX_PATH; 
+	of.lpstrTitle = pszTitle;
+	of.Flags = dwFlags | OFN_DONTADDTORECENT | OFN_LONGNAMES | OFN_ENABLESIZING | OFN_EXPLORER | OFN_NONETWORKBUTTON; 
  
 	return (0 != GetOpenFileName(&of));
 }

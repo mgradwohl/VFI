@@ -100,16 +100,16 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		return -1;
 	
 	// Turn off Redraw
-    DWORD dwStyle = ::GetClassLong (m_hWnd, GCL_STYLE);
-    ::SetClassLong (m_hWnd, GCL_STYLE, dwStyle & ~(CS_HREDRAW | CS_VREDRAW));
+	DWORD dwStyle = ::GetClassLong (m_hWnd, GCL_STYLE);
+	::SetClassLong (m_hWnd, GCL_STYLE, dwStyle & ~(CS_HREDRAW | CS_VREDRAW));
 
 	if (!EnableToolTips(TRUE))
 		return -1;
 
-    NONCLIENTMETRICS ncm;
-    ZeroMemory(&ncm, sizeof(NONCLIENTMETRICS));
-    ncm.cbSize = sizeof(NONCLIENTMETRICS);
-    SystemParametersInfo( SPI_GETNONCLIENTMETRICS, 0, &ncm, 0);
+	NONCLIENTMETRICS ncm;
+	ZeroMemory(&ncm, sizeof(NONCLIENTMETRICS));
+	ncm.cbSize = sizeof(NONCLIENTMETRICS);
+	SystemParametersInfo( SPI_GETNONCLIENTMETRICS, 0, &ncm, 0);
 	m_fntUI.CreateFontIndirect(&ncm.lfMessageFont);
 
 	// Create a Status Bar
@@ -145,7 +145,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	HBITMAP hbm = (HBITMAP) ::LoadImage(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDR_MAINFRAME), IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION | LR_LOADMAP3DCOLORS | LR_LOADTRANSPARENT);
 	CBitmap bm;
 	bm.Attach(hbm);
-      
+	  
 	m_ilToolBar.Create(32,32,ILC_COLOR8,4,4);
 	m_ilToolBar.Add(&bm,(CBitmap*)NULL);
 
@@ -155,7 +155,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	HBITMAP hbmd = (HBITMAP) ::LoadImage(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDR_MAINFRAMED), IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION | LR_LOADMAP3DCOLORS | LR_LOADTRANSPARENT);
 	CBitmap bmd;
 	bmd.Attach(hbmd);
-      
+	  
 	m_ilToolBarGrey.Create(32,32,ILC_COLOR8,4,4);
 	m_ilToolBarGrey.Add(&bmd,(CBitmap*)NULL);
 
@@ -274,7 +274,7 @@ void CMainFrame::OnUpdateCount(CCmdUI* pCmdUI)
 		return;
 	}
 	
-    pCmdUI->Enable(); 
+	pCmdUI->Enable(); 
 
 	CMyDoc* pDoc = static_cast<CMyDoc*> (GetActiveDocument());
 	ASSERT (pDoc);
@@ -286,7 +286,7 @@ void CMainFrame::OnUpdateCount(CCmdUI* pCmdUI)
 	m_iCount = pDoc->GetItemCount();
 
 	CString strCount;
-    strCount.Format( STR_FILECOUNT, m_iCount ); 
+	strCount.Format( STR_FILECOUNT, m_iCount ); 
 
 	m_wndStatusBar.SetPaneText(m_wndStatusBar.CommandToIndex( ID_INDICATOR_COUNT ), strCount, TRUE);
 }

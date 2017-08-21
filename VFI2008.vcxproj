@@ -231,12 +231,10 @@
     <ClInclude Include="ColumnInfo.h" />
     <ClInclude Include="Doc.h" />
     <ClInclude Include="filelib.h" />
-    <ClInclude Include="fileutil.h" />
     <ClInclude Include="FileVersion.h" />
     <ClInclude Include="Frame.h" />
     <ClInclude Include="globals.h" />
     <ClInclude Include="HelpDlg.h" />
-    <ClInclude Include="MyFileBox.h" />
     <ClInclude Include="mylistview.h" />
     <ClInclude Include="MyPropPage1.h" />
     <ClInclude Include="Mypropsheet.h" />
@@ -246,7 +244,6 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="strlib.h" />
     <ClInclude Include="TCodePage.h" />
-    <ClInclude Include="TCriticalSection.h" />
     <ClInclude Include="TEvent.h" />
     <ClInclude Include="TGuid.h" />
     <ClInclude Include="TimeDlg.h" />
@@ -282,12 +279,10 @@
   <ItemGroup>
     <ClCompile Include="Doc.cpp" />
     <ClCompile Include="filelib.cpp" />
-    <ClCompile Include="fileutil.cpp" />
     <ClCompile Include="FileVersion.cpp" />
     <ClCompile Include="Frame.cpp" />
     <ClCompile Include="globals.cpp" />
     <ClCompile Include="Helpdlg.cpp" />
-    <ClCompile Include="MyFileBox.cpp" />
     <ClCompile Include="mylistview.cpp" />
     <ClCompile Include="MyPropPage1.cpp" />
     <ClCompile Include="Mypropsheet.cpp" />

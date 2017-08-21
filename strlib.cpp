@@ -50,15 +50,15 @@
 
 int mbstrcch(LPCSTR pszSource)
 {
-    LPSTR pch = (LPSTR)pszSource;
+	LPSTR pch = (LPSTR)pszSource;
 	int i = 0;
 
 	while (*pch)
-    {
+	{
 		i++;
 		pch = CharNextA(pch);
-    }
-    return i;
+	}
+	return i;
 }
 
 int wstrcch(LPCWSTR pszSource)

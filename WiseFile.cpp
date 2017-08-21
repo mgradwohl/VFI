@@ -1223,7 +1223,7 @@ bool CWiseFile::GetShortPath(LPWSTR pszBuf, int cchBuf)
 
 int CWiseFile::ReadVersionInfoEx()
 {
-    HINSTANCE h = ::LoadLibraryEx(m_szFullPath, NULL, LOAD_LIBRARY_AS_DATAFILE);
+	HINSTANCE h = ::LoadLibraryEx(m_szFullPath, NULL, LOAD_LIBRARY_AS_DATAFILE);
 	if (NULL == h)
 	{
 		return FWF_ERR_NOVERSION;

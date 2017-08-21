@@ -331,8 +331,8 @@ bool CMyApp::ForwardMessages()
 				msg.message == WM_CLOSE ||
 				msg.message == WM_SYSCOMMAND ||
 				msg.message == WM_DESTROY )
-            {
-                ::PostQuitMessage( (int)msg.wParam );
+			{
+				::PostQuitMessage( (int)msg.wParam );
 				return true;
 			}
 			::TranslateMessage( &msg );
