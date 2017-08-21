@@ -687,7 +687,6 @@ int CALLBACK CMyListView::ListViewCompareProc(LPARAM lParam1, LPARAM lParam2, LP
 				}
 			case 3:     // sort by Size
 				{
-					//iResult = DWordCompare(pFile1->GetSize(), pFile2->GetSize(), pView->m_fSortAscend);
 					iResult = QWordCompare(pFile1->GetSize64(), pFile2->GetSize64(), pView->m_fSortAscend);
 					break;
 				}
@@ -753,20 +752,12 @@ int CALLBACK CMyListView::ListViewCompareProc(LPARAM lParam1, LPARAM lParam2, LP
 
 			case 13:     // sort by Language
 				{
-					//pFile1->GetLanguage( str1 );
-					//pFile2->GetLanguage( str2 );
-					//iResult = StringCompare(str1, str2, pView->m_fSortAscend);
-
 					iResult = WordCompare(pFile1->GetLanguage(), pFile2->GetLanguage(), pView->m_fSortAscend);
 					break;
 
 				}
 			case 14:     // sort by Code Page
 				{
-					//pFile1->GetCodePage( str1 );
-					//pFile2->GetCodePage( str2 );
-					//iResult = StringCompare(str1, str2, pView->m_fSortAscend);
-
 					iResult = WordCompare(pFile1->GetCodePage().Get(), pFile2->GetCodePage().Get(), pView->m_fSortAscend);
 					break;
 				}
@@ -1223,7 +1214,6 @@ int CMyListView::FindVisibleItem(CObject* pObject)
 		}
 	}
 
-	//
 	CWiseFile* pFileInfo = reinterpret_cast<CWiseFile*> (theListCtrl.GetItemData(iItem));
 	ASSERT(pFileInfo);
 	TRACE(L"FindVisibleItem found item %s.\n", pFileInfo->GetFullPath());
@@ -1733,10 +1723,10 @@ bool CMyListView::GetCommandLineFolder(LPWSTR pszFolder)
 	// first whitespace after that. we always end at the first whitespace, or the end
 	// of the string
 
-	// c:\something.exe bangme -> bangme
-	// "c:\something.exe" bangme -> bangme
-	// "c:\something.exe"x bangme -> error, what's the x
-	// "c:\something.exe" x bangme -> x
+	// c:\something.exe foo -> foo
+	// "c:\something.exe" foo -> foo
+	// "c:\something.exe"x foo -> error, what's the x
+	// "c:\something.exe" x foo -> x
 	// c:\my programs\something.exe
 
 	while(*pch != '\0')
@@ -1965,18 +1955,6 @@ HGLOBAL CMyListView::GetBufferHandle()
 
 void CMyListView::ShowCmdHelp()
 {
-#if 0
-	cout << "VFI -- Visual File Information" << endl;
-	cout << "==============================" << endl;
-	cout << "usage: vfi <folder>" << endl << endl;
-	cout << "Comments to mattgr@microsoft.com" << endl;
-
-	printf( L"VFI -- Visual File Information\r\n");
-	printf( L"==============================\r\n");
-	printf( L"usage: vfi <folder>\r\n");
-	printf( L"Comments to mattgr@microsoft.com\r\n");
-#endif
-
 		CString strTitle;
 #pragma warning(suppress: 6031)
 		strTitle.LoadString(ERR_TITLE);

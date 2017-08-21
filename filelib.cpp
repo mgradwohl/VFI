@@ -353,7 +353,7 @@ bool PathIsWritable(LPCWSTR pszPath)
 
 	WCHAR szBuf[MAX_PATH];
 	lstrcpy(szBuf, pszPath);
-	PathAppend(szBuf, L"MattGr.tmp");
+	PathAppend(szBuf, L"RandomNameThatWillNotExistInAllHistoryOfTime.tmp");
 	if (DoesFileExist(szBuf))
 	{
 		if (!DeleteFile(szBuf))
