@@ -1259,7 +1259,12 @@ void CMyListView::OnFileAdd()
 {
 	TRACE(L">>> CMyListView::OnFileAdd()\n");
 	#define BUFSIZE	512 * MAX_PATH
-	WCHAR szBuf[BUFSIZE];
+
+	LPWSTR pszBuf = new WCHAR[BUFSIZE];
+	if (pszBuf == nullptr)
+		return;
+
+	*pszBuf = '\0';
 	WCHAR szFilter[MAX_PATH];
 	WCHAR szTitle[MAX_PATH];
 	int nFiles = 0;
@@ -1270,19 +1275,18 @@ void CMyListView::OnFileAdd()
 	::LoadString(AfxGetResourceHandle(), STR_OPENTITLE, szTitle, MAX_PATH);
 	pipe2null(szFilter);
 
-	szBuf[0] = '\0';
-	if (!OpenBox(m_hWnd, szTitle, szFilter, szBuf, NULL, OFN_FILEMUSTEXIST | OFN_FORCESHOWHIDDEN | OFN_ALLOWMULTISELECT | OFN_HIDEREADONLY))
+	if (!OpenBox(m_hWnd, szTitle, szFilter, pszBuf, NULL, OFN_FILEMUSTEXIST | OFN_FORCESHOWHIDDEN | OFN_ALLOWMULTISELECT | OFN_HIDEREADONLY))
 		return;
 
-	if (szBuf[0] == '\0')
+	if (*pszBuf == '\0')
 		return;
 
 	pDoc->PauseAllThreads(true);
 
-	if (DoesFileExist(szBuf))
+	if (DoesFileExist(pszBuf))
 	{
 		// one file, just add it
-		pDoc->AddFile(szBuf);
+		pDoc->AddFile(pszBuf);
 		// resume processing
 		pDoc->PauseAllThreads(false);
 		return;
@@ -1290,10 +1294,10 @@ void CMyListView::OnFileAdd()
 
 	// selected multiple files
 	// first thing in the list is the folder
-	wcscpy_s(szTitle, MAX_PATH, szBuf);
+	wcscpy_s(szTitle, MAX_PATH, pszBuf);
 
 	// walk past the folder
-	LPWSTR pchFile = szBuf;
+	LPWSTR pchFile = pszBuf;
 	while (*pchFile != '\0')
 		pchFile = CharNext(pchFile);
 	pchFile++;
