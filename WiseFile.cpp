@@ -264,7 +264,7 @@ int CWiseFile::GetSize64(LPWSTR pszText, bool bHex)
 
 	if (bHex)
 	{
-		wsprintf(pszText, L"%16Ix", m_qwSize);
+		wsprintf(pszText, L"%16I64x", m_qwSize);
 		return FWF_SUCCESS;
 	}
 	else
@@ -692,7 +692,6 @@ int CWiseFile::ReadVersionInfo()
 	}
 
 	DWORD	dwVerSize = 0;
-	DWORD	dwVerHandle = 0;
 	LPVOID	lpVerBuffer = NULL;
 	LPVOID	lpVerData = NULL;
 	UINT	cbVerData = 0;
@@ -704,6 +703,7 @@ int CWiseFile::ReadVersionInfo()
 	}
 
 	// this takes a long time to call, max size I've seen is 5476
+	DWORD	dwVerHandle = 0;
 	dwVerSize = ::GetFileVersionInfoSize( szShortPath, &dwVerHandle);
 
 	if (dwVerSize < 1)

@@ -332,8 +332,9 @@ BOOL CMyStatusBar::OnToolTipText( UINT id, NMHDR* pNMHDR, LRESULT* pResult )
 		}
 		wcscat_s(szTip, 128, L"\0");
 
+		// the 80 below comes from the declaration of pTTTW->szText
 		if (pNMHDR->code == TTN_NEEDTEXTW)
-			wcsncpy_s(pTTTW->szText, 128, szTip, _countof(pTTTW->szText));
+			wcsncpy_s(pTTTW->szText, 80, szTip, _TRUNCATE);
 
 		*pResult = 0;
 		// bring the tooltip window above other popup windows
