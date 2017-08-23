@@ -256,7 +256,6 @@
     <None Include="res\descend.ico" />
     <None Include="res\mainframe.bmp" />
     <None Include="res\mainframed.bmp" />
-    <None Include="res\toolbar.bmp" />
     <None Include="res\VFI.ico" />
     <None Include="res\Complete.wav" />
     <None Include="res\VFI.rtf" />
