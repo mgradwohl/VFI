@@ -8,7 +8,6 @@
 // Generated from the TEXTINCLUDE 2 resource.
 //
 #include "afxres.h"
-#include "version.h"
 
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
@@ -20,44 +19,81 @@
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
 
-#ifdef APSTUDIO_INVOKED
-/////////////////////////////////////////////////////////////////////////////
+#ifdef APSTUDIO_INVOKED/////////////////////////////////////////////////////////////////////////////
 //
 // TEXTINCLUDE
 //
 
-1 TEXTINCLUDE 
+1 TEXTINCLUDE
 BEGIN
-    "resource.h\0"
+"resource.h\0"
 END
 
-2 TEXTINCLUDE 
+2 TEXTINCLUDE
 BEGIN
-    "#include ""afxres.h""\r\n"
-    "#include ""version.h""\r\n"
-    "\0"
+"#include ""afxres.h""\r\n"
+"\0"
 END
 
-3 TEXTINCLUDE 
+3 TEXTINCLUDE
 BEGIN
-    "#define _AFX_NO_OLE_RESOURCES\r\n"
-    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
-    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
-    "\r\n"
-    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
-    "#ifdef _WIN32\r\n"
-    "LANGUAGE 9, 1\r\n"
-    "#pragma code_page(1252)\r\n"
-    "#endif\r\n"
-    "#include ""res\\VFI.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
-    "#include ""afxres.rc""         // Standard components\r\n"
-    "#include ""afxprint.rc""       // printing/print preview resources\r\n"
-    "#include ""afxribbon.rc""              // MFC ribbon and control bar resources\r\n"
-    "#endif\0"
+"#define _AFX_NO_OLE_RESOURCES\r\n"
+"#define _AFX_NO_TRACKER_RESOURCES\r\n"
+"#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+"\r\n"
+"#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+"#ifdef _WIN32\r\n"
+"LANGUAGE 9, 1\r\n"
+"#pragma code_page(1252)\r\n"
+"#endif\r\n"
+"#include ""afxres.rc""         // Standard components\r\n"
+"#include ""afxprint.rc""       // printing/print preview resources\r\n"
+"#include ""afxribbon.rc""      // MFC ribbon and control bar resources\r\n"
+"#endif\0"
 END
-
 #endif    // APSTUDIO_INVOKED
 
+VS_VERSION_INFO	VERSIONINFO
+FILEVERSION		4,90,1708,2202
+PRODUCTVERSION	4,90,1708,2202
+#ifdef _DEBUG
+FILEFLAGS VS_FF_DEBUG
+#else
+FILEFLAGS 0x0L
+#endif
+
+FILEOS VOS_NT_WINDOWS32
+FILETYPE VFT_APP
+FILESUBTYPE VFT2_UNKNOWN
+
+BEGIN
+	BLOCK "StringFileInfo"
+	BEGIN
+		BLOCK "040904B0"
+		BEGIN
+			VALUE "Comments", "Generate and retrieve file information\0"
+			VALUE "CompanyName", "Microsoft\0"
+			VALUE "FileDescription", "Visual File Information\0"
+			VALUE "FileVersion", "4.90.1708.2201\0"
+			VALUE "InternalName", "vfi\0"
+			VALUE "LegalCopyright", "Copyright ©1995-2017 Microsoft\0"
+			VALUE "LegalTrademarks", "Copyright ©1995-2017 Microsoft\0"
+			VALUE "OriginalFilename", "vfi.exe\0"
+			VALUE "ProductName", "Visual File Information\0"
+#if defined (DEBUG)
+	VALUE "ProductVersion", "4.90 (Debug)\0"
+#else
+	VALUE "ProductVersion", "4.90\0"
+#endif
+			//VALUE "Build Date", __DATE__
+			//VALUE "Build Time", __TIME__
+		END
+	END
+	BLOCK "VarFileInfo"
+	BEGIN
+		VALUE "Translation", 0x409, 1200
+	END
+END
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -67,17 +103,13 @@ END
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 IDR_MAINFRAME           ICON                    "res\\VFI.ico"
-
 IDI_ASCEND              ICON                    "res\\ascend.ico"
-
 IDI_DESCEND             ICON                    "res\\descend.ico"
-
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Dialog
 //
-
 IDD_ABOUTBOX DIALOGEX 0, 0, 255, 89
 STYLE DS_SETFONT | DS_MODALFRAME | DS_3DLOOK | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About Visual File Information"
@@ -349,43 +381,28 @@ END
 //
 // Bitmap
 //
-
 IDR_MAINFRAME           BITMAP                  "res\\mainframe.bmp"
-
 IDR_MAINFRAMED          BITMAP                  "res\\mainframed.bmp"
-
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // RTF
 //
-
 IDR_RTF_HELP            RTF                     "res\\VFI.rtf"
-
 IDR_RTF_ATTRIBS         RTF                     "res\\VFI_Attribs.rtf"
-
 IDR_RTF_VERSION         RTF                     "res\\VFI_Version.rtf"
-
 IDR_RTF_LANGUAGE        RTF                     "res\\VFI_Language.rtf"
-
 IDR_RTF_CODEPAGE        RTF                     "res\\VFI_Codepage.rtf"
-
 IDR_RTF_OS              RTF                     "res\\VFI_OS.rtf"
-
 IDR_RTF_TYPE            RTF                     "res\\VFI_Type.rtf"
-
 IDR_RTF_FLAGS           RTF                     "res\\VFI_Flags.rtf"
-
 IDR_RTF_CRC             RTF                     "res\\VFI_CRC.rtf"
-
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // WAVE
 //
-
 WAV_COMPLETE            WAVE                    "res\\Complete.wav"
-
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -427,7 +444,6 @@ END
 //
 // String Table
 //
-
 STRINGTABLE
 BEGIN
     STR_APPTITLE            "Visual File Information"
@@ -704,8 +720,6 @@ END
 #endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
 
-
-
 #ifndef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -720,11 +734,9 @@ END
 LANGUAGE 9, 1
 #pragma code_page(1252)
 #endif
-#include "res\VFI.rc2"  // non-Microsoft Visual C++ edited resources
 #include "afxres.rc"         // Standard components
 #include "afxprint.rc"       // printing/print preview resources
-#include "afxribbon.rc"              // MFC ribbon and control bar resources
+#include "afxribbon.rc"      // MFC ribbon and control bar resources
 #endif
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED
-

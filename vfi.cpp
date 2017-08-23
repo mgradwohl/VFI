@@ -34,7 +34,7 @@
 #include "Frame.h"
 #include "Doc.h"
 #include "mylistview.h"
-#include "version.h"
+//#include "version.h"
 #include "helpdlg.h"
 #include "globals.h"
 
@@ -358,18 +358,14 @@ BOOL CAboutDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	//MoveWindowEx(m_hWnd, MWX_APP | MWX_CENTER);
-	// find out how big the dialog is
-	//CRect rcWnd;
-	//GetWindowRect(&rcWnd);
-
-	// figure out the border size
-
 	// set the Title
 	CStatic* pCtl = static_cast<CStatic*> (GetDlgItem(IDC_TITLE));
 	ASSERT(pCtl);
 	CString str;
-	str.FormatMessage(STR_TITLE, STAMPER_STR_PROD_VERSION, STAMPER_STR_FILE_VERSION);
+	//TODO put our version information in here
+	//str.FormatMessage(STR_TITLE, STAMPER_STR_PROD_VERSION, STAMPER_STR_FILE_VERSION);
+	str.FormatMessage(STR_TITLE, L"4.90", L"4.90.1708.2201");
+
 	pCtl->SetWindowText(str);
 
 	// set the Author

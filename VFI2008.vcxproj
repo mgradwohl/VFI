@@ -247,7 +247,6 @@
     <ClInclude Include="TEvent.h" />
     <ClInclude Include="TGuid.h" />
     <ClInclude Include="TimeDlg.h" />
-    <ClInclude Include="version.h" />
     <ClInclude Include="vfi.h" />
     <ClInclude Include="WiseFile.h" />
     <ClInclude Include="wndlib.h" />
@@ -259,7 +258,6 @@
     <None Include="res\mainframed.bmp" />
     <None Include="res\toolbar.bmp" />
     <None Include="res\VFI.ico" />
-    <None Include="res\VFI.RC2" />
     <None Include="res\Complete.wav" />
     <None Include="res\mainframe.png" />
     <None Include="res\mainframed.png" />
