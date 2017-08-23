@@ -259,8 +259,6 @@
     <None Include="res\toolbar.bmp" />
     <None Include="res\VFI.ico" />
     <None Include="res\Complete.wav" />
-    <None Include="res\mainframe.png" />
-    <None Include="res\mainframed.png" />
     <None Include="res\VFI.rtf" />
     <None Include="res\VFI_Attribs.rtf" />
     <None Include="res\VFI_Codepage.rtf" />
