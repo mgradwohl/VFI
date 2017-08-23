@@ -39,7 +39,7 @@
 void ChangeDialogFont(CWnd* pWnd, CFont* pFont, int nFlag);
 /////////////////////////////////////////////////////////////////////////////
 // CMyApp:
-// See GameCRC.cpp for the implementation of this class
+// See vfi.cpp for the implementation of this class
 //
 class CMyApp : public CWinApp
 {
