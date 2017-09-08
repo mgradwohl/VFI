@@ -224,15 +224,15 @@ void CPageGeneral::OnDestroy()
 
 void CPageGeneral::OnBrowseWave() 
 {
-	WCHAR szFile[MAX_PATH];
+	WCHAR szFile[_MAX_PATH];
 	WCHAR szFilter[1024];
-	WCHAR szFolder[MAX_PATH];
+	WCHAR szFolder[_MAX_PATH];
 
 	LoadString(AfxGetResourceHandle(), STR_WAVEFILTER, szFilter, 1024);
 	pipe2null(szFilter);
 
-	WCHAR szTitle[MAX_PATH];
-	LoadString(AfxGetResourceHandle(), STR_BROWSEWAVE, szTitle, MAX_PATH);
+	WCHAR szTitle[_MAX_PATH];
+	LoadString(AfxGetResourceHandle(), STR_BROWSEWAVE, szTitle, _MAX_PATH);
 
 	SHGetFolderPath(NULL, CSIDL_MYMUSIC|CSIDL_FLAG_CREATE, NULL, 0, szFolder);
 
@@ -305,7 +305,7 @@ void CPageGeneral::OnKillfocusSavepath()
 
 void CPageGeneral::OnBrowsepath() 
 {
-	WCHAR szFolder[MAX_PATH];
+	WCHAR szFolder[_MAX_PATH];
 	if (BrowseForFolder(AfxGetMainWnd()->GetSafeHwnd(), L"Choose a folder as your default save path.", szFolder))
 	{
 		m_strSavePath = szFolder;

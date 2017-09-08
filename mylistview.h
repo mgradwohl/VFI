@@ -47,8 +47,8 @@ public:
 	LPWSTR GetBuffer();
 	void CloseBuffer();
 	bool FillBuffer(bool fAllRows, bool fAllFields);
-	WCHAR m_szFolder[MAX_PATH];
-	WCHAR m_szCmdLineOutput[MAX_PATH];
+	WCHAR m_szFolder[_MAX_PATH];
+	WCHAR m_szCmdLineOutput[_MAX_PATH];
 	bool GetCommandLineFolder(LPWSTR pszFolder);
 	bool PromptToSave();
 	bool GetItem(int nItem, POINT pt);

@@ -60,7 +60,7 @@ bool CFileVersion::Open(LPCWSTR pszFile)
 		return false;
 	}
 
-	WCHAR szTemp[MAX_PATH];
+	WCHAR szTemp[_MAX_PATH];
 	if (!DoesFileExist(pszFile))
 	{
 		// look in the Module Directory
@@ -69,7 +69,7 @@ bool CFileVersion::Open(LPCWSTR pszFile)
 		if (!DoesFileExist(szTemp))
 		{
 			// look in the Windows Directory
-			if (0 == GetWindowsDirectory(szTemp, MAX_PATH))
+			if (0 == GetWindowsDirectory(szTemp, _MAX_PATH))
 			{
 				return false;
 			}
@@ -77,7 +77,7 @@ bool CFileVersion::Open(LPCWSTR pszFile)
 			if (!DoesFileExist(szTemp))
 			{
 				// look in the System Directory
-				GetSystemDirectory(szTemp, MAX_PATH);
+				GetSystemDirectory(szTemp, _MAX_PATH);
 				PathAppend(szTemp, pszFile);
 				if (!DoesFileExist(szTemp))
 				{

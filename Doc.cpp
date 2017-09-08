@@ -165,7 +165,7 @@ BOOL CMyDoc::OnSaveDocument(LPCWSTR lpszPathName)
 		}
 	}
 
-	WCHAR szPath[MAX_PATH];
+	WCHAR szPath[_MAX_PATH];
 	GetFileName(szPath);
 
 	// Create A Common File Dialog, with the Desktop Folder as the default
@@ -245,7 +245,7 @@ DWORD CMyDoc::RecurseDir( LPWSTR pszPath )
 	CStringList PathList;
 	CString strText;
 	CStringList FileList;
-	WCHAR szSearch[MAX_PATH];
+	WCHAR szSearch[_MAX_PATH];
 	BOOL fRun=FALSE;
 	
 #pragma warning(suppress: 6031)
@@ -660,7 +660,7 @@ void CMyDoc::DeleteKillList()
 
 BOOL CMyDoc::AddFile(CString strFolder, CString strFileName)
 {
-	PathAddBackslash(strFolder.GetBuffer(MAX_PATH));
+	PathAddBackslash(strFolder.GetBuffer(_MAX_PATH));
 	strFolder.ReleaseBuffer(-1);
 	strFolder += strFileName;
 	return AddFile(strFolder);
@@ -683,8 +683,9 @@ BOOL CMyDoc::AddFile(LPCWSTR pszFilename)
 	if (FWF_SUCCESS != pNewFile->Attach( pszFilename))
 	{
 		delete pNewFile;
-		ASSERT(false);
-		return FALSE;
+		//ASSERT(false);
+		//return FALSE;
+		TRACE(L"AddFile skipping %s\r\n", pszFilename);
 	}
 	else
 	{
@@ -1315,9 +1316,9 @@ void CMyDoc::Shutdown()
 
 bool CMyDoc::GetFileName(LPWSTR pszFile)
 {
-	WCHAR szFile[MAX_PATH];
-	WCHAR szPath[MAX_PATH];
-	WCHAR szPostfix[MAX_PATH];
+	WCHAR szFile[_MAX_PATH];
+	WCHAR szPath[_MAX_PATH];
+	WCHAR szPostfix[_MAX_PATH];
 
 	// figure out the postfix -- folder name or drive label
 	lstrcpy(szPostfix, GetPathName());
@@ -1325,7 +1326,7 @@ bool CMyDoc::GetFileName(LPWSTR pszFile)
 	// If the containing folder is the root, get a name
 	if (PathIsRootOnly(szPostfix))
 	{
-		GetVolumeLabel(szPostfix, szPostfix, MAX_PATH);
+		GetVolumeLabel(szPostfix, szPostfix, _MAX_PATH);
 	}
 	else
 	{
@@ -1372,7 +1373,7 @@ DONE:
 	PathAddBackslash(szPath);
 	if (!GetLogFileName(szPath, L"VFI", (LPCWSTR)szPostfix, (LPWSTR)szFile, L"csv"))
 	{
-		LoadString(AfxGetResourceHandle(), STR_INITFILE, szFile, MAX_PATH);
+		LoadString(AfxGetResourceHandle(), STR_INITFILE, szFile, _MAX_PATH);
 		lstrcat(szPath, szFile);
 		lstrcat(szPath, L".txt");
 	}

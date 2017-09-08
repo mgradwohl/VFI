@@ -41,7 +41,7 @@ bool CreateFolder(LPCWSTR pszFolder)
 
 bool GetTempFolder(LPWSTR pszFolder)
 {
-	return (0 != GetTempPath(MAX_PATH, pszFolder));
+	return (0 != GetTempPath(_MAX_PATH, pszFolder));
 }
 
 bool GetWindowsFolder(LPWSTR pszFolder)
@@ -153,7 +153,7 @@ bool GetModuleFolder(HINSTANCE hInst, LPWSTR pszFolder)
 		return false;
 	}
 
-	::GetModuleFileName(hInst, pszFolder, MAX_PATH);
+	::GetModuleFileName(hInst, pszFolder, _MAX_PATH);
 
 	PathGetFolder(pszFolder);
 	return true;
@@ -161,15 +161,15 @@ bool GetModuleFolder(HINSTANCE hInst, LPWSTR pszFolder)
 
 bool GetLogFolder(LPCWSTR pszAppname, LPWSTR pszFolder)
 {
-	if (IsBadWritePtr(pszFolder, MAX_PATH) || pszFolder == nullptr)
+	if (IsBadWritePtr(pszFolder, _MAX_PATH) || pszFolder == nullptr)
 	{
-		TRACE(L"GetLogFolder pszFolder needs to hold MAX_PATH characters\r\n");
+		TRACE(L"GetLogFolder pszFolder needs to hold _MAX_PATH characters\r\n");
 		return false;
 	}
 
 	HKEY hKey;
 	DWORD dwType = REG_SZ;
-	DWORD dwSize = MAX_PATH;
+	DWORD dwSize = _MAX_PATH;
 
 	// open the key
 	if (ERROR_SUCCESS != RegOpenKeyEx(HKEY_LOCAL_MACHINE,
@@ -187,7 +187,7 @@ bool GetLogFolder(LPCWSTR pszAppname, LPWSTR pszFolder)
 	}
 		
 	// read the app specific folder
-	dwSize = MAX_PATH;
+	dwSize = _MAX_PATH;
 	if (ERROR_SUCCESS != (RegQueryValueEx(hKey, szModule, NULL, &dwType, (LPBYTE)pszFolder, &dwSize)))
 		goto USE_TEMP;
 
@@ -216,7 +216,7 @@ bool GetLogFolder(LPCWSTR pszAppname, LPWSTR pszFolder)
 
 USE_DEFAULT:
 	// if the default key doesn't exist, try to use the temp folder
-	dwSize = MAX_PATH;
+	dwSize = _MAX_PATH;
 	if (ERROR_SUCCESS != (RegQueryValueEx(hKey, L"", NULL, &dwType, (LPBYTE)pszFolder, &dwSize)))
 		goto USE_TEMP;
 	if (lstrlen(pszFolder) < 1)
@@ -267,7 +267,7 @@ bool GetLogFileName(LPCWSTR pszFolder, LPCWSTR pszPrefix, LPCWSTR pszPostfix, LP
 	if (0 == ::GetTimeFormat(::GetThreadLocale(), 0, &st, L"HHmm", szTime, 5))
 		return false;
 
-	WCHAR szFilename[MAX_PATH];
+	WCHAR szFilename[_MAX_PATH];
 	for (unsigned int i = 0; i < 999; i++)
 	{
 		szFilename[0] = L'\0';
@@ -299,7 +299,7 @@ bool GetModuleName(HINSTANCE hInst, LPWSTR pszName)
 		return false;
 	}
 
-	if (0 == ::GetModuleFileName(hInst, pszName, MAX_PATH))
+	if (0 == ::GetModuleFileName(hInst, pszName, _MAX_PATH))
 		return false;
 
 	PathGetFileName(pszName);
@@ -317,12 +317,12 @@ bool PathIsLocal(LPCWSTR pszPath)
 	if (PathIsNetworkPath(pszPath))
 		return false;
 
-	LPWSTR pszBuf = new WCHAR[MAX_PATH];
+	LPWSTR pszBuf = new WCHAR[_MAX_PATH];
 	if (pszBuf == nullptr)
 	{
 		return false;
 	}
-	wcscpy_s(pszBuf, MAX_PATH, pszPath);
+	wcscpy_s(pszBuf, _MAX_PATH, pszPath);
 
 	// removes .. and . and stuff like that
 	PathStripToRoot(pszBuf);
@@ -351,7 +351,7 @@ bool PathIsWritable(LPCWSTR pszPath)
 	if (!DoesFolderExist(pszPath))
 		return false;
 
-	WCHAR szBuf[MAX_PATH];
+	WCHAR szBuf[_MAX_PATH];
 	lstrcpy(szBuf, pszPath);
 	PathAppend(szBuf, L"RandomNameThatWillNotExistInAllHistoryOfTime.tmp");
 	if (DoesFileExist(szBuf))
@@ -381,8 +381,8 @@ bool PathGetLongName(LPCWSTR pszShortPath, LPWSTR pszLongPath)
 	}
 
 	LPITEMIDLIST pidlShellItem = NULL;
-	OLECHAR olePath[MAX_PATH];
-	wcscpy_s(olePath, MAX_PATH, pszShortPath);
+	OLECHAR olePath[_MAX_PATH];
+	wcscpy_s(olePath, _MAX_PATH, pszShortPath);
 
 	ULONG chEaten = 0;
 	if (S_OK != psfDesktop->ParseDisplayName(NULL, NULL, olePath, &chEaten, &pidlShellItem, NULL))

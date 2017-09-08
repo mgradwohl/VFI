@@ -82,7 +82,7 @@
 #include <winnls.h>			// Language support
 #include <winbase.h>		// Types, ZeroMemory, etc
 #include <shlobj.h>			// Browse for folder
-#include <shlwapi.h>		// StrFormatByteSize
+//#include <shlwapi.h>		// StrFormatByteSize
 
 #pragma warning(disable:4201)
 #include <mmsystem.h>
@@ -95,6 +95,7 @@ static const int SIZEBUF = 2 * SIZEMEG;
 
 static const int LIST_NUMCOLUMNS = 19;
 static const int LIST_MAXHEADLENGTH	= (64 * sizeof(WCHAR));
+size_t const maxExtendedPathLength = 0x7FFF - 24;
 
 // Hints
 enum Hints

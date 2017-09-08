@@ -206,10 +206,10 @@ private:
 	bool Init();
 	// Member Variables
 	// Set when a file is added
-	WCHAR		m_szFullPath[MAX_PATH];
-	WCHAR		m_szPath[MAX_PATH];
-	WCHAR		m_szName[MAX_PATH];
-	WCHAR		m_szExt[MAX_PATH];
+	WCHAR		m_szFullPath[_MAX_PATH];
+	WCHAR		m_szPath[_MAX_PATH];
+	WCHAR		m_szName[_MAX_PATH];
+	WCHAR		m_szExt[_MAX_PATH];
 	WCHAR		m_szShortName[14];
 
 	// Set when information requested, if not set

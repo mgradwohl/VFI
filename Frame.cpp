@@ -299,8 +299,9 @@ void CMainFrame::OnUpdateSize(CCmdUI* pCmdUI)
 	ASSERT (pDoc);
 
 	m_qwSize = pDoc->GetTotalSize();
-	WCHAR szBuf[32];
-	StrFormatByteSize64(m_qwSize, szBuf, 32 );
+	WCHAR szBuf[64];
+	int2str(szBuf, m_qwSize);							//StrFormatByteSize64(m_qwSize, szBuf, 32 );
+	wcscat_s(szBuf, 64, L" bytes\0");
 
 	m_wndStatusBar.SetPaneText(m_wndStatusBar.CommandToIndex( ID_INDICATOR_SIZE ), szBuf, TRUE);
 }
@@ -343,14 +344,9 @@ void CMainFrame::OnUpdateBuffer(CCmdUI* pCmdUI)
 	pCmdUI->Enable(); 
 
 	WCHAR szBuf[32];
-	if (NULL == g_pBuf)
-	{
-		StrFormatByteSize(0, szBuf, 32);
-	}
-	else
-	{
-		StrFormatByteSize(g_dwChunk, szBuf, 32);
-	}
+	// normally use int2str but here I want something properly formatted like "32 MB"
+	StrFormatByteSize(g_dwChunk, szBuf, 32);
+
 	m_wndStatusBar.SetPaneText(m_wndStatusBar.CommandToIndex( ID_INDICATOR_BUFFER ), szBuf, TRUE);
 }
 

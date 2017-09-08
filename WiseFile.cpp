@@ -36,11 +36,6 @@
 
 IMPLEMENT_DYNAMIC (CWiseFile, CObject)
 
-__forceinline void lstrinit(LPWSTR psz)
-{
-	*psz = '\0';
-}
-
 // CWiseFile::CWiseFile
 CWiseFile::CWiseFile()
 {
@@ -94,7 +89,7 @@ void CWiseFile::Dump(CDumpContext& dc) const
 // Param:   LPCWSTR pszFileSpec
 int CWiseFile::Attach(LPCWSTR pszFileSpec)
 {
-	if (lstrcch(pszFileSpec) < 1 || (lstrcch(pszFileSpec) > MAX_PATH))
+	if (lstrcch(pszFileSpec) < 1 || (lstrcch(pszFileSpec) > _MAX_PATH))
 	{
 		return FWF_ERR_BADPARAM;
 	}
@@ -672,8 +667,8 @@ int CWiseFile::ReadVersionInfo()
 		}
 	#endif
 
-	CHAR szPath[MAX_PATH];
-	lw2mb(m_szFullPath, szPath, MAX_PATH);
+	char szPath[_MAX_PATH];
+	lw2mb(m_szFullPath, szPath, _MAX_PATH);
 
 	PLOADED_IMAGE pli;
 	pli = ImageLoad(szPath, NULL);
@@ -696,8 +691,8 @@ int CWiseFile::ReadVersionInfo()
 	LPVOID	lpVerData = NULL;
 	UINT	cbVerData = 0;
 
-	WCHAR	szShortPath[MAX_PATH];
-	if (!GetShortPath(szShortPath, MAX_PATH))
+	WCHAR	szShortPath[_MAX_PATH];
+	if (!GetShortPath(szShortPath, _MAX_PATH))
 	{
 		return FWF_ERR_NOVERSION;
 	}

@@ -110,7 +110,7 @@ bool CMyStatusBar::CreateProgressCtrl()
 	int dY = abs(rc.bottom - rc.top) / 2;
 
 	rc.bottom = rc.top + dY - 1;
-	if (FALSE == m_ctlProgress1.Create( /*PBS_SMOOTH |*/ WS_CHILD | WS_VISIBLE, rc, this, ID_PROGRESS))
+	if (FALSE == m_ctlProgress1.Create( PBS_SMOOTH | WS_CHILD | WS_VISIBLE, rc, this, ID_PROGRESS))
 	{
 		return false;
 	}
@@ -120,7 +120,7 @@ bool CMyStatusBar::CreateProgressCtrl()
 	// move the 2nd control down
 	rc.top += dY + 1;
 	rc.bottom += dY + 1;
-	if (FALSE == m_ctlProgress2.Create( /*PBS_SMOOTH |*/ WS_CHILD | WS_VISIBLE, rc, this, ID_PROGRESS))
+	if (FALSE == m_ctlProgress2.Create( PBS_SMOOTH | WS_CHILD | WS_VISIBLE, rc, this, ID_PROGRESS))
 	{
 		return false;
 	}
@@ -128,7 +128,7 @@ bool CMyStatusBar::CreateProgressCtrl()
 	m_ctlProgress2.SetStep(1);
 
 	m_ctlProgress1.SendMessage(PBM_SETBARCOLOR, 0, (LPARAM)(COLORREF) 0x0000ff00);
-	m_ctlProgress2.SendMessage(PBM_SETBARCOLOR, 0, (LPARAM)(COLORREF) 0x000000ff);
+	m_ctlProgress2.SendMessage(PBM_SETBARCOLOR, 0, (LPARAM)(COLORREF) 0x00ff0000);
 
 	m_ctlProgress1.SendMessage(PBM_SETBKCOLOR, 0, (LPARAM)(COLORREF) 0x00000000);
 	m_ctlProgress2.SendMessage(PBM_SETBKCOLOR, 0, (LPARAM)(COLORREF) 0x00000000);
@@ -303,34 +303,42 @@ BOOL CMyStatusBar::OnToolTipText( UINT id, NMHDR* pNMHDR, LRESULT* pResult )
 		return FALSE;
 	}
 	ASSERT(pNMHDR->code == TTN_NEEDTEXTA || pNMHDR->code == TTN_NEEDTEXTW);
-	TOOLTIPTEXTA* pTTTA = (TOOLTIPTEXTA*)pNMHDR;
 	TOOLTIPTEXTW* pTTTW = (TOOLTIPTEXTW*)pNMHDR;
 
-	WCHAR szRead[128];
-	WCHAR szTotal[128];
-
-
 	DWORD dw = pDoc->GetItemCount();
-	StrFormatByteSize64(pDoc->m_qwSize, szTotal, 128);
-	StrFormatByteSize64(pDoc->SizeRead(), szRead, 128);
-	
+
+	WCHAR szTotal[64];
+	int2str(szTotal, pDoc->m_qwSize);					// StrFormatByteSize64(pDoc->m_qwSize, szTotal, 128);
+
+	WCHAR szRead[64];
+	int2str(szRead, pDoc->SizeRead());					// StrFormatByteSize64(pDoc->SizeRead(), szRead, 128);
+
+	WCHAR szItemCount[64];
+	int2str(szItemCount, pDoc->GetItemCount());
+
+	WCHAR szDirtyInfo[64];
+	int2str(szDirtyInfo, dw - pDoc->m_dwDirtyInfo);
+
+	WCHAR szDirtyCRC[64];
+	int2str(szDirtyCRC, dw - pDoc->m_dwDirtyCRC);
+
 	UINT_PTR nID = pNMHDR->idFrom;
 
-	WCHAR szTip[128];
-	szTip[0] = '\0';
+	WCHAR szTip[255];
+	lstrinit(szTip);
+	//szTip[0] = '\0';
 
-	if (pNMHDR->code == TTN_NEEDTEXTA && (pTTTA->uFlags & TTF_IDISHWND) ||
-		pNMHDR->code == TTN_NEEDTEXTW && (pTTTW->uFlags & TTF_IDISHWND))
+	if (pNMHDR->code == TTN_NEEDTEXTW && (pTTTW->uFlags & TTF_IDISHWND))
 	{
 		if (nID == (UINT_PTR)m_ctlProgress1.m_hWnd)
 		{
-			strfmt(AfxGetResourceHandle(), szTip, TIP_PROGRESS_INFO, dw - pDoc->m_dwDirtyInfo, dw);
+			strfmt(AfxGetResourceHandle(), szTip, TIP_PROGRESS_INFO, szDirtyInfo, szItemCount);
 		}
 		if (nID == (UINT_PTR)m_ctlProgress2.m_hWnd)
 		{
-			strfmt(AfxGetResourceHandle(), szTip, TIP_PROGRESS_CRC, dw - pDoc->m_dwDirtyCRC, dw, szRead, szTotal);
+			strfmt(AfxGetResourceHandle(), szTip, TIP_PROGRESS_CRC, szDirtyCRC, szItemCount, szRead, szTotal);
 		}
-		wcscat_s(szTip, 128, L"\0");
+		wcscat_s(szTip, 255, L"\0");
 
 		// the 80 below comes from the declaration of pTTTW->szText
 		if (pNMHDR->code == TTN_NEEDTEXTW)

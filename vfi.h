@@ -50,7 +50,7 @@ public:
 	}
 
 	CFont* GetUIFont();
-	WCHAR m_szIniPath[MAX_PATH];
+	WCHAR m_szIniPath[_MAX_PATH];
 	bool ForwardMessages();
 	CMyApp();
 	BOOL FirstInstance();

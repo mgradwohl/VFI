@@ -387,9 +387,9 @@ int ErrorMessageBox(const HINSTANCE hInst, const HWND hWnd, const DWORD dwError,
 
 bool SaveBox(const HWND hWnd, LPCWSTR pszTitle, LPCWSTR pszFilter, LPWSTR pszFile, const DWORD dwFlags)
 {
-	WCHAR szFile[MAX_PATH];
+	WCHAR szFile[_MAX_PATH];
 	*szFile = L'\0';
-	WCHAR szDesktop[MAX_PATH];
+	WCHAR szDesktop[_MAX_PATH];
 	SHGetSpecialFolderPath(NULL, szDesktop, CSIDL_DESKTOPDIRECTORY, FALSE);
 
 	OPENFILENAME of;
@@ -400,7 +400,7 @@ bool SaveBox(const HWND hWnd, LPCWSTR pszTitle, LPCWSTR pszFilter, LPWSTR pszFil
 	of.hInstance = GetModuleHandle(NULL); 
 	of.lpstrFilter = pszFilter;	//TEXT("Executable\0*.EXE\0Dynamic Link Library\0*.DLL\0Movie\0*.AVI\0\0"); 
 	of.lpstrFile = pszFile; 
-	of.nMaxFile = MAX_PATH; 
+	of.nMaxFile = _MAX_PATH; 
 	of.lpstrInitialDir = szDesktop;
 	of.lpstrTitle = pszTitle;
 	of.Flags = dwFlags | OFN_LONGNAMES | OFN_ENABLESIZING | OFN_HIDEREADONLY | OFN_EXPLORER | OFN_NONETWORKBUTTON; 
@@ -413,12 +413,12 @@ bool OpenBox(const HWND hWnd, LPCWSTR pszTitle, LPCWSTR pszFilter, LPWSTR pszFil
 
 	OPENFILENAME of;
 	::ZeroMemory(&of, sizeof(OPENFILENAME));
-	WCHAR szFile[MAX_PATH];
+	WCHAR szFile[_MAX_PATH];
 	*szFile = L'\0';
 	
 	if (NULL == pszFolder)
 	{
-		WCHAR szDesktop[MAX_PATH];
+		WCHAR szDesktop[_MAX_PATH];
 		SHGetSpecialFolderPath(NULL, szDesktop, CSIDL_DESKTOPDIRECTORY, FALSE);
 		of.lpstrInitialDir = szDesktop;
 	}
@@ -432,7 +432,7 @@ bool OpenBox(const HWND hWnd, LPCWSTR pszTitle, LPCWSTR pszFilter, LPWSTR pszFil
 	of.hInstance = GetModuleHandle(NULL); 
 	of.lpstrFilter = pszFilter;	//TEXT("Executable\0*.EXE\0Dynamic Link Library\0*.DLL\0Movie\0*.AVI\0\0"); 
 	of.lpstrFile = pszFile; 
-	of.nMaxFile = MAX_PATH; 
+	of.nMaxFile = _MAX_PATH; 
 	of.lpstrTitle = pszTitle;
 	of.Flags = dwFlags | OFN_DONTADDTORECENT | OFN_LONGNAMES | OFN_ENABLESIZING | OFN_EXPLORER | OFN_NONETWORKBUTTON; 
  

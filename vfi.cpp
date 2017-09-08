@@ -208,7 +208,7 @@ BOOL CMyApp::InitInstance()
 	}
 
 	// Use an INI not the Registry
-	WCHAR szIniName[MAX_PATH];
+	WCHAR szIniName[_MAX_PATH];
 	GetModuleFolder(GetModuleHandle(NULL), m_szIniPath);
 	if (!PathIsLocal(m_szIniPath) || !PathIsWritable(m_szIniPath))
 	{
@@ -219,7 +219,7 @@ BOOL CMyApp::InitInstance()
 			ERR_INSTALL);
 		return FALSE;
 	}
-	::LoadString(AfxGetResourceHandle(), STR_INIFILENAME, szIniName, MAX_PATH);
+	::LoadString(AfxGetResourceHandle(), STR_INIFILENAME, szIniName, _MAX_PATH);
 	PathAppend(m_szIniPath, szIniName);
 	free((void*) (m_pszProfileName));
 

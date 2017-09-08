@@ -239,8 +239,8 @@ void CMyListView::OnInitialUpdate()
 			int argc = 0;
 			argv = CommandLineToArgvW(::GetCommandLine(),&argc);
 			
-			wmemset(m_szFolder,0,MAX_PATH);
-			wmemset(m_szCmdLineOutput,0,MAX_PATH);
+			wmemset(m_szFolder,0,_MAX_PATH);
+			wmemset(m_szCmdLineOutput,0,_MAX_PATH);
 
 			// if we have the 3rd argument - path to save...
 			if (argc == 3)
@@ -325,7 +325,7 @@ void CMyListView::OnAddButtload()
 {
 	TRACE(L"CMyListView::OnAddButtload()\n");
 
-	WCHAR szFolder[MAX_PATH];
+	WCHAR szFolder[_MAX_PATH];
 	if (BrowseForFolder(m_hWnd, L"Choose a folder, all files in the folder will be added to the list.", szFolder))
 	{
 		CMyDoc* pDoc=GetDocument();
@@ -374,7 +374,7 @@ void CMyListView::OnDropFiles(HDROP hDropInfo)
 	bool fRun = false;
 	UINT nFiles=0;
 	UINT i=0;
-	WCHAR szFileName[MAX_PATH];
+	WCHAR szFileName[_MAX_PATH];
 	ZeroMemory(szFileName, 4);
 	WCHAR szBuf[256];
 
@@ -384,12 +384,12 @@ void CMyListView::OnDropFiles(HDROP hDropInfo)
 	OutputDebugString(szBuf);
 	
 	// determine where they were dropped from, and remember it
-	::DragQueryFileW( hDropInfo, 0, szFileName, MAX_PATH);
+	::DragQueryFileW( hDropInfo, 0, szFileName, _MAX_PATH);
 	
 	wsprintf(szBuf, L"nFiles %lu\r\n", nFiles);
 	OutputDebugString(szBuf);
 	
-	WCHAR szDropFolder[MAX_PATH];
+	WCHAR szDropFolder[_MAX_PATH];
 	ZeroMemory(szDropFolder, 4);
 
 	lstrcpy(szDropFolder, szFileName);
@@ -397,7 +397,7 @@ void CMyListView::OnDropFiles(HDROP hDropInfo)
 	// just add them to a list first
 	while ( i < nFiles )
 	{
-		::DragQueryFile( hDropInfo, i, szFileName, MAX_PATH);
+		::DragQueryFile( hDropInfo, i, szFileName, _MAX_PATH);
 		fRun = (TRUE == m_Find.FindFile(szFileName,0));
 		while ( fRun )
 		{
@@ -594,7 +594,7 @@ void CMyListView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 					if (m_szCmdLineOutput[0] == '\0')
 					{
 						// use the path generated
-						WCHAR szPath[MAX_PATH];
+						WCHAR szPath[_MAX_PATH];
 						pDoc->GetFileName(szPath);
 						pDoc->WriteFileEx(szPath);
 					}
@@ -652,8 +652,8 @@ int CALLBACK CMyListView::ListViewCompareProc(LPARAM lParam1, LPARAM lParam2, LP
 {
 	CWiseFile* pFile1 = reinterpret_cast<CWiseFile*> (lParam1);
 	CWiseFile* pFile2 = reinterpret_cast<CWiseFile*> (lParam2);
-	WCHAR str1[MAX_PATH];
-	WCHAR str2[MAX_PATH];
+	WCHAR str1[_MAX_PATH];
+	WCHAR str2[_MAX_PATH];
 	int iResult = 0;
 	CMyListView* pView = reinterpret_cast<CMyListView*> (lParamView);
 	if (pFile1 && pFile2)
@@ -1258,21 +1258,21 @@ void CMyListView::UpdateWidths()
 void CMyListView::OnFileAdd() 
 {
 	TRACE(L">>> CMyListView::OnFileAdd()\n");
-	#define BUFSIZE	512 * MAX_PATH
+	#define BUFSIZE	512 * _MAX_PATH
 
 	LPWSTR pszBuf = new WCHAR[BUFSIZE];
 	if (pszBuf == nullptr)
 		return;
 
 	*pszBuf = '\0';
-	WCHAR szFilter[MAX_PATH];
-	WCHAR szTitle[MAX_PATH];
+	WCHAR szFilter[_MAX_PATH];
+	WCHAR szTitle[_MAX_PATH];
 	int nFiles = 0;
 
 	CMyDoc* pDoc=GetDocument();
 	ASSERT_VALID( pDoc );
-	::LoadString(AfxGetResourceHandle(), STR_FILEFILTER,  szFilter, MAX_PATH);
-	::LoadString(AfxGetResourceHandle(), STR_OPENTITLE, szTitle, MAX_PATH);
+	::LoadString(AfxGetResourceHandle(), STR_FILEFILTER,  szFilter, _MAX_PATH);
+	::LoadString(AfxGetResourceHandle(), STR_OPENTITLE, szTitle, _MAX_PATH);
 	pipe2null(szFilter);
 
 	if (!OpenBox(m_hWnd, szTitle, szFilter, pszBuf, NULL, OFN_FILEMUSTEXIST | OFN_FORCESHOWHIDDEN | OFN_ALLOWMULTISELECT | OFN_HIDEREADONLY))
@@ -1294,7 +1294,7 @@ void CMyListView::OnFileAdd()
 
 	// selected multiple files
 	// first thing in the list is the folder
-	wcscpy_s(szTitle, MAX_PATH, pszBuf);
+	wcscpy_s(szTitle, _MAX_PATH, pszBuf);
 
 	// walk past the folder
 	LPWSTR pchFile = pszBuf;

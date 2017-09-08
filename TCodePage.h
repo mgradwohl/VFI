@@ -69,16 +69,7 @@ public:
 			ZeroMemory(&m_mcp, sizeof(MIMECPINFO));
 			if (S_OK  == m_pML->GetCodePageInfo(CodePage, wLanguage, &m_mcp))
 			{
-				#if defined(UNICODE)
-					wsprintf( pszBuf, __T("%s (%lu)"), m_mcp.wszDescription, CodePage);
-				#else
-					CHAR szOut[MAX_MIMECP_NAME];
-					ZeroMemory(szOut, MAX_MIMECP_NAME);
-					//WideCharToMultiByte(CP_ACP, 0, m_mcp.wszDescription, -1, szOut, 256, NULL, NULL);
-					lw2mb(m_mcp.wszDescription, szOut, MAX_MIMECP_NAME);
-					
-					wsprintf( pszBuf, __T("%s (%lu)"), szOut, CodePage);
-				#endif
+				wsprintf( pszBuf, __T("%s (%lu)"), m_mcp.wszDescription, CodePage);
 				return true;
 			}
 		}

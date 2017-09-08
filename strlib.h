@@ -48,10 +48,6 @@
 	#endif
 #endif
 
-// types
-typedef unsigned char* LPXSTR;
-typedef const unsigned char* LPCXSTR;
-
 #if defined(UNICODE)
 	#define MAX_DRIVE	(_MAX_DRIVE)
 	#define MAX_DIR	(_MAX_DIR)
@@ -68,9 +64,9 @@ typedef const unsigned char* LPCXSTR;
 
 // lccb
 // LCHAR count bytes
-#define sccb	 sizeof(CHAR)
-#define	mccb	 sizeof(WCHAR)
-#define wccb	 sizeof(WCHAR)
+#define sccb	 sizeof(char)
+#define	mccb	 sizeof(wchar_t)
+#define wccb	 sizeof(wchar_t)
 
 #if (defined(UNICODE) || defined(MBCS))
 	#define lccb wccb
@@ -144,6 +140,11 @@ bool pipe2null(LPWSTR psz);
 bool strfmt(HINSTANCE hInstance, LPWSTR pszBuffer, UINT nFormatID, ...);
 
 bool MyGetUserName(LPWSTR pszUserName);
+
+__forceinline void lstrinit(LPWSTR psz)
+{
+	*psz = '\0';
+}
 
 #define STRLIB_H
 #endif//STRLIB_H
