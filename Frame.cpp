@@ -286,10 +286,11 @@ void CMainFrame::OnUpdateCount(CCmdUI* pCmdUI)
 	}
 	m_iCount = pDoc->GetItemCount();
 
-	CString strCount;
-	strCount.Format( STR_FILECOUNT, m_iCount ); 
+	WCHAR szBuf[64];
+	int2str(szBuf, m_iCount);							//StrFormatByteSize64(m_qwSize, szBuf, 32 );
+	wcscat_s(szBuf, 64, L" files\0");
 
-	m_wndStatusBar.SetPaneText(m_wndStatusBar.CommandToIndex( ID_INDICATOR_COUNT ), strCount, TRUE);
+	m_wndStatusBar.SetPaneText(m_wndStatusBar.CommandToIndex( ID_INDICATOR_COUNT ), szBuf, TRUE);
 }
 
 void CMainFrame::OnUpdateSize(CCmdUI* pCmdUI)

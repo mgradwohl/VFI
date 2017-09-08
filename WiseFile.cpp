@@ -586,7 +586,7 @@ int CWiseFile::GetLanguage(LPWSTR pszText, bool bNumeric)
 
 	if (!m_fHasVersion)
 	{
-		*pszText = 0;
+		lstrinit(pszText);
 		return FWF_SUCCESS;
 	}
 

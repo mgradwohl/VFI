@@ -95,7 +95,7 @@ static const int SIZEBUF = 2 * SIZEMEG;
 
 static const int LIST_NUMCOLUMNS = 19;
 static const int LIST_MAXHEADLENGTH	= (64 * sizeof(WCHAR));
-size_t const maxExtendedPathLength = 0x7FFF - 24;
+
 
 // Hints
 enum Hints

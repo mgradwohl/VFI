@@ -794,7 +794,9 @@ void CMyDoc::DeleteMainList()
 	Box.Create(AfxGetMainWnd(), MWX_SE);
 	
 	int count = Clamp(m_FileList.GetCount());
-	strText.FormatMessage(STR_FILEREMOVE, count);
+	WCHAR szCount[64];
+	int2str(szCount, count);
+	strText.FormatMessage(STR_FILEREMOVE, szCount);
 	Box.SetWindowText(strText);
 	Box.m_ctlProgress.SetPos(0);
 	Box.m_ctlProgress.SetRange32(0, count);

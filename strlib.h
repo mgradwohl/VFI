@@ -35,7 +35,7 @@
 
 #include "globals.h"
 
-// make sure that the CRT and Win32 are in-synch re: UNICODE and MBCS
+// make sure that the CRT and Win32 are in-synch
 #ifdef UNICODE
 	#ifndef _UNICODE
 		#define _UNICODE
@@ -55,6 +55,7 @@
 	#define MAX_EXT	(_MAX_EXT)
 	#define MAX_USERNAME ((UNLEN + 1))
 #endif
+size_t const maxExtendedPathLength = 0x7FFF - 24;
 
 // QWORD
 #define QWORD			DWORDLONG
@@ -68,11 +69,7 @@
 #define	mccb	 sizeof(wchar_t)
 #define wccb	 sizeof(wchar_t)
 
-#if (defined(UNICODE) || defined(MBCS))
-	#define lccb wccb
-#else
-	#define lccb sccb
-#endif
+#define lccb wccb
 
 // pointer macros
 #define zero(x)			(::SecureZeroMemory((LPVOID)&x, sizeof(x)))
@@ -95,17 +92,10 @@ int mbstrcb(LPCSTR psz);
 // Returns: int, # of bytes in first n characters or lstrcb, whichever is shorter
 // Param:   LPCWSTR pszSource
 int wstrcbn(LPCWSTR psz, int cch);
-int mbstrcbn(LPCSTR psz, int cch);
 
-#if defined(UNICODE)
 	#define lstrcch	wstrcch
 	#define lstrcb	wstrcb
 	#define lstrcbn	wstrcbn
-#elif defined(MBCS)
-	#define lstrcch	mbstrcch
-	#define lstrcb	mbstrcb
-	#define lstrcbn	mbstrcbn
-#endif
 
 #ifdef lstrcmp
 	#undef lstrcmp

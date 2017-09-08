@@ -390,8 +390,6 @@ void CMyListView::OnDropFiles(HDROP hDropInfo)
 	OutputDebugString(szBuf);
 	
 	WCHAR szDropFolder[_MAX_PATH];
-	ZeroMemory(szDropFolder, 4);
-
 	lstrcpy(szDropFolder, szFileName);
 
 	// just add them to a list first
@@ -459,7 +457,10 @@ void CMyListView::OnDropFiles(HDROP hDropInfo)
 
 	// now we know how many files there are, so we add them
 	int count = Clamp(FileList.GetCount());
-	strText.FormatMessage(STR_FILEADD, count);
+	WCHAR szCount[64];
+	int2str(szCount, count);
+	strText.FormatMessage(STR_FILEADD, szCount);
+
 	Box.SetWindowText(strText);
 	Box.m_ctlProgress.SetRange32(0, count);
 
@@ -1050,7 +1051,9 @@ void CMyListView::OnFileTouch()
 	SetRedraw(FALSE);
 
 	CString strText;
-	strText.FormatMessage(STR_FILETOUCH, theListCtrl.GetSelectedCount());
+	WCHAR szTouch[64];
+	int2str(szTouch, theListCtrl.GetSelectedCount());
+	strText.FormatMessage(STR_FILETOUCH, szTouch);
 	
 	CProgressBox Box;
 	Box.Create(this, MWX_CENTER);
