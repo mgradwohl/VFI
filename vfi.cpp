@@ -363,9 +363,7 @@ BOOL CAboutDlg::OnInitDialog()
 	ASSERT(pCtl);
 	CString str;
 	//TODO put our version information in here
-	//str.FormatMessage(STR_TITLE, STAMPER_STR_PROD_VERSION, STAMPER_STR_FILE_VERSION);
 	str.FormatMessage(STR_TITLE, L"4.90", L"4.90.1708.2201");
-
 	pCtl->SetWindowText(str);
 
 	// set the Author

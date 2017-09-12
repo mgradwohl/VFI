@@ -414,7 +414,7 @@ void CALLBACK EXPORT CMainFrame::TimerProc(HWND hWnd, UINT nMsg, UINT nIDEvent, 
 	
 	if (pDoc->IsDirty())
 	{
-		pDoc->ResumeAllThreads();
+		pDoc->PauseAllThreads(false);
 	}
 }
 
@@ -487,5 +487,9 @@ void CMainFrame::OnHelpCodepage()
 
 void CMainFrame::OnClose() 
 {
+	g_eTermThreads.Signal();
+	CMyDoc* pDoc = static_cast<CMyDoc*> (GetActiveDocument());
+	ASSERT(pDoc);
+	pDoc->PauseAllThreads(false);
 	CFrameWnd::OnClose();
 }

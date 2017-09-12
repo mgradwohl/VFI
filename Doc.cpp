@@ -31,7 +31,7 @@
 #include "Doc.h"
 #include "ProgressBox.h"
 #include "wisefile.h"
-
+#include <memory>
 #include "filelib.h"
 #include "wndlib.h"
 
@@ -269,7 +269,6 @@ DWORD CMyDoc::RecurseDir( LPWSTR pszPath )
 		fRun = m_Find.FindFile(szSearch,0);
 		while ( fRun )
 		{
-			fRun = m_Find.FindNextFile();
 			// if it's a directory, and it's not dots then add it to the path list
 			if ( m_Find.IsDirectory() && !m_Find.IsDots() )
 			{
@@ -278,7 +277,6 @@ DWORD CMyDoc::RecurseDir( LPWSTR pszPath )
 			// it it's not a directory (it's a file) add it to the file list
 			if ( !m_Find.IsDirectory() )
 			{
-				//AddFile( m_Find.GetFilePath() );  jj change
 				FileList.AddTail( m_Find.GetFilePath() );
 			}
 			theApp.ForwardMessages();
@@ -286,6 +284,7 @@ DWORD CMyDoc::RecurseDir( LPWSTR pszPath )
 			{
 				return (DWORD)-1;
 			}
+			fRun = m_Find.FindNextFile();
 		} // there are more files
 	} // there are more directories
 	m_Find.Close();	
@@ -318,7 +317,9 @@ DWORD CMyDoc::RecurseDir( LPWSTR pszPath )
 	}
 
 	int count = Clamp(FileList.GetCount());
-	strText.FormatMessage(STR_FILEADD, count);
+	WCHAR szCount[64];
+	int2str(szCount, count);
+	strText.FormatMessage(STR_FILEADD, szCount);
 	Box.m_ctlProgress.SetRange32(0, count);
 	Box.SetWindowText(strText);
 	CString strFile;
@@ -630,7 +631,9 @@ void CMyDoc::DeleteKillList()
 	Box.Create(AfxGetMainWnd(), MWX_SE);
 	
 	int count = Clamp(m_KillList.GetCount());
-	strText.FormatMessage(STR_EMPTYTRASH, count);
+	WCHAR szCount[64];
+	int2str(szCount, count);
+	strText.FormatMessage(STR_EMPTYTRASH, szCount);
 	Box.SetWindowText(strText);
 	Box.m_ctlProgress.SetPos(0);
 	Box.m_ctlProgress.SetRange32(0, count);
@@ -676,15 +679,13 @@ BOOL CMyDoc::AddFile(LPCWSTR pszFilename)
 		return FALSE;
 	}
 
-	// Allocate memory for the fileinfo
 	CWiseFile* pNewFile = new CWiseFile;
-	ASSERT (pNewFile);
+	ASSERT(pNewFile);
+
 	
 	if (FWF_SUCCESS != pNewFile->Attach( pszFilename))
 	{
 		delete pNewFile;
-		//ASSERT(false);
-		//return FALSE;
 		TRACE(L"AddFile skipping %s\r\n", pszFilename);
 	}
 	else
@@ -705,8 +706,6 @@ BOOL CMyDoc::AddFile(LPCWSTR pszFilename)
 
 		// set the pathname
 		SetPathName(pszFilename, FALSE);
-
-		//ResumeAllThreads();
 	}
 	return TRUE;
 }
@@ -736,7 +735,6 @@ BOOL CMyDoc::RemoveFromMain( CWiseFile* pFileInfo )
 
 BOOL CMyDoc::AddToMain( CWiseFile* pFileInfo )
 {
-	// TODO: Do I need to lock these lists?
 	TRACE(L"CMyDoc::AddToMain\n");
 	ASSERT (pFileInfo);
 
@@ -1153,7 +1151,7 @@ DWORD UpdateThreadCRC( LPVOID pParam )
 	// Now that we have the basic things we need, declare variables
 	// TODO: Try to reduce the number of allocations
 	CWiseFile* pFileInfo;
-	register unsigned long crc32;
+	unsigned long crc32;
 	BYTE* pchCurrent;
 	HANDLE hFile;
 	DWORD dwAttribs;

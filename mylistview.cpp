@@ -375,7 +375,7 @@ void CMyListView::OnDropFiles(HDROP hDropInfo)
 	UINT nFiles=0;
 	UINT i=0;
 	WCHAR szFileName[_MAX_PATH];
-	ZeroMemory(szFileName, 4);
+	lstrinit(szFileName);
 	WCHAR szBuf[256];
 
 	// determine how many files we have
@@ -393,13 +393,13 @@ void CMyListView::OnDropFiles(HDROP hDropInfo)
 	lstrcpy(szDropFolder, szFileName);
 
 	// just add them to a list first
-	while ( i < nFiles )
+	while ( i < nFiles && !g_eTermThreads.Signaled())
 	{
 		::DragQueryFile( hDropInfo, i, szFileName, _MAX_PATH);
 		fRun = (TRUE == m_Find.FindFile(szFileName,0));
 		while ( fRun )
 		{
-			fRun = (TRUE == m_Find.FindNextFile()); 
+			fRun = ((TRUE == m_Find.FindNextFile()) && !g_eTermThreads.Signaled());
 			// if it's a directory, and it's not dots then add it to the path list
 			if ( m_Find.IsDirectory() && !m_Find.IsDots() )
 			{
@@ -410,20 +410,21 @@ void CMyListView::OnDropFiles(HDROP hDropInfo)
 			{
 				FileList.AddTail( m_Find.GetFilePath() );
 			}
+
 			theApp.ForwardMessages();
-			if (g_eTermThreads.Signaled())
-			{
-				TRACE(L"OnDropFiles aborting\r\n");
-				fRun = false;
-			}
 		}
 		i++;
 	}
 	::DragFinish( hDropInfo );
-	m_Find.Close();	
+	m_Find.Close();
+	if (g_eTermThreads.Signaled())
+	{
+		pDoc->PauseAllThreads(false);
+		return;
+	}
 
 	// now add all files on the path list to the file list
-	while ( !PathList.IsEmpty() )
+	while ( !PathList.IsEmpty() && !g_eTermThreads.Signaled())
 	{
 		strSearch=PathList.RemoveHead();
 		if (strSearch[strSearch.GetLength()-1] != '\\')
@@ -432,7 +433,7 @@ void CMyListView::OnDropFiles(HDROP hDropInfo)
 		}
 		strSearch += "*.*";
 		fRun = (TRUE==m_Find.FindFile(strSearch,0));
-		while ( fRun )
+		while ( fRun && !g_eTermThreads.Signaled())
 		{
 			fRun = (TRUE==m_Find.FindNextFile());
 			// if it's a directory, and it's not dots then add it to the path list
@@ -446,14 +447,14 @@ void CMyListView::OnDropFiles(HDROP hDropInfo)
 				FileList.AddTail( m_Find.GetFilePath() );
 			}
 			theApp.ForwardMessages();
-			if (g_eTermThreads.Signaled())
-			{
-				TRACE(L"OnDropFiles aborting\r\n");
-				fRun = false;
-			}
 		}
 	}
 	m_Find.Close();	
+	if (g_eTermThreads.Signaled())
+	{
+		pDoc->PauseAllThreads(false);
+		return;
+	}
 
 	// now we know how many files there are, so we add them
 	int count = Clamp(FileList.GetCount());
@@ -462,12 +463,14 @@ void CMyListView::OnDropFiles(HDROP hDropInfo)
 	strText.FormatMessage(STR_FILEADD, szCount);
 
 	Box.SetWindowText(strText);
+
 	Box.m_ctlProgress.SetRange32(0, count);
 
 	CString strFile;
-	while ( !FileList.IsEmpty())
+	while ( !FileList.IsEmpty() && !g_eTermThreads.Signaled())
 	{
-		Box.m_ctlProgress.StepIt();
+		if (Box.m_hWnd != NULL)
+			Box.m_ctlProgress.StepIt();
 		strFile = FileList.RemoveHead();
 		if (FALSE == pDoc->AddFile(strFile))
 		{
@@ -476,14 +479,8 @@ void CMyListView::OnDropFiles(HDROP hDropInfo)
 		}
 
 		theApp.ForwardMessages();
-		if (g_eTermThreads.Signaled())
-		{
-			TRACE(L"OnDropFiles aborting\r\n");
-			FileList.RemoveAll();
-		}
 	}
 	Box.DestroyWindow();
-
 	pDoc->SetPathName(szDropFolder);
 	// resume processing
 	pDoc->PauseAllThreads(false);
@@ -556,7 +553,7 @@ void CMyListView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 
 	CMyDoc* pDoc = GetDocument();
 	ASSERT_VALID( pDoc );
-	pDoc->ResumeAllThreads();
+	pDoc->PauseAllThreads(false);
 
 	switch (lHint)
 	{
@@ -1403,13 +1400,16 @@ void CMyListView::OnEditRemove()
 	CProgressBox Box;
 	CString strText;
 	// create the progess box
-	strText.FormatMessage(STR_FILEREMOVE, theListCtrl.GetSelectedCount());
+	int count = theListCtrl.GetSelectedCount();
+	WCHAR szCount[64];
+	int2str(szCount, count);
+	strText.FormatMessage(STR_FILEREMOVE, szCount);
 	Box.Create(this, MWX_APP | MWX_CENTER);
 	Box.SetWindowText(strText);
 	Box.m_ctlProgress.SetPos(0);
 	Box.m_ctlProgress.SetStep(1);
 	Box.ShowWindow(SW_SHOWNORMAL);
-	Box.m_ctlProgress.SetRange32(0, theListCtrl.GetSelectedCount());
+	Box.m_ctlProgress.SetRange32(0, count);
 	strText.Empty();
 
 	SetRedraw(FALSE);
@@ -1622,7 +1622,9 @@ BOOL CMyListView::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult)
 
 LRESULT CMyListView::WindowProc(UINT message, WPARAM wParam, LPARAM lParam) 
 {
-	// took out check for ::IsWindow
+	if (!::IsWindow(m_hWnd) || g_eTermThreads.Signaled())
+		return 0L;
+
 	if (theApp.WM_UPDATEVIEW() == message)
 	{
 			OnUpdate(this, wParam, reinterpret_cast<CObject*> (lParam));
