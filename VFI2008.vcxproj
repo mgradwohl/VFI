@@ -238,6 +238,7 @@
     <ClInclude Include="Frame.h" />
     <ClInclude Include="globals.h" />
     <ClInclude Include="HelpDlg.h" />
+    <ClInclude Include="MyList.h" />
     <ClInclude Include="mylistview.h" />
     <ClInclude Include="MyPropPage1.h" />
     <ClInclude Include="Mypropsheet.h" />
@@ -255,6 +256,7 @@
     <ClInclude Include="wndlib.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="ClassDiagram.cd" />
     <None Include="res\ascend.ico" />
     <None Include="res\descend.ico" />
     <None Include="res\mainframe.bmp" />
@@ -281,6 +283,7 @@
     <ClCompile Include="Frame.cpp" />
     <ClCompile Include="globals.cpp" />
     <ClCompile Include="Helpdlg.cpp" />
+    <ClCompile Include="MyList.cpp" />
     <ClCompile Include="mylistview.cpp" />
     <ClCompile Include="MyPropPage1.cpp" />
     <ClCompile Include="Mypropsheet.cpp" />

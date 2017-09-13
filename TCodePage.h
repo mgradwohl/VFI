@@ -33,7 +33,7 @@
 #include <windows.h>
 #include <mlang.h>
 #include "strlib.h"
-
+#define __T(x)      L ## x
 class TCodePage  
 {
 public:
@@ -69,7 +69,7 @@ public:
 			ZeroMemory(&m_mcp, sizeof(MIMECPINFO));
 			if (S_OK  == m_pML->GetCodePageInfo(CodePage, wLanguage, &m_mcp))
 			{
-				wsprintf( pszBuf, __T("%s (%lu)"), m_mcp.wszDescription, CodePage);
+				wsprintf( pszBuf, L"%s (%lu)", m_mcp.wszDescription, CodePage);
 				return true;
 			}
 		}
@@ -78,7 +78,7 @@ public:
 		ZeroMemory(&cp, sizeof(CPINFOEX));
 		if (GetCPInfoEx(CodePage, 0, &cp))
 		{
-			wsprintf( pszBuf, __T("%s"), cp.CodePageName);
+			wsprintf( pszBuf, L"%s", cp.CodePageName);
 			return true;
 		}
 		

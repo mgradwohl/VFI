@@ -345,28 +345,6 @@ void CMyListView::OnDropFiles(HDROP hDropInfo)
 		pFrame->SetForegroundWindow();
 	}
 
-	// get the document
-	CMyDoc* pDoc=GetDocument();
-	ASSERT_VALID( pDoc );
-	
-	// suspend processing
-	pDoc->PauseAllThreads(true);
-
-	// create the progess box
-	CString strText;
-
-	CProgressBox Box;
-	Box.Create(this, MWX_APP | MWX_CENTER);
-
-#pragma warning(suppress: 6031)
-	strText.LoadString(STR_FILECOUNTING);
-	Box.SetWindowText(strText);
-
-	Box.m_ctlProgress.SetPos(0);
-	Box.m_ctlProgress.SetStep(1);
-	Box.ShowWindow(SW_SHOWNORMAL);
-	strText.Empty();
-
 	CStringList PathList;
 	CStringList FileList;
 	CString strSearch;
@@ -410,16 +388,15 @@ void CMyListView::OnDropFiles(HDROP hDropInfo)
 			{
 				FileList.AddTail( m_Find.GetFilePath() );
 			}
-
 			theApp.ForwardMessages();
 		}
 		i++;
 	}
 	::DragFinish( hDropInfo );
 	m_Find.Close();
+
 	if (g_eTermThreads.Signaled())
 	{
-		pDoc->PauseAllThreads(false);
 		return;
 	}
 
@@ -450,21 +427,36 @@ void CMyListView::OnDropFiles(HDROP hDropInfo)
 		}
 	}
 	m_Find.Close();	
+
 	if (g_eTermThreads.Signaled())
 	{
-		pDoc->PauseAllThreads(false);
 		return;
 	}
 
 	// now we know how many files there are, so we add them
+	// create the progess box
+	CString strText;
+
+	CProgressBox Box;
+	Box.Create(this, MWX_APP | MWX_CENTER);
+
+#pragma warning(suppress: 6031)
+	Box.m_ctlProgress.SetPos(0);
+	Box.m_ctlProgress.SetStep(1);
+	Box.ShowWindow(SW_SHOWNORMAL);
+	strText.Empty();
 	int count = Clamp(FileList.GetCount());
 	WCHAR szCount[64];
 	int2str(szCount, count);
 	strText.FormatMessage(STR_FILEADD, szCount);
-
 	Box.SetWindowText(strText);
-
 	Box.m_ctlProgress.SetRange32(0, count);
+
+	CMyDoc* pDoc = GetDocument();
+	if (pDoc == nullptr)
+	{
+		return;
+	}
 
 	CString strFile;
 	while ( !FileList.IsEmpty() && !g_eTermThreads.Signaled())
@@ -477,11 +469,11 @@ void CMyListView::OnDropFiles(HDROP hDropInfo)
 			strText.FormatMessage(ERR_FILEINUSE, (LPCWSTR)strFile);
 			UpdateStatus(strText);
 		}
-
 		theApp.ForwardMessages();
 	}
 	Box.DestroyWindow();
 	pDoc->SetPathName(szDropFolder);
+
 	// resume processing
 	pDoc->PauseAllThreads(false);
 }
@@ -1413,7 +1405,7 @@ void CMyListView::OnEditRemove()
 	strText.Empty();
 
 	SetRedraw(FALSE);
-	CWiseFile* pInfo=NULL;
+	CWiseFile* pInfo = nullptr;
 	int iItem = theListCtrl.GetNextItem( -1, LVNI_SELECTED);
 	while (iItem != -1)
 	{
@@ -1623,7 +1615,7 @@ BOOL CMyListView::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult)
 LRESULT CMyListView::WindowProc(UINT message, WPARAM wParam, LPARAM lParam) 
 {
 	if (!::IsWindow(m_hWnd) || g_eTermThreads.Signaled())
-		return 0L;
+		return (LRESULT)-1;
 
 	if (theApp.WM_UPDATEVIEW() == message)
 	{

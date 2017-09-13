@@ -431,8 +431,10 @@ void CMainFrame::OnEndSession(BOOL bEnding)
 		return;
 
 	CMyDoc* pDoc = static_cast<CMyDoc*> (GetActiveDocument());
-	ASSERT (pDoc);
-	pDoc->TerminateThreads();
+	if (pDoc)
+	{
+		pDoc->TerminateThreads();
+	}
 
 	CFrameWnd::OnEndSession(bEnding);
 }
@@ -487,9 +489,11 @@ void CMainFrame::OnHelpCodepage()
 
 void CMainFrame::OnClose() 
 {
-	g_eTermThreads.Signal();
 	CMyDoc* pDoc = static_cast<CMyDoc*> (GetActiveDocument());
-	ASSERT(pDoc);
-	pDoc->PauseAllThreads(false);
+	if (pDoc)
+	{
+		pDoc->TerminateThreads();
+	}
+
 	CFrameWnd::OnClose();
 }

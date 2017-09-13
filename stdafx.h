@@ -145,5 +145,7 @@ static const int THREAD_TRY		=50;
 #include "strlib.h"
 #include "wndlib.h"
 #include "filelib.h"
+#include <memory>
+#include <vector>
 
-typedef CTypedPtrList< CObList, CWiseFile* > CMyObList;
+using namespace std;

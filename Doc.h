@@ -27,6 +27,8 @@
 	#define new DEBUG_NEW
 #endif
 
+#include "MyList.h"
+
 void InitCRCMemory();
 void FreeCRCMemory();
 
@@ -38,9 +40,9 @@ protected: // create from serialization only
 
 // Attributes
 public:
-	CWiseFile* GetItem(int i)
+	wfsp GetItem(int i)
 	{
-		return m_FileList.GetAt(m_FileList.FindIndex(i));
+		return m_FileList.GetItemAt(i);
 	}
 
 	QWORD SizeRead()
@@ -60,14 +62,14 @@ public:
 	void DeleteMainList();
 	void RemoveAllMain();
 	BOOL CreateThreads();
-	BOOL AddToMain( CWiseFile* pFileInfo );
-	BOOL RemoveFromMain( CWiseFile* pFileInfo );
+	BOOL AddToMain( wfsp pFileInfo );
+	BOOL RemoveFromMain( wfsp pFileInfo );
 	void DeleteKillList();
-	void AddToKill( CWiseFile* pFileInfo );
-	void ChangeItemState( CWiseFile* pFileInfo, WORD wState );
-	BOOL AddToDirty( CWiseFile* pFileInfo );
-	BOOL RemoveFromDirty( CWiseFile* pFileInfo );
-	CWiseFile* RemoveDirtyHead();
+	void AddToKill( wfsp pFileInfo );
+	void ChangeItemState( wfsp pFileInfo, WORD wState );
+	BOOL AddToDirty( wfsp pFileInfo );
+	BOOL RemoveFromDirty( wfsp pFileInfo );
+	wfsp RemoveDirtyHead();
 	BOOL SuspendAllThreads();
 	BOOL ResumeAllThreads();
 	void RemoveAllDirty();
@@ -97,16 +99,17 @@ public:
 // Operations
 public:
 	BOOL DeleteFile( CWiseFile* pFileInfo );
-	CMyObList m_FileList;
-	CMyObList m_DirtyList;
-	CMyObList m_KillList;
+	MyList m_FileList;
+	MyList m_DirtyList;
+	MyList m_KillList;
 
-	CMyObList* GetList() {return &m_FileList;}
+	//CMyObList* GetList() {return &m_FileList;}
+	MyList* GetList() { return &m_FileList; }
 
 	static CMyDoc* GetDoc();
 	BOOL AddFile(CString strFolder, CString strFileName);
 	BOOL AddFile(LPCWSTR pszFileName);
-	BOOL IsEmpty() { return m_FileList.IsEmpty(); }
+	BOOL IsEmpty() { return m_FileList.isEmpty(); }
 
 // Overrides
 	// ClassWizard generated virtual function overrides
@@ -142,7 +145,7 @@ public:
 
 	inline bool CMyDoc::IsDirtyEmpty()
 	{
-		return (TRUE == m_DirtyList.IsEmpty());
+		return (TRUE == m_DirtyList.isEmpty());
 	}
 
 	void PauseAllThreads(bool fPause);

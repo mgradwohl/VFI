@@ -100,11 +100,18 @@ public:
 
 	bool Close()
 	{
+		if (NULL == m_hEvent)
+		{
+			MYTRACE(L"TEvent::Close warning: NULL Event.\r\n");
+			return false;
+		}
+
 		if (! ::CloseHandle (m_hEvent))
 		{
 			MYTRACE(L"TEvent::Close warning: CloseHandle failed.\r\n");
 			return false;
 		}
+		MYTRACE(L"TEvent::Closed\r\n");
 
 		m_hEvent = NULL;
 		return true;
