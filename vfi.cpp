@@ -376,7 +376,7 @@ BOOL CAboutDlg::OnInitDialog()
 	{
 		return false;
 	}
-#pragma warning(suppress: 6031)
+
 	str.LoadString(STR_AUTHOR);
 	pCtl->SetWindowText(str);
 
@@ -387,7 +387,7 @@ BOOL CAboutDlg::OnInitDialog()
 BOOL CMyApp::FirstInstance()
 {
 	CString strEvent;
-#pragma warning(suppress: 6031)
+
 	strEvent.LoadString(AFX_IDS_APP_TITLE);
 	strEvent += "::SingleInstanceEvent";
 	if (m_eOneTime.Create(strEvent))
@@ -402,7 +402,7 @@ BOOL CMyApp::SetFocusToPrevInstance()
 	CWnd* pWndPrev;
 	CWnd* pWndChild;
 	CString strWndTitle;
-#pragma warning(suppress: 6031)
+
 	strWndTitle.LoadString(AFX_IDS_APP_TITLE);
 
 	pWndPrev = CWnd::FindWindow(NULL, strWndTitle);

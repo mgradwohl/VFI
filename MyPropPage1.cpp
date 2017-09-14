@@ -178,7 +178,7 @@ BOOL CPageColumn::OnInitDialog()
 	CString strLabel;
 	for( int i=0; i < LIST_NUMCOLUMNS; i++ )
 	{
-#pragma warning(suppress: 6031)
+
 		strLabel.LoadString( m_pci[i].GetLabelID() );
 		strLabel = " " + strLabel;
 		m_ctlColumns.AddString( strLabel );
@@ -264,7 +264,7 @@ void CPageGeneral::OnKillFocusEditWave()
 	{
 		CString strError;
 		CString strTitle;
-#pragma warning(suppress: 6031)
+
 		strTitle.LoadString(ERR_TITLE);
 		strError.FormatMessage(ERR_REENTERWAVE, (LPCWSTR)m_strWave);
 
@@ -296,7 +296,7 @@ void CPageGeneral::OnKillfocusSavepath()
 	if (!DoesFolderExist(m_strSavePath) && !m_strSavePath.IsEmpty())
 	{
 		CString strTitle;
-#pragma warning(suppress: 6031)
+
 		strTitle.LoadString(ERR_TITLE);
 		CString strError;
 		strError.FormatMessage(ERR_REENTERPATH, (LPCWSTR)m_strSavePath);

@@ -174,7 +174,7 @@ void CMyStatusBar::SetPaneSize( UINT nPaneID, UINT nStringID )
 
 	CString strCount;
 	strCount.Empty();
-#pragma warning(suppress: 6031)
+
 	strCount.LoadString(nStringID);
 	CSize sz = pdc->GetTextExtent(strCount);
 	if (hOldFont!=NULL) 

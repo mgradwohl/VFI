@@ -29,8 +29,6 @@
 #include "mylistview.h"
 #include "frame.h"
 #include "Doc.h"
-#include "ProgressBox.h"
-#include "wisefile.h"
 #include <memory>
 #include "filelib.h"
 #include "wndlib.h"
@@ -1301,11 +1299,11 @@ DONE:
 bool CMyDoc::WriteFileEx(LPCWSTR pszFile)
 {
 	CMainFrame* pFrame = static_cast<CMainFrame*> (AfxGetMainWnd());
-	if (NULL == pFrame)
+	if (pFrame==nullptr)
 		return false;
 	
 	CMyListView* pView = static_cast<CMyListView*> (pFrame->GetActiveView());
-	if (NULL == pView)
+	if (pView==nullptr)
 		return false;
 
 	// New strategy
@@ -1340,21 +1338,17 @@ bool CMyDoc::WriteFileEx(LPCWSTR pszFile)
 		CloseHandle(hFile);
 		return false;
 	}
+
 	CString	strText;
-#pragma warning(suppress: 6031)
 	strText.LoadString(STR_FILESAVING);
-	CProgressBox Box;
-	Box.Create(AfxGetMainWnd(), MWX_APP | MWX_CENTER);
-	Box.SetWindowText(strText);
-	Box.m_ctlProgress.SetPos(0);
-	Box.m_ctlProgress.SetStep(1);
-	Box.ShowWindow(SW_SHOWNORMAL);
+	pView->UpdateStatus(strText);
 
 	CListCtrl& theListCtrl = pView->GetListCtrl();
 	c = theListCtrl.GetItemCount();
-	Box.m_ctlProgress.SetRange32(0, c);
 
-	//wfsp pInfo = nullptr;
+	// the reason we use the view is we write out the columns the user has chosen, not all the data
+	
+	// Why can't this be a spWiseFile (shared_ptr)?
 	CWiseFile* pInfo = nullptr;
 	for (j = 0; j < c; j++)
 	{
@@ -1371,18 +1365,15 @@ bool CMyDoc::WriteFileEx(LPCWSTR pszFile)
 			CloseHandle(hFile);
 			::DeleteFile(pszFile);
 			HeapFree(GetProcessHeap(), 0, (LPVOID) pwz);
-			Box.DestroyWindow();
 			return false;
 		}
 		::SetFilePointer(hFile, 0, NULL, FILE_END);
-		Box.m_ctlProgress.StepIt();
 	}
 
 	HeapFree(GetProcessHeap(), 0, (LPVOID) pwz);
 	CloseHandle(hFile);
-	Box.DestroyWindow();
 
-	Box.DestroyWindow();
+	pView->ResetStatus();
 	SetModifiedFlag(FALSE);
 	return true;
 }

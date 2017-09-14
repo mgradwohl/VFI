@@ -243,7 +243,6 @@
     <ClInclude Include="MyPropPage1.h" />
     <ClInclude Include="Mypropsheet.h" />
     <ClInclude Include="MyStatusBar.h" />
-    <ClInclude Include="ProgressBox.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="strlib.h" />
@@ -288,7 +287,6 @@
     <ClCompile Include="MyPropPage1.cpp" />
     <ClCompile Include="Mypropsheet.cpp" />
     <ClCompile Include="MyStatusBar.cpp" />
-    <ClCompile Include="ProgressBox.cpp" />
     <ClCompile Include="STDAFX.CPP" />
     <ClCompile Include="strlib.cpp" />
     <ClCompile Include="Timedlg.cpp" />

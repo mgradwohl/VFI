@@ -37,7 +37,6 @@
 #include "mylistview.h"
 #include "MyPropSheet.h"
 #include "timedlg.h"
-#include "progressbox.h"
 #include <mmsystem.h>
 
 #ifdef _DEBUG
@@ -220,10 +219,8 @@ void CMyListView::OnInitialUpdate()
 		if ((NULL == g_pBuf) || (g_dwChunk < 1 ))
 		{
 			CString strError;
-#pragma warning(suppress: 6031)
 			strError.LoadString(ERR_NOMEMORY);
 			CString strTitle;
-#pragma warning(suppress: 6031)
 			strTitle.LoadString(ERR_TITLE);
 			ErrorMessageBox(AfxGetMainWnd()->GetSafeHwnd(), GetLastError(), strTitle, strError);
 
@@ -304,7 +301,7 @@ bool CMyListView::AddItem(CWiseFile* pFileInfo)
 		}
 
 		CString strTitle;
-#pragma warning(suppress: 6031)
+
 		strTitle.LoadString(ERR_TITLE);
 		strError.Format(ERR_ADDFILE_FAILED, (LPCWSTR)strError, GetLastError() );
 
@@ -456,7 +453,7 @@ void CMyListView::OnDropFiles(HDROP hDropInfo)
 	strText.FormatMessage(STR_FILEADD, szCount);
 	UpdateStatus(strText);
 
-#pragma warning(suppress: 6031)
+
 	CString strFile;
 	while ( !FileList.IsEmpty() && !g_eTermThreads.Signaled())
 	{
@@ -905,7 +902,7 @@ bool CMyListView::RestorePreferences()
 	{
 		CString strError;
 		CString strTitle;
-#pragma warning(suppress: 6031)
+
 		strTitle.LoadString(ERR_TITLE);
 		strError.FormatMessage(ERR_WAVENOTFOUND, (LPCWSTR)m_strWave);
 		ErrorMessageBox(AfxGetMainWnd()->GetSafeHwnd(), GetLastError(), strTitle, strError);
@@ -1032,10 +1029,10 @@ void CMyListView::OnFileTouch()
 	if (theListCtrl.GetSelectedCount() == 0)
 	{
 		CString strTitle;
-#pragma warning(suppress: 6031)
+
 		strTitle.LoadString(ERR_TITLE);
 		CString strError;
-#pragma warning(suppress: 6031)
+
 		strError.LoadString(ERR_NOTOUCH);
 		ErrorMessageBox(AfxGetMainWnd()->GetSafeHwnd(), GetLastError(), strTitle, strError);
 		return;
@@ -1977,7 +1974,7 @@ HGLOBAL CMyListView::GetBufferHandle()
 void CMyListView::ShowCmdHelp()
 {
 		CString strTitle;
-#pragma warning(suppress: 6031)
+
 		strTitle.LoadString(ERR_TITLE);
 		CString strError;
 		strError.FormatMessage(ERR_BADCOMMANDLINE, m_szFolder);
