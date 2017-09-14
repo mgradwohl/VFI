@@ -448,32 +448,18 @@ void CMyListView::OnDropFiles(HDROP hDropInfo)
 		return;
 	}
 
-	// now we know how many files there are, so we add them
-	// create the progess box
 	CString strText;
-
-	CProgressBox Box;
-	Box.Create(this, MWX_APP | MWX_CENTER);
-	// so the view can detroy this later
-	m_pBox = &Box;
-
-#pragma warning(suppress: 6031)
-	Box.m_ctlProgress.SetPos(0);
-	Box.m_ctlProgress.SetStep(1);
-	Box.ShowWindow(SW_SHOWNORMAL);
-	strText.Empty();
-	int count = Clamp(FileList.GetCount());
+	size_t count = FileList.GetCount();
+	//pDoc->m_FileList.Grow(count);
 	WCHAR szCount[64];
 	int2str(szCount, count);
 	strText.FormatMessage(STR_FILEADD, szCount);
-	Box.SetWindowText(strText);
-	Box.m_ctlProgress.SetRange32(0, count);
+	UpdateStatus(strText);
 
+#pragma warning(suppress: 6031)
 	CString strFile;
 	while ( !FileList.IsEmpty() && !g_eTermThreads.Signaled())
 	{
-		if (Box.m_hWnd != NULL)
-			Box.m_ctlProgress.StepIt();
 		strFile = FileList.RemoveHead();
 		pDoc = GetDocument();
 		if (pDoc != nullptr)
@@ -486,8 +472,6 @@ void CMyListView::OnDropFiles(HDROP hDropInfo)
 		}
 		theApp.ForwardMessages();
 	}
-	Box.DestroyWindow();
-	m_pBox = nullptr;
 
 	pDoc = GetDocument();
 	if (pDoc != nullptr)
@@ -495,6 +479,9 @@ void CMyListView::OnDropFiles(HDROP hDropInfo)
 		pDoc->SetPathName(szDropFolder);
 		pDoc->ResumeAllThreads();
 	}
+
+	strText.LoadStringW(AFX_IDS_IDLEMESSAGE);
+	UpdateStatus(strText);
 }
 
 void CMyListView::OnGetDispInfo(NMHDR* pNMHDR, LRESULT* pResult) 

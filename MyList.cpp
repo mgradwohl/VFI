@@ -61,3 +61,9 @@ void MyList::AddHead(shared_ptr<CWiseFile> p)
 {
 	list.insert(list.begin(), p);
 }
+
+void MyList::Grow(size_t i)
+{
+	size_t c = list.size();
+	list.resize(i + c);
+}

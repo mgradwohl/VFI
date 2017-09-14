@@ -26,5 +26,6 @@ public:
 	bool Remove(shared_ptr<CWiseFile> p);
 	void AddTail(shared_ptr<CWiseFile> p);
 	void AddHead(shared_ptr<CWiseFile> p);
+	void Grow(size_t i);
 };
 
