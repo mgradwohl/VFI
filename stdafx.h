@@ -26,7 +26,7 @@
 //      are changed infrequently
 //
 
-#pragma warning(disable: 4711)
+//#pragma warning(disable: 4711)
 
 #ifndef STRICT
 	#define STRICT
@@ -84,9 +84,9 @@
 #include <shlobj.h>			// Browse for folder
 //#include <shlwapi.h>		// StrFormatByteSize
 
-#pragma warning(disable:4201)
+//#pragma warning(disable:4201)
 #include <mmsystem.h>
-#pragma warning(default:4201)
+//#pragma warning(default:4201)
 
 #include <afxdisp.h>
 
