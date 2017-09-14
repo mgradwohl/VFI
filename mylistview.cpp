@@ -91,6 +91,7 @@ CMyListView::CMyListView()
 {
 	TRACE(L"CMyListView::CMyListView()\n");
 
+	m_pBox = nullptr;
 	m_hBuf = NULL;
 	m_pBuf = NULL;
 	m_fLockHeaderWidth = false;
@@ -131,7 +132,7 @@ void CMyListView::Dump(CDumpContext& dc) const
 
 CMyDoc* CMyListView::GetDocument()
 {
-	return static_cast<CMyDoc*> (m_pDocument);
+	return static_cast<CMyDoc*> (CListView::GetDocument());
 }
 #endif //_DEBUG
 
@@ -163,7 +164,10 @@ void CMyListView::OnInitialUpdate()
 
 	CListView::OnInitialUpdate();
 	CMyDoc* pDoc=GetDocument();
-	ASSERT_VALID( pDoc );
+	if (pDoc == nullptr)
+	{
+		return;
+	}
 
 	if (m_fFirstTime)
 	{
@@ -307,8 +311,11 @@ bool CMyListView::AddItem(CWiseFile* pFileInfo)
 		ErrorMessageBox(AfxGetMainWnd()->GetSafeHwnd(), GetLastError(), strTitle, strError);
 
 		CMyDoc* pDoc=GetDocument();
-		ASSERT (pDoc);
-		VERIFY (FALSE!=pDoc->DeleteFile( pFileInfo ));
+		if (pDoc == nullptr)
+		{
+			return false;
+		}
+		pDoc->DeleteFile( pFileInfo );
 	}
 	else
 	{
@@ -329,7 +336,10 @@ void CMyListView::OnAddButtload()
 	if (BrowseForFolder(m_hWnd, L"Choose a folder, all files in the folder will be added to the list.", szFolder))
 	{
 		CMyDoc* pDoc=GetDocument();
-		ASSERT_VALID( pDoc );
+		if (pDoc == nullptr)
+		{
+			return;
+		}
 		pDoc->RecurseDir( szFolder );
 	}
 }
@@ -344,7 +354,7 @@ void CMyListView::OnDropFiles(HDROP hDropInfo)
 	{
 		pFrame->SetForegroundWindow();
 	}
-
+	
 	CStringList PathList;
 	CStringList FileList;
 	CString strSearch;
@@ -354,25 +364,29 @@ void CMyListView::OnDropFiles(HDROP hDropInfo)
 	UINT i=0;
 	WCHAR szFileName[_MAX_PATH];
 	lstrinit(szFileName);
-	WCHAR szBuf[256];
+	//WCHAR szBuf[256];
 
 	// determine how many files we have
 	nFiles = ::DragQueryFile( hDropInfo, 0xFFFFFFFF, NULL, 0);
-	wsprintf(szBuf, L"nFiles %lu\r\n", nFiles);
-	OutputDebugString(szBuf);
-	
+
 	// determine where they were dropped from, and remember it
 	::DragQueryFileW( hDropInfo, 0, szFileName, _MAX_PATH);
-	
-	wsprintf(szBuf, L"nFiles %lu\r\n", nFiles);
-	OutputDebugString(szBuf);
-	
+
 	WCHAR szDropFolder[_MAX_PATH];
 	lstrcpy(szDropFolder, szFileName);
 
+	CMyDoc* pDoc = GetDocument();
+	if (pDoc == nullptr)
+	{
+		return;
+	}
+	pDoc->SuspendAllThreads();
+	
 	// just add them to a list first
 	while ( i < nFiles && !g_eTermThreads.Signaled())
 	{
+		CWaitCursor wait;
+
 		::DragQueryFile( hDropInfo, i, szFileName, _MAX_PATH);
 		fRun = (TRUE == m_Find.FindFile(szFileName,0));
 		while ( fRun )
@@ -403,6 +417,7 @@ void CMyListView::OnDropFiles(HDROP hDropInfo)
 	// now add all files on the path list to the file list
 	while ( !PathList.IsEmpty() && !g_eTermThreads.Signaled())
 	{
+		CWaitCursor wait;
 		strSearch=PathList.RemoveHead();
 		if (strSearch[strSearch.GetLength()-1] != '\\')
 		{
@@ -439,6 +454,8 @@ void CMyListView::OnDropFiles(HDROP hDropInfo)
 
 	CProgressBox Box;
 	Box.Create(this, MWX_APP | MWX_CENTER);
+	// so the view can detroy this later
+	m_pBox = &Box;
 
 #pragma warning(suppress: 6031)
 	Box.m_ctlProgress.SetPos(0);
@@ -452,30 +469,32 @@ void CMyListView::OnDropFiles(HDROP hDropInfo)
 	Box.SetWindowText(strText);
 	Box.m_ctlProgress.SetRange32(0, count);
 
-	CMyDoc* pDoc = GetDocument();
-	if (pDoc == nullptr)
-	{
-		return;
-	}
-
 	CString strFile;
 	while ( !FileList.IsEmpty() && !g_eTermThreads.Signaled())
 	{
 		if (Box.m_hWnd != NULL)
 			Box.m_ctlProgress.StepIt();
 		strFile = FileList.RemoveHead();
-		if (FALSE == pDoc->AddFile(strFile))
+		pDoc = GetDocument();
+		if (pDoc != nullptr)
 		{
-			strText.FormatMessage(ERR_FILEINUSE, (LPCWSTR)strFile);
-			UpdateStatus(strText);
+			if (FALSE == pDoc->AddFile(strFile))
+			{
+				strText.FormatMessage(ERR_FILEINUSE, (LPCWSTR)strFile);
+				UpdateStatus(strText);
+			}
 		}
 		theApp.ForwardMessages();
 	}
 	Box.DestroyWindow();
-	pDoc->SetPathName(szDropFolder);
+	m_pBox = nullptr;
 
-	// resume processing
-	pDoc->PauseAllThreads(false);
+	pDoc = GetDocument();
+	if (pDoc != nullptr)
+	{
+		pDoc->SetPathName(szDropFolder);
+		pDoc->ResumeAllThreads();
+	}
 }
 
 void CMyListView::OnGetDispInfo(NMHDR* pNMHDR, LRESULT* pResult) 
@@ -493,9 +512,6 @@ void CMyListView::OnGetDispInfo(NMHDR* pNMHDR, LRESULT* pResult)
 
 void CMyListView::OnUpdateFileNew(CCmdUI* pCmdUI) 
 {
-	CMyDoc* pDoc=GetDocument();
-	ASSERT_VALID( pDoc );
-
 	pCmdUI->Enable( TRUE );
 }
 
@@ -531,7 +547,10 @@ void CMyListView::OnUpdateFileRename(CCmdUI* pCmdUI)
 void CMyListView::OnUpdateFileSaveAs(CCmdUI* pCmdUI) 
 {
 	CMyDoc* pDoc=GetDocument();
-	ASSERT_VALID( pDoc );
+	if (pDoc == nullptr)
+	{
+		return;
+	}
 
 	pCmdUI->Enable( !pDoc->IsEmpty() );	
 }
@@ -544,8 +563,10 @@ void CMyListView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 		return;
 
 	CMyDoc* pDoc = GetDocument();
-	ASSERT_VALID( pDoc );
-	pDoc->PauseAllThreads(false);
+	if (pDoc == nullptr)
+	{
+		return;
+	}
 
 	switch (lHint)
 	{
@@ -785,7 +806,10 @@ void CMyListView::OnContextMenu(CWnd*, CPoint point)
 	VERIFY(menu.LoadMenu(CG_POPUP));
 	
 	CMenu* pPopup = menu.GetSubMenu(0);
-	ASSERT(pPopup != NULL);
+	if (pPopup == nullptr)
+	{
+		return;
+	}
 
 	CWnd* pWndPopupOwner = this;
 	while (pWndPopupOwner->GetStyle() & WS_CHILD)
@@ -793,8 +817,7 @@ void CMyListView::OnContextMenu(CWnd*, CPoint point)
 		pWndPopupOwner = pWndPopupOwner->GetParent();
 	}
 
-	pPopup->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON,
-		point.x, point.y,pWndPopupOwner);
+	pPopup->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, point.x, point.y,pWndPopupOwner);
 }
 
 BOOL CMyListView::PreTranslateMessage(MSG* pMsg)
@@ -950,7 +973,10 @@ bool CMyListView::SavePreferences()
 void CMyListView::OnViewOptions() 
 {
 	CMyDoc* pDoc=GetDocument();
-	ASSERT_VALID( pDoc );
+	if (pDoc == nullptr)
+	{
+		return;
+	}
 
 	CListCtrl& theListCtrl=GetListCtrl();
 	for( int i=0; i < LIST_NUMCOLUMNS; i++ )
@@ -1023,7 +1049,10 @@ void CMyListView::OnFileTouch()
 	}
 
 	CMyDoc* pDoc=GetDocument();
-	ASSERT_VALID( pDoc );
+	if (pDoc == nullptr)
+	{
+		return;
+	}
 
 	CTimeDlg dlg;
 	if (IDOK!=dlg.DoModal())
@@ -1045,6 +1074,7 @@ void CMyListView::OnFileTouch()
 	strText.FormatMessage(STR_FILETOUCH, szTouch);
 	
 	CProgressBox Box;
+	m_pBox = &Box;
 	Box.Create(this, MWX_CENTER);
 	Box.SetWindowText(strText);
 	Box.m_ctlProgress.SetPos(0);
@@ -1073,6 +1103,7 @@ void CMyListView::OnFileTouch()
 	}
 
 	Box.DestroyWindow();
+	m_pBox = nullptr;
 
 	SetRedraw(TRUE);
 	Invalidate();
@@ -1206,9 +1237,6 @@ int CMyListView::FindVisibleItem(CObject* pObject)
 		}
 	}
 
-	CWiseFile* pFileInfo = reinterpret_cast<CWiseFile*> (theListCtrl.GetItemData(iItem));
-	ASSERT(pFileInfo);
-	TRACE(L"FindVisibleItem found item %s.\n", pFileInfo->GetFullPath());
 	return -1;
 }
 
@@ -1261,8 +1289,6 @@ void CMyListView::OnFileAdd()
 	WCHAR szTitle[_MAX_PATH];
 	int nFiles = 0;
 
-	CMyDoc* pDoc=GetDocument();
-	ASSERT_VALID( pDoc );
 	::LoadString(AfxGetResourceHandle(), STR_FILEFILTER,  szFilter, _MAX_PATH);
 	::LoadString(AfxGetResourceHandle(), STR_OPENTITLE, szTitle, _MAX_PATH);
 	pipe2null(szFilter);
@@ -1273,14 +1299,19 @@ void CMyListView::OnFileAdd()
 	if (*pszBuf == '\0')
 		return;
 
-	pDoc->PauseAllThreads(true);
+	CMyDoc* pDoc = GetDocument();
+	if (pDoc == nullptr)
+	{
+		return;
+	}
+	pDoc->SuspendAllThreads();
 
 	if (DoesFileExist(pszBuf))
 	{
 		// one file, just add it
 		pDoc->AddFile(pszBuf);
 		// resume processing
-		pDoc->PauseAllThreads(false);
+		pDoc->ResumeAllThreads();
 		return;
 	}
 
@@ -1306,6 +1337,7 @@ void CMyListView::OnFileAdd()
 
 	bool fBox = false;
 	CProgressBox Box;
+	m_pBox = &Box;
 	if (nFiles > 20)
 	{
 		CString strText;
@@ -1321,6 +1353,12 @@ void CMyListView::OnFileAdd()
 	}
 
 	pch = pchFile;
+	pDoc = GetDocument();
+	if (pDoc == nullptr)
+	{
+		return;
+	}
+
 	while(true)
 	{
 		pDoc->AddFile(szTitle, pch);
@@ -1333,14 +1371,25 @@ void CMyListView::OnFileAdd()
 	}
 
 	if (fBox) Box.DestroyWindow();
+	m_pBox = nullptr;
 
 	// resume processing
-	pDoc->PauseAllThreads(false);
+	if (pDoc == nullptr)
+	{
+		return;
+	}
+	pDoc->ResumeAllThreads();
 }
 
 void CMyListView::OnDestroy() 
 {
 	SavePreferences();
+
+	if (m_pBox != nullptr)
+	{
+		m_pBox->DestroyWindow();
+		m_pBox = nullptr;
+	}
 	CListView::OnDestroy();
 }
 
@@ -1357,7 +1406,10 @@ void CMyListView::OnFileProperties()
 {
 	// get the doc
 	CMyDoc* pDoc=GetDocument();
-	ASSERT_VALID( pDoc );
+	if (pDoc == nullptr)
+	{
+		return;
+	}
 
 	// get the listctrl
 	CListCtrl& theListCtrl=GetListCtrl();
@@ -1370,26 +1422,25 @@ void CMyListView::OnFileProperties()
 	POSITION pos = theListCtrl.GetFirstSelectedItemPosition();
 	int iItem = theListCtrl.GetNextSelectedItem(pos);
 
-	// get the object
-	CWiseFile* pFileInfo = reinterpret_cast<CWiseFile*> (theListCtrl.GetItemData(iItem));
-	ASSERT (pFileInfo);
-	
-	POINT pt = {0,0};
+	POINT pt = { 0,0 };
 	GetItem(iItem, pt);
 	pt.x += 2;
 	pt.y += (m_nMonoY + 2);
 
-	ShowShellFileProperties(m_hWnd, pFileInfo->GetFullPath());
+	// get the object
+	CWiseFile* pFileInfo = reinterpret_cast<CWiseFile*> (theListCtrl.GetItemData(iItem));
+	if (pFileInfo != nullptr)
+	{
+		ShowShellFileProperties(m_hWnd, pFileInfo->GetFullPath());
+	}
 }
 
 void CMyListView::OnEditRemove() 
 {
-	CMyDoc* pDoc=GetDocument();
-	ASSERT_VALID( pDoc );
-
 	CListCtrl& theListCtrl=GetListCtrl();
 
 	CProgressBox Box;
+	m_pBox = nullptr;
 	CString strText;
 	// create the progess box
 	int count = theListCtrl.GetSelectedCount();
@@ -1407,12 +1458,20 @@ void CMyListView::OnEditRemove()
 	SetRedraw(FALSE);
 	CWiseFile* pInfo = nullptr;
 	int iItem = theListCtrl.GetNextItem( -1, LVNI_SELECTED);
+	CMyDoc* pDoc = GetDocument();
+	if (pDoc == nullptr)
+	{
+		return;
+	}
+
 	while (iItem != -1)
 	{
 		Box.m_ctlProgress.StepIt();
 		pInfo= reinterpret_cast<CWiseFile*> (theListCtrl.GetItemData(iItem));
-		ASSERT (pInfo);
-		pDoc->DeleteFile( pInfo );
+		if (pInfo != nullptr)
+		{
+			pDoc->DeleteFile(pInfo);
+		}
 		iItem = theListCtrl.GetNextItem( iItem-1, LVNI_SELECTED);
 	}
 	SetRedraw(TRUE);
@@ -1427,6 +1486,7 @@ void CMyListView::OnEditRemove()
 	}
 
 	Box.DestroyWindow();
+	m_pBox = nullptr;
 }
 
 void CMyListView::OnViewSmartFit() 
@@ -1628,9 +1688,10 @@ LRESULT CMyListView::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 void CMyListView::OnEditCopy() 
 {
 	CMyDoc* pDoc = GetDocument();
-	ASSERT_VALID( pDoc );
-	if (!pDoc)
+	if (pDoc == nullptr)
+	{
 		return;
+	}
 
 	// If we have dirty files alert the user
 	if (pDoc->IsDirty())
@@ -1810,10 +1871,8 @@ bool CMyListView::FillBuffer(bool fAllRows, bool fAllFields)
 {
 	fAllFields;
 	CMyDoc* pDoc = GetDocument();
-	ASSERT_VALID( pDoc );
-	if (!pDoc || pDoc->IsEmpty())
+	if (pDoc==nullptr || pDoc->IsEmpty())
 	{
-		// no valid document
 		return false;
 	}
 
@@ -1839,9 +1898,10 @@ bool CMyListView::FillBuffer(bool fAllRows, bool fAllFields)
 		for (j = 0; j < c; j++)
 		{
 			pInfo = reinterpret_cast<CWiseFile*> (theListCtrl.GetItemData(j));
-			ASSERT (pInfo);
-
-			cbBuf += sizeof(*pInfo);
+			if (pInfo != nullptr)
+			{
+				cbBuf += sizeof(*pInfo);
+			}
 		}
 	}
 	else
@@ -1851,15 +1911,19 @@ bool CMyListView::FillBuffer(bool fAllRows, bool fAllFields)
 		{
 			iItem = theListCtrl.GetNextSelectedItem(pos);
 			pInfo = reinterpret_cast<CWiseFile*> (theListCtrl.GetItemData(iItem));
-			ASSERT (pInfo);
-
-			cbBuf += sizeof(*pInfo);
+			if (pInfo != nullptr)
+			{
+				cbBuf += sizeof(*pInfo);
+			}
 		}
 	}
 
 	// create buffer for holding individual items
 	LPWSTR pszItem = new WCHAR [8192];
-	ASSERT (pszItem);
+	if (pszItem == nullptr)
+	{
+		return false;
+	}
 	
 	// create buffer for holding all output
 	// done in clipboard friendly format
@@ -1891,7 +1955,6 @@ bool CMyListView::FillBuffer(bool fAllRows, bool fAllFields)
 		for (j = 0; j < c; j++)
 		{
 			pInfo = reinterpret_cast<CWiseFile*> (theListCtrl.GetItemData(j));
-			ASSERT (pInfo);
 
 			if (pInfo != nullptr)
 			{
@@ -1912,7 +1975,6 @@ bool CMyListView::FillBuffer(bool fAllRows, bool fAllFields)
 			pInfo = reinterpret_cast<CWiseFile*> (theListCtrl.GetItemData(iItem));
 			if (pInfo == nullptr)
 			{
-				ASSERT(pInfo);
 				delete[] pszItem;
 				return false;
 			}

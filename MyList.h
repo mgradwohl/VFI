@@ -4,8 +4,8 @@
 #include <memory>
 
 using namespace std;
-typedef shared_ptr<CWiseFile> wfsp;
-typedef vector<wfsp> MyVector;
+typedef shared_ptr<CWiseFile> spWiseFile;
+typedef vector<spWiseFile> MyVector;
 typedef MyVector::iterator MyListIterator;
 
 

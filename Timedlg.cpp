@@ -140,8 +140,7 @@ BOOL CTimeDlg::OnInitDialog()
 
 void CTimeDlg::GetTime( SYSTEMTIME* pTime )
 {
-	ASSERT(pTime);
-	if (pTime==NULL)
+	if (pTime==nullptr)
 		return;
 
 	UpdateData(TRUE);

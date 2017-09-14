@@ -134,9 +134,9 @@ enum MWXFlags
 };
 						
 // How long should we wait for the threads to die in ms
-static const int THREAD_WAIT	=100;
+static const int THREAD_WAIT	=250;
 // How many times should we try to kill them
-static const int THREAD_TRY		=50;
+static const int THREAD_TRY		=10;
 #define THREAD_PRIORITY THREAD_PRIORITY_NORMAL
 #define APP_PRIORITY THREAD_PRIORITY_ABOVE_NORMAL
 

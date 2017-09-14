@@ -40,7 +40,7 @@ protected: // create from serialization only
 
 // Attributes
 public:
-	wfsp GetItem(int i)
+	spWiseFile GetItem(int i)
 	{
 		return m_FileList.GetItemAt(i);
 	}
@@ -62,14 +62,14 @@ public:
 	void DeleteMainList();
 	void RemoveAllMain();
 	BOOL CreateThreads();
-	BOOL AddToMain( wfsp pFileInfo );
-	BOOL RemoveFromMain( wfsp pFileInfo );
+	BOOL AddToMain( spWiseFile pFileInfo );
+	BOOL RemoveFromMain( spWiseFile pFileInfo );
 	void DeleteKillList();
-	void AddToKill( wfsp pFileInfo );
-	void ChangeItemState( wfsp pFileInfo, WORD wState );
-	BOOL AddToDirty( wfsp pFileInfo );
-	BOOL RemoveFromDirty( wfsp pFileInfo );
-	wfsp RemoveDirtyHead();
+	void AddToKill( spWiseFile pFileInfo );
+	void ChangeItemState( spWiseFile pFileInfo, WORD wState );
+	BOOL AddToDirty( spWiseFile pFileInfo );
+	BOOL RemoveFromDirty( spWiseFile pFileInfo );
+	spWiseFile RemoveDirtyHead();
 	BOOL SuspendAllThreads();
 	BOOL ResumeAllThreads();
 	void RemoveAllDirty();
@@ -148,7 +148,6 @@ public:
 		return (TRUE == m_DirtyList.isEmpty());
 	}
 
-	void PauseAllThreads(bool fPause);
 	virtual void SafeUpdateAllViews(CView* pSender, LPARAM lHint, CObject* pHint);
 	virtual ~CMyDoc();
 	CMutex m_Mutex;

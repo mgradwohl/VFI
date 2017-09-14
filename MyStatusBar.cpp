@@ -54,7 +54,7 @@ BEGIN_MESSAGE_MAP(CMyStatusBar, CStatusBar)
 	//{{AFX_MSG_MAP(CMyStatusBar)
 	ON_WM_SIZE()
 	//}}AFX_MSG_MAP
-	ON_NOTIFY_EX( TTN_NEEDTEXTA, 0, OnToolTipText )
+	ON_NOTIFY_EX(TTN_NEEDTEXTA, 0, OnToolTipText)
 	ON_NOTIFY_EX( TTN_NEEDTEXTW, 0, OnToolTipText )
 END_MESSAGE_MAP()
 
@@ -270,7 +270,6 @@ void CMyStatusBar::OnSize(UINT nType, int cx, int cy)
 
 INT_PTR CMyStatusBar::OnToolHitTest(CPoint point, TOOLINFO* pTI)
 {
-	ASSERT(FALSE);
 	CRect rc1;
 	CRect rc2;
 	m_ctlProgress1.GetWindowRect(&rc1);
@@ -297,12 +296,11 @@ BOOL CMyStatusBar::OnToolTipText( UINT id, NMHDR* pNMHDR, LRESULT* pResult )
 {
 	id;
 	CMyDoc* pDoc = GetFrame()->GetDocument();
-	ASSERT(pDoc);
 	if (pDoc == nullptr)
 	{
-		return FALSE;
+		return false;
 	}
-	ASSERT(pNMHDR->code == TTN_NEEDTEXTA || pNMHDR->code == TTN_NEEDTEXTW);
+
 	TOOLTIPTEXTW* pTTTW = (TOOLTIPTEXTW*)pNMHDR;
 
 	DWORD dw = pDoc->GetItemCount();

@@ -94,7 +94,10 @@ bool CHelpDlg::LoadRTF(UINT nID)
 DWORD CALLBACK CHelpDlg::EditStreamInCallBack(DWORD_PTR dwCookie, LPBYTE pbBuff, LONG cb, LONG* pcb)
 {
 	CMemFile* pFile = reinterpret_cast<CMemFile*> (dwCookie);
-	ASSERT(pFile != NULL);
+	if (pFile == nullptr)
+	{
+		return (DWORD)E_FAIL;
+	}
 
 	// read the number of bytes requested (no more than that!)
 	*pcb = pFile->Read(pbBuff, cb);
