@@ -250,15 +250,19 @@ DWORD CMyDoc::RecurseDir( LPWSTR pszPath )
 	WCHAR szSearch[_MAX_PATH];
 	BOOL fRun=FALSE;
 	
-#pragma warning(suppress: 6031)
-	strText.LoadString(STR_FILECOUNTING);
+	CMainFrame* pFrame = static_cast<CMainFrame*> (AfxGetMainWnd());
+	if (pFrame == nullptr)
+	{
+		return (DWORD)-1;
+	}
+	CMyListView* pView = static_cast<CMyListView*> (pFrame->GetActiveView());
 
-	CProgressBox Box;
-	Box.Create(AfxGetMainWnd(), MWX_APP | MWX_CENTER);
-	Box.SetWindowText(strText);
-	Box.m_ctlProgress.SetPos(0);
-	Box.m_ctlProgress.SetStep(1);
-	Box.ShowWindow(SW_SHOWNORMAL);
+	if (pView == nullptr)
+	{
+		return (DWORD)-1;
+	}
+	strText.LoadString(STR_FILECOUNTING);
+	pView->UpdateStatus(strText);
 
 	PathList.AddTail( pszPath );
 
@@ -318,16 +322,15 @@ DWORD CMyDoc::RecurseDir( LPWSTR pszPath )
 		}
 	}
 
-	int count = Clamp(FileList.GetCount());
+	size_t count = FileList.GetCount();
 	WCHAR szCount[64];
 	int2str(szCount, count);
 	strText.FormatMessage(STR_FILEADD, szCount);
-	Box.m_ctlProgress.SetRange32(0, count);
-	Box.SetWindowText(strText);
+	pView->UpdateStatus(strText);
+
 	CString strFile;
 	while ( !FileList.IsEmpty())
 	{
-		Box.m_ctlProgress.StepIt();
 		strFile = FileList.RemoveHead();
 		if (FALSE == this->AddFile(strFile))
 		{
@@ -340,9 +343,8 @@ DWORD CMyDoc::RecurseDir( LPWSTR pszPath )
 		}
 	}
 
-	Box.DestroyWindow();
 	SetPathName(pszPath, FALSE);
-
+	pView->ResetStatus();
 	ResumeAllThreads();
 
 	return 0;

@@ -480,8 +480,7 @@ void CMyListView::OnDropFiles(HDROP hDropInfo)
 		pDoc->ResumeAllThreads();
 	}
 
-	strText.LoadStringW(AFX_IDS_IDLEMESSAGE);
-	UpdateStatus(strText);
+	ResetStatus();
 }
 
 void CMyListView::OnGetDispInfo(NMHDR* pNMHDR, LRESULT* pResult) 
@@ -1019,7 +1018,14 @@ void CMyListView::OnFileRename()
 	shFileOp.lpszProgressTitle; 
  }
 
-void CMyListView::OnFileTouch() 
+void CMyListView::ResetStatus()
+{
+	CString strText;
+	strText.LoadString(AFX_IDS_IDLEMESSAGE);
+	UpdateStatus(strText);
+}
+
+void CMyListView::OnFileTouch()
 {
 	m_fAutomatic = false;
 	CListCtrl& theListCtrl=GetListCtrl();
@@ -1059,16 +1065,7 @@ void CMyListView::OnFileTouch()
 	WCHAR szTouch[64];
 	int2str(szTouch, theListCtrl.GetSelectedCount());
 	strText.FormatMessage(STR_FILETOUCH, szTouch);
-	
-	CProgressBox Box;
-	m_pBox = &Box;
-	Box.Create(this, MWX_CENTER);
-	Box.SetWindowText(strText);
-	Box.m_ctlProgress.SetPos(0);
-	Box.m_ctlProgress.SetRange32(0, theListCtrl.GetSelectedCount());
-	Box.m_ctlProgress.SetStep(1);
-	Box.ShowWindow(SW_SHOWNORMAL);
-	strText.Empty();
+	UpdateStatus(szTouch);
 
 	dlg.GetTime( &time );
 	time.wSecond = 0;
@@ -1086,11 +1083,9 @@ void CMyListView::OnFileTouch()
 		TRACE(L">>> Touching file.\r\n");
 		pInfo->TouchFileTime( &ftime );//, TRUE, TRUE, TRUE);
 		theApp.ForwardMessages();
-		Box.m_ctlProgress.StepIt();
 	}
 
-	Box.DestroyWindow();
-	m_pBox = nullptr;
+	ResetStatus();
 
 	SetRedraw(TRUE);
 	Invalidate();
@@ -1322,22 +1317,11 @@ void CMyListView::OnFileAdd()
 		if (*pch == '\0') break;
 	}
 
-	bool fBox = false;
-	CProgressBox Box;
-	m_pBox = &Box;
-	if (nFiles > 20)
-	{
-		CString strText;
-		Box.Create(this, MWX_APP | MWX_CENTER);
-#pragma warning(suppress: 6031)
-		strText.LoadString(STR_FILEADD);
-		Box.SetWindowText(strText);
-		Box.m_ctlProgress.SetPos(0);
-		Box.m_ctlProgress.SetRange32(0, nFiles);
-		Box.m_ctlProgress.SetStep(1);
-		Box.ShowWindow(SW_SHOWNORMAL);
-		fBox = true;
-	}
+	CString strText;
+	WCHAR szCount[64];
+	int2str(szCount, nFiles);
+	strText.FormatMessage(STR_FILEADD, szCount);
+	UpdateStatus(strText);
 
 	pch = pchFile;
 	pDoc = GetDocument();
@@ -1349,22 +1333,20 @@ void CMyListView::OnFileAdd()
 	while(true)
 	{
 		pDoc->AddFile(szTitle, pch);
-		if (fBox) Box.m_ctlProgress.StepIt();
-
 		while (*pch != '\0')
 			pch = CharNext(pch);
 		pch++;
 		if (*pch == '\0') break;
 	}
 
-	if (fBox) Box.DestroyWindow();
-	m_pBox = nullptr;
-
 	// resume processing
 	if (pDoc == nullptr)
 	{
 		return;
 	}
+	
+	ResetStatus();
+
 	pDoc->ResumeAllThreads();
 }
 
@@ -1426,21 +1408,12 @@ void CMyListView::OnEditRemove()
 {
 	CListCtrl& theListCtrl=GetListCtrl();
 
-	CProgressBox Box;
-	m_pBox = nullptr;
 	CString strText;
-	// create the progess box
 	int count = theListCtrl.GetSelectedCount();
 	WCHAR szCount[64];
 	int2str(szCount, count);
 	strText.FormatMessage(STR_FILEREMOVE, szCount);
-	Box.Create(this, MWX_APP | MWX_CENTER);
-	Box.SetWindowText(strText);
-	Box.m_ctlProgress.SetPos(0);
-	Box.m_ctlProgress.SetStep(1);
-	Box.ShowWindow(SW_SHOWNORMAL);
-	Box.m_ctlProgress.SetRange32(0, count);
-	strText.Empty();
+	UpdateStatus(strText);
 
 	SetRedraw(FALSE);
 	CWiseFile* pInfo = nullptr;
@@ -1453,7 +1426,6 @@ void CMyListView::OnEditRemove()
 
 	while (iItem != -1)
 	{
-		Box.m_ctlProgress.StepIt();
 		pInfo= reinterpret_cast<CWiseFile*> (theListCtrl.GetItemData(iItem));
 		if (pInfo != nullptr)
 		{
@@ -1472,8 +1444,7 @@ void CMyListView::OnEditRemove()
 		theListCtrl.SetItemState( theListCtrl.GetItemCount()-1, LVIS_FOCUSED, LVIS_FOCUSED );
 	}
 
-	Box.DestroyWindow();
-	m_pBox = nullptr;
+	ResetStatus();
 }
 
 void CMyListView::OnViewSmartFit() 

@@ -54,6 +54,7 @@ public:
 	bool GetItem(int nItem, POINT pt);
 	int FindVisibleItem(CObject* pObject);
 	void UpdateStatus(LPCWSTR pszStatus);
+	void ResetStatus();
 	CColumnInfo* GetColumnInfo();
 	virtual ~CMyListView();
 	CString	m_strSavePath;
@@ -63,10 +64,6 @@ public:
 #endif
 	// misc
 	void UpdateWidths();
-
-	// Thread management
-	int GetThreadPriority();
-	void SetThreadPriority( int iPriority );
 
 	// Item Stuff
 	bool AddItem(CWiseFile* pFileInfo);
@@ -121,7 +118,7 @@ protected:
 	afx_msg void OnContextMenu(CWnd* pWnd, CPoint point);
 	afx_msg void OnFileRename();
 	afx_msg void OnUpdateFileRename(CCmdUI* pCmdUI);
-	afx_msg void OnFileTouch();
+	void OnFileTouch();
 	afx_msg void OnUpdateFileTouch(CCmdUI* pCmdUI);
 	afx_msg void OnEditSelectAll();
 	afx_msg void OnUpdateEditSelectAll(CCmdUI* pCmdUI);
