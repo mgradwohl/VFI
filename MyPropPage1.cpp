@@ -131,7 +131,6 @@ END_MESSAGE_MAP()
 void CPageGeneral::OnAudiocue() 
 {
 	CButton* pCheck = static_cast<CButton*> (GetDlgItem(IDC_AUDIOCUE));
-	ASSERT (pCheck);
 
 	if (pCheck != nullptr)
 	{
@@ -139,12 +138,16 @@ void CPageGeneral::OnAudiocue()
 	}
 
 	CButton* pBrowse = static_cast<CButton*> (GetDlgItem(IDC_BROWSEWAVE));
-	ASSERT (pBrowse);
-	pBrowse->EnableWindow( m_fAudioCue );
+	if (pBrowse != nullptr)
+	{
+		pBrowse->EnableWindow(m_fAudioCue);
+	}
 
 	CWnd* pEdit = static_cast<CWnd*> (GetDlgItem(IDC_EDITWAVE));
-	ASSERT (pEdit);
-	pEdit->EnableWindow( m_fAudioCue );
+	if (pEdit != nullptr)
+	{
+		pEdit->EnableWindow(m_fAudioCue);
+	}
 }
 
 BOOL CPageGeneral::OnInitDialog() 
@@ -241,8 +244,10 @@ void CPageGeneral::OnBrowseWave()
 		m_strWave = szFile;
 
 		CButton* pCheck = static_cast<CButton*> (GetDlgItem(IDC_AUDIOCUE));
-		ASSERT (pCheck);
-		pCheck->SetCheck(TRUE);
+		if (pCheck != nullptr)
+		{
+			pCheck->SetCheck(TRUE);
+		}
 
 		UpdateData(FALSE);
 	}

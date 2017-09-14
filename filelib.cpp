@@ -524,7 +524,7 @@ __int64 SetFilePointer64 (HANDLE hf, __int64 distance, DWORD MoveMethod)
 
 __int64 GetFileSize64(LPCWSTR pszFileSpec)
 {
-	if (NULL == pszFileSpec)
+	if (pszFileSpec == nullptr)
 		return 0;
 
 	HANDLE hFile = CreateFile(pszFileSpec,

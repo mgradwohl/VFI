@@ -71,17 +71,17 @@ BOOL CMyPropSheet::OnInitDialog()
 {
 	BOOL fRet=CPropertySheet::OnInitDialog();
 
-	// change the font for each page
-	CPropertyPage* pPage = NULL;
-	for (int i = 0; i < GetPageCount (); i++)
-	{
-		VERIFY (SetActivePage(i));
-		pPage = GetActivePage();
-		ASSERT (pPage);
-	}
+	//// change the font for each page
+	//CPropertyPage* pPage = NULL;
+	//for (int i = 0; i < GetPageCount (); i++)
+	//{
+	//	SetActivePage(i);
+	//	pPage = GetActivePage();
+	//	ASSERT (pPage);
+	//}
 
-	// set the default page active
-	VERIFY (SetActivePage (0));
+	//// set the default page active
+	//VERIFY (SetActivePage (0));
 
 	return fRet;
 }

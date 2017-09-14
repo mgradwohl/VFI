@@ -191,11 +191,11 @@ BOOL CMyApp::InitInstance()
 		return FALSE;
 	}
 
-		// for LVM_SETBKIMAGE
-	if (S_OK != CoInitialize(NULL))
-	{
-		ASSERT(false);
-	}
+	// for LVM_SETBKIMAGE
+	//if (S_OK != CoInitialize(NULL))
+	//{
+	//	ASSERT(false);
+	//}
 
 	// Init the Rich Edit Box
 	AfxInitRichEdit();
@@ -360,7 +360,11 @@ BOOL CAboutDlg::OnInitDialog()
 
 	// set the Title
 	CStatic* pCtl = static_cast<CStatic*> (GetDlgItem(IDC_TITLE));
-	ASSERT(pCtl);
+	if (pCtl == nullptr)
+	{
+		return false;
+	}
+
 	CString str;
 	//TODO put our version information in here
 	str.FormatMessage(STR_TITLE, L"4.90", L"4.90.1708.2201");
@@ -368,7 +372,10 @@ BOOL CAboutDlg::OnInitDialog()
 
 	// set the Author
 	pCtl = static_cast<CStatic*> (GetDlgItem(IDC_AUTHOR));
-	ASSERT(pCtl);
+	if (pCtl == nullptr)
+	{
+		return false;
+	}
 #pragma warning(suppress: 6031)
 	str.LoadString(STR_AUTHOR);
 	pCtl->SetWindowText(str);

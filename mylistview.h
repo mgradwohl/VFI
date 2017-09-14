@@ -178,6 +178,7 @@ private:
 	DWORD m_dwViewStyle;
 	HICON m_hSmallIcon;
 	HICON m_hLargeIcon;
+	CWnd* m_pBox;
 
 	// Other Class members
 	bool m_fFirstTime;
@@ -195,7 +196,7 @@ public:
 
 #ifndef _DEBUG  // debug version in mylistview.cpp
 inline CMyDoc* CMyListView::GetDocument()
-   { return reinterpret_cast<CMyDoc*> (m_pDocument); }
+   { return reinterpret_cast<CMyDoc*> (CListView::GetDocument()); }
 #endif
 
 inline bool CMyListView::SetViewType(DWORD dwViewType)

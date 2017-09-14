@@ -126,8 +126,9 @@ void CMyDoc::Dump(CDumpContext& dc) const
 
 BOOL CMyDoc::DeleteFile( CWiseFile* pFileInfo )
 {
-	ASSERT (NULL != pFileInfo);
-	
+	if (pFileInfo == nullptr)
+		return false;
+
 	if ( !pFileInfo->CheckState(FWFS_CRC_COMPLETE) )
 	{
 		InterlockedDecrement(&m_dwDirtyCRC);
@@ -140,14 +141,13 @@ BOOL CMyDoc::DeleteFile( CWiseFile* pFileInfo )
 	
 	// Update total filesize
 	m_qwSize -= pFileInfo->GetSize();
-	ASSERT(m_qwSize >= 0);
 
 	SetModifiedFlag( !m_FileList.isEmpty() );
 	
 	// Tell the view the file is gone
 	UpdateAllViews( NULL, HINT_DELETE, pFileInfo);
 
-	wfsp p;
+	spWiseFile p;
 	p.reset(pFileInfo);
 	AddToKill(p);
 	
@@ -241,7 +241,7 @@ DWORD CMyDoc::RecurseDir( LPWSTR pszPath )
 	if (NULL == pszPath)
 		return 0;
 	
-	PauseAllThreads(false);
+	SuspendAllThreads();
 
 	CFileFind m_Find;
 	CStringList PathList;
@@ -343,7 +343,7 @@ DWORD CMyDoc::RecurseDir( LPWSTR pszPath )
 	Box.DestroyWindow();
 	SetPathName(pszPath, FALSE);
 
-	PauseAllThreads(false);
+	ResumeAllThreads();
 
 	return 0;
 }
@@ -371,6 +371,7 @@ void CMyDoc::DeleteContents()
 	if (!m_fLastTime)
 	{
 		CreateThreads();
+		SuspendAllThreads();
 	}
 	
 	m_fFirstTime = false;
@@ -392,14 +393,17 @@ DWORD UpdateThreadInfo( LPVOID pParam )
 	TRACE(L"THREADINFO: begin\n");
 	
 	CMyDoc* pDoc = static_cast<CMyDoc*> (pParam);
-	ASSERT (pDoc);
+	if (pDoc == nullptr)
+	{
+		return (DWORD)-1;
+	}
 
-	wfsp pFileInfo = NULL;
+	spWiseFile pFileInfo = NULL;
 
 	// keep the thread alive
 	while (true)
 	{
-		g_eGoThreadInfo.Wait();
+		g_eGoThreadInfo.Wait(INFINITE);
 		if (g_eTermThreads.Signaled())
 		{
 			return (DWORD)-1;
@@ -408,7 +412,7 @@ DWORD UpdateThreadInfo( LPVOID pParam )
 		// keep the thread working
 		while (pDoc->IsDirty())
 		{
-			g_eGoThreadInfo.Wait();
+			g_eGoThreadInfo.Wait(INFINITE);
 			if (g_eTermThreads.Signaled())
 			{
 				return (DWORD)-1;
@@ -466,16 +470,13 @@ BOOL CMyDoc::ResumeAllThreads()
 {
 	TRACE(L"CMyDoc::ResumeAllThreads()\n");
 	
-	if (m_fPause)
-		return FALSE;
-
-	CMainFrame* pFrame = static_cast<CMainFrame*> (AfxGetMainWnd());
-	if (NULL == pFrame)
-		return FALSE;
-	
-	CMyListView* pView = static_cast<CMyListView*> (pFrame->GetActiveView());
-	if (NULL == pView)
-		return FALSE;
+	//CMainFrame* pFrame = static_cast<CMainFrame*> (AfxGetMainWnd());
+	//if (NULL == pFrame)
+	//	return FALSE;
+	//
+	//CMyListView* pView = static_cast<CMyListView*> (pFrame->GetActiveView());
+	//if (NULL == pView)
+	//	return FALSE;
 	
 	if ( (!g_eGoThreadInfo.Signaled()) && (m_dwDirtyInfo > 0) )
 	{
@@ -500,17 +501,17 @@ BOOL CMyDoc::SuspendAllThreads()
 	return TRUE;
 }
 
-wfsp CMyDoc::RemoveDirtyHead()
+spWiseFile CMyDoc::RemoveDirtyHead()
 {
 	TRACE(L"CMyDoc::RemoveDirtyHead\n");
 	
-	wfsp pObject = NULL;
+	spWiseFile pObject = NULL;
 
 	CSingleLock m_sLock( &m_Mutex );
-		while (!m_sLock.Lock(MTX_LOCK));
+	while (!m_sLock.Lock(MTX_LOCK));
 		if (m_DirtyList.isEmpty())
 		{
-			ASSERT ("Attempt to remove from empty dirty list");
+			TRACE ("Attempt to remove from empty dirty list");
 			pObject = NULL;
 		}
 		else
@@ -522,28 +523,31 @@ wfsp CMyDoc::RemoveDirtyHead()
 	return pObject;
 }
 
-BOOL CMyDoc::RemoveFromDirty( wfsp pFileInfo )
+BOOL CMyDoc::RemoveFromDirty( spWiseFile pFileInfo )
 {
 	TRACE(L"CMyDoc::RemoveFromDirty\n");
-	ASSERT( pFileInfo );
-	if (NULL == pFileInfo || m_DirtyList.isEmpty())
+
+	if (pFileInfo==nullptr || m_DirtyList.isEmpty())
 	{
 		return FALSE;
 	}
 	
 	CSingleLock m_sLock( &m_Mutex );
-		while (!m_sLock.Lock(MTX_LOCK));
+	while (!m_sLock.Lock(MTX_LOCK));
 		m_DirtyList.Remove(pFileInfo);
-
 	m_sLock.Unlock();
 	
 	return TRUE;
 }
 
-BOOL CMyDoc::AddToDirty( wfsp pFileInfo )
+BOOL CMyDoc::AddToDirty( spWiseFile pFileInfo )
 {
 	TRACE(L"CMyDoc::AddToDirty\n");
-	ASSERT (pFileInfo);
+
+	if (pFileInfo == nullptr)
+	{
+		return false;
+	}
 
 	CSingleLock m_sLock( &m_Mutex );
 		while (!m_sLock.Lock(MTX_LOCK));
@@ -553,12 +557,14 @@ BOOL CMyDoc::AddToDirty( wfsp pFileInfo )
 	return TRUE;
 }
 
-void CMyDoc::ChangeItemState( wfsp pFileInfo, WORD wState )
+void CMyDoc::ChangeItemState( spWiseFile pFileInfo, WORD wState )
 {
 	TRACE(L"CMyDoc::ChangeItemState\n");
-	ASSERT (pFileInfo);
-	if (NULL == pFileInfo)
+	if (pFileInfo == nullptr)
+	{
 		return;
+	}
+
 	
 	if (pFileInfo->CheckState(FWFS_DELETE))
 	{
@@ -606,7 +612,7 @@ void CMyDoc::ChangeItemState( wfsp pFileInfo, WORD wState )
 	}
 }
 
-void CMyDoc::AddToKill( wfsp pFileInfo )
+void CMyDoc::AddToKill( spWiseFile pFileInfo )
 {
 	TRACE(L"CMyDoc::AddToKill\n");
 	if (NULL == pFileInfo)
@@ -635,31 +641,42 @@ BOOL CMyDoc::AddFile(LPCWSTR pszFilename)
 {
 	TRACE(L"CMyDoc::AddFile()\n");
 	
+	// the mutex is a good signal that the Doc is going away
 	if (g_eTermThreads.Signaled())
 	{
 		TRACE(L"AddFile aborting\r\n");
 		return FALSE;
 	}
 
-	wfsp pNewFile (new CWiseFile);
-	ASSERT(pNewFile);
-		
+	spWiseFile pNewFile (new CWiseFile);
+	if (pNewFile == nullptr)
+	{
+		return false;
+	}
+
 	if (FWF_SUCCESS != pNewFile->Attach( pszFilename))
 	{
 		TRACE(L"AddFile skipping %s\r\n", pszFilename);
 	}
 	else
 	{
-		SetModifiedFlag( TRUE );
-		UpdateAllViews( NULL, HINT_ADD, pNewFile.get());
-		
+		if (m_Mutex == NULL)
+		{
+			// get out
+			TRACE(L"AddFile aborting: mutex is gone\r\n");
+			return false;
+		}
+
 		// Add the SAME file pointer to 2 lists, one that is the view's list
 		// and one that is the list of files for the thread to act on
-		AddToMain (pNewFile);
-		AddToDirty (pNewFile);
-		
+		AddToMain(pNewFile);
+		AddToDirty(pNewFile);
+
 		InterlockedIncrement(&m_dwDirtyCRC);
 		InterlockedIncrement(&m_dwDirtyInfo);
+
+		SetModifiedFlag( TRUE );
+		UpdateAllViews( NULL, HINT_ADD, pNewFile.get());
 		
 		m_fSentHintInfo = false;
 		m_fSentHintCRC = false;
@@ -670,35 +687,35 @@ BOOL CMyDoc::AddFile(LPCWSTR pszFilename)
 	return TRUE;
 }
 
-BOOL CMyDoc::RemoveFromMain( wfsp pFileInfo )
+BOOL CMyDoc::RemoveFromMain( spWiseFile pFileInfo )
 {
 	TRACE(L"CMyDoc::RemoveFromMain\n");
-	ASSERT( pFileInfo );
 	
-	if (NULL==pFileInfo || m_FileList.isEmpty())
+	if (pFileInfo==nullptr || m_FileList.isEmpty())
 		return FALSE;
 	
 	CSingleLock m_sLock( &m_Mutex );
-		while (!m_sLock.Lock(MTX_LOCK));
-	
+	while (!m_sLock.Lock(MTX_LOCK));
 		m_FileList.Remove(pFileInfo);
 	m_sLock.Unlock();
 	
 	return TRUE;
 }
 
-BOOL CMyDoc::AddToMain( wfsp pFileInfo )
+BOOL CMyDoc::AddToMain( spWiseFile pFileInfo )
 {
 	TRACE(L"CMyDoc::AddToMain\n");
-	ASSERT (pFileInfo);
+	
+	if (pFileInfo == nullptr)
+		return false;
 
 	CSingleLock m_sLock( &m_Mutex );
-		while (!m_sLock.Lock(MTX_LOCK));
+	while (!m_sLock.Lock(MTX_LOCK));
 		m_FileList.AddTail(pFileInfo);
 	m_sLock.Unlock();
 
 	m_qwSize += pFileInfo->GetSize();
-	return TRUE;
+	return true;
 }
 
 BOOL CMyDoc::CreateThreads()
@@ -715,11 +732,17 @@ BOOL CMyDoc::CreateThreads()
 
 	// Create the Threads
 	g_hThreadInfo=CreateThread( NULL, 0, (LPTHREAD_START_ROUTINE)UpdateThreadInfo, this, THREAD_PRIORITY, &g_dwThreadInfo);
-	ASSERT(g_hThreadInfo);
+	if (g_hThreadInfo == NULL)
+	{
+		return false;
+	}
 	
 	g_hThreadCRC=CreateThread( NULL, 0, (LPTHREAD_START_ROUTINE)UpdateThreadCRC, this, THREAD_PRIORITY, &g_dwThreadCRC);
-	ASSERT(g_hThreadCRC);
-	
+	if (g_hThreadCRC == NULL)
+	{
+		return false;
+	}
+
 	return TRUE;
 }
 
@@ -747,6 +770,10 @@ void CMyDoc::TerminateThreads()
 {
 	TRACE(L"CMyDoc::TerminateThreads()\n");
 
+	// Unlock the lists
+	CSingleLock m_sLock(&m_Mutex);
+	m_sLock.Unlock();
+
 	// Tell Threads To Die and resume them
 	g_eTermThreads.Signal();
 	g_eGoThreadCRC.Signal();
@@ -764,7 +791,7 @@ void CMyDoc::TerminateThreads()
 		}
 		if (S_OK != CloseHandle(g_hThreadCRC))
 		{
-			TerminateThread(g_hThreadCRC, -1);
+			TerminateThread(g_hThreadCRC, (DWORD)-1);
 			TRACE(L"THREADMAIN: CRC thread nuked\n");
 		}
 		else
@@ -792,7 +819,7 @@ void CMyDoc::TerminateThreads()
 		
 		if (S_OK != CloseHandle(g_hThreadInfo))
 		{
-			TerminateThread(g_hThreadInfo, -1);
+			TerminateThread(g_hThreadInfo, (DWORD)-1);
 			TRACE(L"THREADMAIN: Info thread nuked\n");
 		}
 		else
@@ -811,7 +838,8 @@ void CMyDoc::TerminateThreads()
 	g_eGoThreadCRC.Close();
 	g_eGoThreadInfo.Close();
 	
-	FreeCRCMemory();
+	// handled by destructor
+	// FreeCRCMemory();
 }
 
 void CMyDoc::OnCloseDocument() 
@@ -819,30 +847,27 @@ void CMyDoc::OnCloseDocument()
 	TRACE(L"THREADMAIN: OnCloseDocument()\n");
 	m_fLastTime = true;
 	m_bAutoDelete = true;
+
+	TerminateThreads();
+
 	CDocument::OnCloseDocument();
 }
 
 void CMyDoc::SafeUpdateAllViews(CView* pSender, LPARAM lHint, CObject* pHint)
 {
-	ASSERT(pSender == NULL || !m_viewList.IsEmpty());
-	// must have views if sent by one of them
+	if (pSender == nullptr || !m_viewList.IsEmpty())
+	{
+		return;
+	}
 
 	POSITION pos = GetFirstViewPosition();
 	CView* pView = NULL;
 	while (pos != NULL)
 	{
 		pView = GetNextView(pos);
-		//ASSERT_VALID(pView);
 		if (pView != pSender)
 			pView->PostMessage(theApp.WM_UPDATEVIEW(), lHint, (LPARAM) pHint);
 	}
-}
-
-void CMyDoc::PauseAllThreads(bool fPause)
-{
-	m_fPause = fPause;
-	if (!m_fPause)
-		ResumeAllThreads();
 }
 
 bool CMyDoc::GetHeaderString(LPWSTR pszBuf)
@@ -897,7 +922,6 @@ bool CMyDoc::GetRowString(CWiseFile& rFile, LPWSTR pszBuf)
 	LPWSTR pszText = (LPWSTR) HeapAlloc(GetProcessHeap(), 0, (cbItem + 1) );
 	if (pszText == nullptr)
 	{
-		ASSERT(pszText);
 		return false;
 	}
 
@@ -1040,7 +1064,7 @@ DWORD UpdateThreadCRC( LPVOID pParam )
 
 	// Now that we have the basic things we need, declare variables
 	// TODO: Try to reduce the number of allocations
-	wfsp pFileInfo;
+	spWiseFile pFileInfo;
 	unsigned long crc32;
 	BYTE* pchCurrent;
 	HANDLE hFile;
@@ -1055,7 +1079,7 @@ DWORD UpdateThreadCRC( LPVOID pParam )
 	// this loop keeps this thread alive until the first if statement below breaks
 	while (true)
 	{
-		g_eGoThreadCRC.Wait();
+		g_eGoThreadCRC.Wait(INFINITE);
 		if (g_eTermThreads.Signaled())
 		{
 			return (DWORD)-1;
@@ -1065,7 +1089,7 @@ DWORD UpdateThreadCRC( LPVOID pParam )
 		// at which point it Resets the event and the Wait() below waits
 		while (pDoc->IsDirty())
 		{
-			g_eGoThreadCRC.Wait();
+			g_eGoThreadCRC.Wait(INFINITE);
 			if (g_eTermThreads.Signaled())
 			{
 				return (DWORD)-1;
@@ -1333,7 +1357,6 @@ bool CMyDoc::WriteFileEx(LPCWSTR pszFile)
 	for (j = 0; j < c; j++)
 	{
 		pInfo = reinterpret_cast<CWiseFile*> (theListCtrl.GetItemData(j));
-		ASSERT(pInfo);
 		if (pInfo != nullptr)
 		{
 			GetRowString(*pInfo, pwz);

@@ -4,8 +4,8 @@
 #include <memory>
 
 using namespace std;
-typedef shared_ptr<CWiseFile> wfsp;
-typedef vector<wfsp> MyVector;
+typedef shared_ptr<CWiseFile> spWiseFile;
+typedef vector<spWiseFile> MyVector;
 typedef MyVector::iterator MyListIterator;
 
 
@@ -26,5 +26,6 @@ public:
 	bool Remove(shared_ptr<CWiseFile> p);
 	void AddTail(shared_ptr<CWiseFile> p);
 	void AddHead(shared_ptr<CWiseFile> p);
+	void Grow(size_t i);
 };
 

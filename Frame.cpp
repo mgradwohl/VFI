@@ -261,11 +261,11 @@ BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs)
 void CMainFrame::OnDropFiles(HDROP hDropInfo) 
 {
 	CMyListView* pView = static_cast<CMyListView*> (GetActiveView());
-	ASSERT( pView );
-	if (pView != nullptr)
+	if (pView == nullptr)
 	{
-		pView->SendMessage(WM_DROPFILES, (WPARAM)hDropInfo, 0);
+		return;
 	}
+	pView->SendMessage(WM_DROPFILES, (WPARAM)hDropInfo, 0);
 }
 
 void CMainFrame::OnUpdateCount(CCmdUI* pCmdUI)
@@ -278,7 +278,10 @@ void CMainFrame::OnUpdateCount(CCmdUI* pCmdUI)
 	pCmdUI->Enable(); 
 
 	CMyDoc* pDoc = static_cast<CMyDoc*> (GetActiveDocument());
-	ASSERT (pDoc);
+	if (pDoc == nullptr)
+	{
+		return;
+	}
 
 	if (m_iCount == pDoc->GetItemCount())
 	{
@@ -297,7 +300,10 @@ void CMainFrame::OnUpdateSize(CCmdUI* pCmdUI)
 {
 	pCmdUI;
 	CMyDoc* pDoc = static_cast<CMyDoc*> (GetActiveDocument());
-	ASSERT (pDoc);
+	if (pDoc == nullptr)
+	{
+		return;
+	}
 
 	m_qwSize = pDoc->GetTotalSize();
 	WCHAR szBuf[64];
@@ -364,13 +370,14 @@ void CMainFrame::OnMyHelp()
 void CMainFrame::UpdateProgress()
 {
 	CMyDoc* pDoc = static_cast<CMyDoc*> (GetActiveDocument());
-	ASSERT (pDoc);
-	if (pDoc != nullptr)
+	if (pDoc == nullptr)
 	{
-		m_wndStatusBar.UpdateProgress(1, pDoc->m_dwDirtyInfo, pDoc->GetItemCount());
-		m_qwSize = pDoc->GetTotalSize();
-		m_wndStatusBar.UpdateProgress(2, (DWORD((m_qwSize - pDoc->SizeRead())) >> 20), ((DWORD)m_qwSize >> 20));
+		return;
 	}
+
+	m_wndStatusBar.UpdateProgress(1, pDoc->m_dwDirtyInfo, pDoc->GetItemCount());
+	m_qwSize = pDoc->GetTotalSize();
+	m_wndStatusBar.UpdateProgress(2, (DWORD((m_qwSize - pDoc->SizeRead())) >> 20), ((DWORD)m_qwSize >> 20));
 }
 
 void CALLBACK EXPORT CMainFrame::TimerProc(HWND hWnd, UINT nMsg, UINT nIDEvent, DWORD dwTime)
@@ -408,14 +415,6 @@ void CALLBACK EXPORT CMainFrame::TimerProc(HWND hWnd, UINT nMsg, UINT nIDEvent, 
 	cui.m_nID = ID_INDICATOR_BUFFER;
 	cui.m_nIndex++;
 	pFrame->OnUpdateBuffer(&cui);
-
-	CMyDoc* pDoc = static_cast<CMyDoc*> (pFrame->GetActiveDocument());
-	ASSERT (pDoc);
-	
-	if (pDoc->IsDirty())
-	{
-		pDoc->PauseAllThreads(false);
-	}
 }
 
 BOOL CMainFrame::PreTranslateMessage(MSG* pMsg) 
@@ -429,12 +428,6 @@ void CMainFrame::OnEndSession(BOOL bEnding)
 	TRACE(L"CMainFrame::OnEndSession\n");
 	if (!bEnding)
 		return;
-
-	CMyDoc* pDoc = static_cast<CMyDoc*> (GetActiveDocument());
-	if (pDoc)
-	{
-		pDoc->TerminateThreads();
-	}
 
 	CFrameWnd::OnEndSession(bEnding);
 }
@@ -489,11 +482,5 @@ void CMainFrame::OnHelpCodepage()
 
 void CMainFrame::OnClose() 
 {
-	CMyDoc* pDoc = static_cast<CMyDoc*> (GetActiveDocument());
-	if (pDoc)
-	{
-		pDoc->TerminateThreads();
-	}
-
 	CFrameWnd::OnClose();
 }
