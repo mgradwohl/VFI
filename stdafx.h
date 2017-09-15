@@ -75,19 +75,12 @@
 #include <afxwin.h>         // MFC core and standard components
 #include <afxext.h>         // MFC extensions
 #include <afxcview.h>		// MFC CListView
-#include <afxcmn.h>			// MFC support for Windows 95 Common Controls
 #include <afxmt.h>			// MFC MultiThreading Objects
 #include <afxtempl.h>
-#include <uxtheme.h>
 #include <winnls.h>			// Language support
 #include <winbase.h>		// Types, ZeroMemory, etc
 #include <shlobj.h>			// Browse for folder
-//#include <shlwapi.h>		// StrFormatByteSize
-
-//#pragma warning(disable:4201)
 #include <mmsystem.h>
-//#pragma warning(default:4201)
-
 #include <afxdisp.h>
 
 static const int SIZEMEG = 1048576;

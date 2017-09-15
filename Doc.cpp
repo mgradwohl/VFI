@@ -271,9 +271,12 @@ DWORD CMyDoc::RecurseDir( LPWSTR pszPath )
 		
 		// now process them
 		fRun = m_Find.FindFile(szSearch,0);
+
 		while ( fRun )
 		{
 			// if it's a directory, and it's not dots then add it to the path list
+			// this will ASSERT in DEBUG and the ASSERT seems invalid
+			// because we are not calling .Get()
 			if ( m_Find.IsDirectory() && !m_Find.IsDots() )
 			{
 				PathList.AddTail( m_Find.GetFilePath() );
