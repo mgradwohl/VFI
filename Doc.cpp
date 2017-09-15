@@ -182,7 +182,7 @@ BOOL CMyDoc::OnSaveDocument(LPCWSTR lpszPathName)
 		return TRUE;
 	}
 
-	DWORD dw = GetLastError();
+	DWORD const dw = GetLastError();
 	if (dw != 0)
 	{
 		// error
@@ -198,8 +198,8 @@ BOOL CMyDoc::OnSaveDocument(LPCWSTR lpszPathName)
 BOOL CMyDoc::SaveModified() 
 {
 	TRACE(L"CMyDoc::SaveModified()\n");
-	CMainFrame* pFrame = static_cast<CMainFrame*> (theApp.GetMainWnd());
-	CMyListView* pView = static_cast<CMyListView*> (pFrame->GetActiveView());
+	const CMainFrame* pFrame = dynamic_cast<CMainFrame*> (theApp.GetMainWnd());
+	CMyListView* const pView = dynamic_cast<CMyListView*> (pFrame->GetActiveView());
 
 	if (!pView->PromptToSave())
 	{
@@ -211,7 +211,7 @@ BOOL CMyDoc::SaveModified()
 		return TRUE;
 	}
 	
-	int iReturn=AfxMessageBox(STR_SAVEMODIFIED,MB_ICONQUESTION | MB_YESNOCANCEL);
+	const int iReturn = AfxMessageBox(STR_SAVEMODIFIED,MB_ICONQUESTION | MB_YESNOCANCEL);
 	
 	switch (iReturn)
 	{
@@ -245,25 +245,25 @@ DWORD CMyDoc::RecurseDir( LPWSTR pszPath )
 	CStringList PathList;
 	CString strText;
 	CStringList FileList;
-	WCHAR szSearch[_MAX_PATH];
 	BOOL fRun=FALSE;
 	
-	CMainFrame* pFrame = static_cast<CMainFrame*> (AfxGetMainWnd());
+	const CMainFrame* pFrame = dynamic_cast<CMainFrame*> (AfxGetMainWnd());
 	if (pFrame == nullptr)
 	{
 		return (DWORD)-1;
 	}
-	CMyListView* pView = static_cast<CMyListView*> (pFrame->GetActiveView());
-
+	CMyListView* const pView = dynamic_cast<CMyListView*> (pFrame->GetActiveView());
 	if (pView == nullptr)
 	{
 		return (DWORD)-1;
 	}
+
 	strText.LoadString(STR_FILECOUNTING);
 	pView->UpdateStatus(strText);
 
 	PathList.AddTail( pszPath );
 
+	WCHAR szSearch[_MAX_PATH];
 	while ( !PathList.IsEmpty() )
 	{
 		lstrcpy(szSearch, PathList.RemoveHead());
@@ -881,7 +881,7 @@ bool CMyDoc::GetHeaderString(LPWSTR pszBuf)
 	}
 
 	// Get the View
-	CMainFrame* pFrame = static_cast<CMainFrame*> (theApp.GetMainWnd());
+	const CMainFrame* pFrame = static_cast<CMainFrame*> (theApp.GetMainWnd());
 	CMyListView* pView = static_cast<CMyListView*> (pFrame->GetActiveView());
 	CColumnInfo* pci= pView->GetColumnInfo();
 	if (NULL == pci)
@@ -890,9 +890,8 @@ bool CMyDoc::GetHeaderString(LPWSTR pszBuf)
 	}
 
 	WCHAR szText[LIST_MAXHEADLENGTH];
-
+	lstrinit(szText);
 	*pszBuf = 0;
-	szText[0] = 0;
 
 	for (int i = 0; i <  LIST_NUMCOLUMNS; i++)
 	{
@@ -918,8 +917,8 @@ bool CMyDoc::GetRowString(CWiseFile& rFile, LPWSTR pszBuf)
 	}
 
 	// Get the View
-	CMainFrame* pFrame = static_cast<CMainFrame*> (theApp.GetMainWnd());
-	CMyListView* pView = static_cast<CMyListView*> (pFrame->GetActiveView());
+	const CMainFrame* pFrame = dynamic_cast<CMainFrame*> (theApp.GetMainWnd());
+	CMyListView* const pView = dynamic_cast<CMyListView*> (pFrame->GetActiveView());
 	CColumnInfo* pci = pView->GetColumnInfo();
 	DWORD cbItem = sizeof(rFile);
 	LPWSTR pszText = (LPWSTR) HeapAlloc(GetProcessHeap(), 0, (cbItem + 1) );
@@ -956,10 +955,9 @@ void InitCRCMemory()
 		ZeroMemory( &ms, sizeof(MEMORYSTATUSEX) );
 		ms.dwLength=sizeof(MEMORYSTATUSEX);
 		GlobalMemoryStatusEx( &ms );
-		DWORD dwIdeal;
+		DWORD const dwIdeal = (DWORD) (ms.ullAvailPhys / 10);
 
 		g_dwChunk = 0;
-		dwIdeal = (DWORD) (ms.ullAvailPhys / 10);
 		while (g_dwChunk < dwIdeal)
 		{
 			g_dwChunk += SIZEMEG;
@@ -1068,16 +1066,17 @@ DWORD UpdateThreadCRC( LPVOID pParam )
 	// Now that we have the basic things we need, declare variables
 	// TODO: Try to reduce the number of allocations
 	spWiseFile pFileInfo;
-	unsigned long crc32;
-	BYTE* pchCurrent;
-	HANDLE hFile;
-	DWORD dwAttribs;
-	QWORD qwBytesRemaining;
-	QWORD qwSize;
-	DWORD dwBytesRead;
-	DWORD dwError;
-	unsigned int nChunk;
+	unsigned long crc32 = 0;
+	BYTE* pchCurrent = nullptr;
+	HANDLE hFile = NULL;
+	DWORD dwAttribs = 0;
+	QWORD qwBytesRemaining = 0;
+	QWORD qwSize = 0;
+	DWORD dwBytesRead = 0;
+	DWORD dwError = 0;
+	unsigned int nChunk = 0;
 	LARGE_INTEGER li;
+	ZeroMemory(&li, sizeof(LARGE_INTEGER));
 
 	// this loop keeps this thread alive until the first if statement below breaks
 	while (true)
@@ -1252,8 +1251,8 @@ bool CMyDoc::GetFileName(LPWSTR pszFile)
 	}
 
 	// User Default Folder
-	CMainFrame* pFrame = static_cast<CMainFrame*> (theApp.GetMainWnd());
-	CMyListView* pView = static_cast<CMyListView*> (pFrame->GetActiveView());
+	const CMainFrame* pFrame = dynamic_cast<CMainFrame*> (theApp.GetMainWnd());
+	const CMyListView* const pView = dynamic_cast<CMyListView*> (pFrame->GetActiveView());
 	if (!pView->m_strSavePath.IsEmpty() && DoesFolderExist(pView->m_strSavePath))
 	{
 		lstrcpy(szPath, pView->m_strSavePath);
@@ -1301,7 +1300,7 @@ DONE:
 
 bool CMyDoc::WriteFileEx(LPCWSTR pszFile)
 {
-	CMainFrame* pFrame = static_cast<CMainFrame*> (AfxGetMainWnd());
+	const CMainFrame* pFrame = dynamic_cast<CMainFrame*> (AfxGetMainWnd());
 	if (pFrame==nullptr)
 		return false;
 	
@@ -1346,7 +1345,7 @@ bool CMyDoc::WriteFileEx(LPCWSTR pszFile)
 	strText.LoadString(STR_FILESAVING);
 	pView->UpdateStatus(strText);
 
-	CListCtrl& theListCtrl = pView->GetListCtrl();
+	const CListCtrl& theListCtrl = pView->GetListCtrl();
 	c = theListCtrl.GetItemCount();
 
 	// the reason we use the view is we write out the columns the user has chosen, not all the data

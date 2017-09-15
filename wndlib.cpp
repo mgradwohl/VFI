@@ -25,18 +25,6 @@
 	#define STRICT 1
 #endif
 
-#ifdef _UNICODE
-	#ifndef UNICODE
-		#define UNICODE         // UNICODE is used by Windows headers
-	#endif
-#endif
-
-#ifdef UNICODE
-	#ifndef _UNICODE
-		#define _UNICODE        // _UNICODE is used by C-runtime/MFC headers
-	#endif
-#endif
-
 #ifdef _DEBUG
 	#ifdef DEBUG_NEW
 		#define new DEBUG_NEW
@@ -49,30 +37,9 @@
 	#define TRACE(x) OutputDebugString(x)
 #endif
 
-#include <windows.h>
 #include <shlobj.h>
 #include "strlib.h"
 #include "wndlib.h"
-
-UINT32 UClamp(INT_PTR val)
-{
-	__int64 ret = val;
-	if (ret > _UI32_MAX)
-	{
-		ret = _UI32_MAX - 1;
-	}
-	return (UINT32)ret;
-}
-
-__int32 Clamp(INT_PTR val)
-{
-	__int64 ret = val;
-	if (ret > _I32_MAX)
-	{
-		ret = _I32_MAX - 1;
-	}
-	return (__int32)ret;
-}
 
 int Width(LPCRECT prc)
 {
@@ -356,7 +323,7 @@ int ErrorMessageBox(const HWND hWnd, const DWORD dwError, LPCWSTR pszTitle, LPCW
 
 	LPWSTR pszBuf = new WCHAR[(lstrlen(pszMessage) + lstrlen((LPCWSTR)pBuf) + 256) * 2];
 	wsprintf(pszBuf, TEXT("%s\r\n\r\nError number: %lu\r\n\r\n%s"), pszMessage, dwError, (LPCWSTR)pBuf);
-	int error = MessageBox(hWnd, pszBuf, pszTitle, MB_OK | MB_ICONINFORMATION);
+	const int error = MessageBox(hWnd, pszBuf, pszTitle, MB_OK | MB_ICONINFORMATION);
 
 	LocalFree(pBuf);
 	delete [] pszBuf;
@@ -378,7 +345,7 @@ int ErrorMessageBox(const HINSTANCE hInst, const HWND hWnd, const DWORD dwError,
 
 	LPWSTR pszBuf = new WCHAR[(lstrlen(szMessage) + lstrlen((LPCWSTR)pBuf) + 256)];
 	wsprintf(pszBuf, TEXT("%s\r\n\r\nError number: %lu\r\n\r\n%s"), szMessage, dwError, (LPCWSTR)pBuf);
-	int error = MessageBox(hWnd, pszBuf, szTitle, MB_OK | MB_ICONINFORMATION);
+	const int error = MessageBox(hWnd, pszBuf, szTitle, MB_OK | MB_ICONINFORMATION);
 
 	LocalFree(pBuf);
 	delete [] pszBuf;

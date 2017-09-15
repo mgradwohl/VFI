@@ -38,8 +38,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // CHelpDlg dialog
 
-CHelpDlg::CHelpDlg(CWnd* pParent, UINT nHelpID, bool fShowCheck)
-	: CDialog(CHelpDlg::IDD, pParent)
+CHelpDlg::CHelpDlg(CWnd* pParent, UINT nHelpID, bool fShowCheck) : CDialog(CHelpDlg::IDD, pParent)
 {
 	m_fShowCheck = fShowCheck;
 	m_nHelpID = nHelpID;

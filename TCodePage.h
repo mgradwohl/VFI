@@ -30,7 +30,6 @@
 	#endif
 #endif
 
-#include <windows.h>
 #include <mlang.h>
 #include "strlib.h"
 #define __T(x)      L ## x

@@ -167,16 +167,16 @@ private:
 	bool m_fCheckPath;
 	QWORD m_qwSizeRead;
 	bool m_fPause;
-	bool m_fSentHintCRC;
-	bool m_fSentHintInfo;
-	bool m_fFirstTime;
+	bool m_fSentHintCRC = false;
+	bool m_fSentHintInfo = false;
+	bool m_fFirstTime = true;
 };
 
 inline CMyDoc* CMyDoc::GetDoc()
 {
 	TRACE( L"CMyDoc::GetDoc()\n");
-	CFrameWnd* pFrame = static_cast<CFrameWnd*> (AfxGetApp()->m_pMainWnd);
-	return static_cast<CMyDoc*> (pFrame->GetActiveDocument());
+	CFrameWnd* pFrame = dynamic_cast<CFrameWnd*> (AfxGetApp()->m_pMainWnd);
+	return dynamic_cast<CMyDoc*> (pFrame->GetActiveDocument());
 }
 
 DWORD UpdateThreadInfo (LPVOID pParam);

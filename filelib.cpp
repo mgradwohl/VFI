@@ -26,11 +26,12 @@
 	#define TRACE(x) OutputDebugString(x)
 #endif
 
-#include <windows.h>
+//#include <windows.h>
 #include <shlobj.h>
 #include <shlwapi.h>
 #include <shellapi.h>
 
+//#include "stdafx.h"
 #include "strlib.h"
 #include "filelib.h"
 	
@@ -91,7 +92,7 @@ bool DoesFileExist(LPCWSTR pszFileName)
 		return false;
 	}
 
-	DWORD dw = ::GetFileAttributes( pszFileName );
+	DWORD const dw = ::GetFileAttributes( pszFileName );
 	if ( dw == (DWORD)-1 || dw & FILE_ATTRIBUTE_DIRECTORY || dw & FILE_ATTRIBUTE_OFFLINE )
 	{
 		return false;
@@ -107,7 +108,7 @@ bool DoesFolderExist(LPCWSTR pszFolder)
 		return false;
 	}
 
-	DWORD dw = ::GetFileAttributes( pszFolder );
+	DWORD const dw = ::GetFileAttributes( pszFolder );
 	if ( dw == (DWORD)-1 || dw & FILE_ATTRIBUTE_OFFLINE )
 	{
 		return false;
@@ -167,7 +168,7 @@ bool GetLogFolder(LPCWSTR pszAppname, LPWSTR pszFolder)
 		return false;
 	}
 
-	HKEY hKey;
+	HKEY hKey = NULL;
 	DWORD dwType = REG_SZ;
 	DWORD dwSize = _MAX_PATH;
 
@@ -177,6 +178,8 @@ bool GetLogFolder(LPCWSTR pszAppname, LPWSTR pszFolder)
 		goto USE_TEMP;
 
 	WCHAR szModule[MAX_FNAME];
+	lstrinit(szModule);
+
 	if (NULL == pszAppname || lstrlen(pszAppname) < 1)
 	{
 		GetModuleName(GetModuleHandle(NULL), szModule);
@@ -251,19 +254,18 @@ DONE:
 
 bool GetLogFileName(LPCWSTR pszFolder, LPCWSTR pszPrefix, LPCWSTR pszPostfix, LPWSTR pszFilename, LPWSTR pszExt)
 {
-	WCHAR szUserName[MAX_USERNAME];
-	WCHAR szDate[11];
-	WCHAR szTime[5];
-
 	SYSTEMTIME st;
 	GetLocalTime(&st);
 
+	WCHAR szUserName[MAX_USERNAME];
 	if (!MyGetUserName(szUserName))
 		return false;
 
+	WCHAR szDate[11];
 	if (0 == ::GetDateFormat(::GetThreadLocale(), 0, &st, L"yyyy-MM-dd", szDate, 11))
 		return false;
 
+	WCHAR szTime[5];
 	if (0 == ::GetTimeFormat(::GetThreadLocale(), 0, &st, L"HHmm", szTime, 5))
 		return false;
 

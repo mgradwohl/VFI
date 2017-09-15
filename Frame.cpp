@@ -190,7 +190,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		return -1;
 
 	// set menu default items
-	CMenu* pMenu = GetMenu();
+	const CMenu* pMenu = GetMenu();
 	if (pMenu)
 	{
 		CMenu* pSubMenu = pMenu->GetSubMenu(0);
@@ -260,7 +260,7 @@ BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs)
 
 void CMainFrame::OnDropFiles(HDROP hDropInfo) 
 {
-	CMyListView* pView = static_cast<CMyListView*> (GetActiveView());
+	const CMyListView* pView = static_cast<CMyListView*> (GetActiveView());
 	if (pView == nullptr)
 	{
 		return;

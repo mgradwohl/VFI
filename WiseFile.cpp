@@ -1282,7 +1282,7 @@ int CWiseFile::ReadVersionInfoEx()
 		return FWF_ERR_NOVERSION;
 	}
 
-	UINT xcb = ::GetFileVersionInfoSize(m_szFullPath, 0);
+	const UINT xcb = ::GetFileVersionInfoSize(m_szFullPath, 0);
 	ASSERT(cb == xcb);
 
 	HGLOBAL hglobal = ::LoadResource(h, hrsrc);

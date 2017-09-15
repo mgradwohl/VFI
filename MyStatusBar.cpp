@@ -320,7 +320,7 @@ BOOL CMyStatusBar::OnToolTipText( UINT id, NMHDR* pNMHDR, LRESULT* pResult )
 	WCHAR szDirtyCRC[64];
 	int2str(szDirtyCRC, dw - pDoc->m_dwDirtyCRC);
 
-	UINT_PTR nID = pNMHDR->idFrom;
+	const UINT_PTR nID = pNMHDR->idFrom;
 
 	WCHAR szTip[255];
 	lstrinit(szTip);

@@ -130,7 +130,7 @@ END_MESSAGE_MAP()
 
 void CPageGeneral::OnAudiocue() 
 {
-	CButton* pCheck = static_cast<CButton*> (GetDlgItem(IDC_AUDIOCUE));
+	const CButton* pCheck = static_cast<CButton*> (GetDlgItem(IDC_AUDIOCUE));
 
 	if (pCheck != nullptr)
 	{

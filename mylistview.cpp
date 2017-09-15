@@ -200,7 +200,7 @@ void CMyListView::OnInitialUpdate()
 
 		// measure the monospaced X
 		pdc->SelectObject(m_fntMono);
-		CSize size = pdc->GetTextExtent(L"X");
+		const CSize size = pdc->GetTextExtent(L"X");
 		ReleaseDC(pdc);
 		m_nMonoX = size.cx;
 		m_nMonoY = size.cy;
@@ -273,12 +273,12 @@ bool CMyListView::AddItem(CWiseFile* pFileInfo)
 {
 	int iItem;
 	int iSubItem=1;
-	LV_ITEM lvi;
 
 	CListCtrl& theListCtrl=GetListCtrl();
 	iItem=theListCtrl.GetItemCount();
 	TRACE1( ">>> CMyListView::AddItem() iItem==%d\r\n",iItem);
 
+	LV_ITEM lvi;
 	ZeroMemory(&lvi, sizeof(lvi));
 	lvi.iItem = iItem;
 	lvi.iSubItem = 0;
@@ -500,25 +500,25 @@ void CMyListView::OnUpdateFileNew(CCmdUI* pCmdUI)
 
 void CMyListView::OnUpdateFileTouch(CCmdUI* pCmdUI) 
 {
-	CListCtrl& theListCtrl=GetListCtrl();
+	const CListCtrl& theListCtrl=GetListCtrl();
 	pCmdUI->Enable( theListCtrl.GetSelectedCount() > 0 );
 }
 
 void CMyListView::OnUpdateEditSelectAll(CCmdUI* pCmdUI) 
 {
-	CListCtrl& theListCtrl=GetListCtrl();
+	const CListCtrl& theListCtrl=GetListCtrl();
 	pCmdUI->Enable( theListCtrl.GetItemCount() > 0 );
 }
 
 void CMyListView::OnUpdateFileProperties(CCmdUI* pCmdUI) 
 {
-	CListCtrl& theListCtrl=GetListCtrl();
+	const CListCtrl& theListCtrl=GetListCtrl();
 	pCmdUI->Enable( theListCtrl.GetSelectedCount() == 1 );
 }
 
 void CMyListView::OnUpdateEditRemove(CCmdUI* pCmdUI) 
 {
-	CListCtrl& theListCtrl=GetListCtrl();
+	const CListCtrl& theListCtrl=GetListCtrl();
 	pCmdUI->Enable( theListCtrl.GetSelectedCount() >0 );
 }
 
@@ -610,7 +610,7 @@ void CMyListView::OnColumnClick(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	TRACE(L">>> CMyListView::OnColumnClick\n");
 
-	NM_LISTVIEW* pNMListView = reinterpret_cast<NM_LISTVIEW*> (pNMHDR);
+	const NM_LISTVIEW* pNMListView = reinterpret_cast<NM_LISTVIEW*> (pNMHDR);
 
 	if (m_iSortColumn == pNMListView->iSubItem)
 	{
@@ -649,7 +649,7 @@ int CALLBACK CMyListView::ListViewCompareProc(LPARAM lParam1, LPARAM lParam2, LP
 	WCHAR str1[_MAX_PATH];
 	WCHAR str2[_MAX_PATH];
 	int iResult = 0;
-	CMyListView* pView = reinterpret_cast<CMyListView*> (lParamView);
+	const CMyListView* pView = reinterpret_cast<CMyListView*> (lParamView);
 	if (pFile1 && pFile2)
 	{
 		switch( pView->m_iSortColumn)
@@ -915,7 +915,7 @@ bool CMyListView::RestorePreferences()
 bool CMyListView::SavePreferences()
 {
 	TRACE(L"CMyListView::SavePreferences()\n");
-	CListCtrl& theListCtrl=GetListCtrl();
+	const CListCtrl& theListCtrl=GetListCtrl();
 	CString strEntry;
 	CString strValue;
 
@@ -955,13 +955,13 @@ bool CMyListView::SavePreferences()
 
 void CMyListView::OnViewOptions() 
 {
-	CMyDoc* pDoc=GetDocument();
+	const CMyDoc* pDoc=GetDocument();
 	if (pDoc == nullptr)
 	{
 		return;
 	}
 
-	CListCtrl& theListCtrl=GetListCtrl();
+	const CListCtrl& theListCtrl=GetListCtrl();
 	for( int i=0; i < LIST_NUMCOLUMNS; i++ )
 	{
 		if (m_pci[i].IsVisible())
@@ -1025,7 +1025,7 @@ void CMyListView::ResetStatus()
 void CMyListView::OnFileTouch()
 {
 	m_fAutomatic = false;
-	CListCtrl& theListCtrl=GetListCtrl();
+	const CListCtrl& theListCtrl=GetListCtrl();
 	if (theListCtrl.GetSelectedCount() == 0)
 	{
 		CString strTitle;
@@ -1038,7 +1038,7 @@ void CMyListView::OnFileTouch()
 		return;
 	}
 
-	CMyDoc* pDoc=GetDocument();
+	const CMyDoc* pDoc=GetDocument();
 	if (pDoc == nullptr)
 	{
 		return;
@@ -1090,7 +1090,7 @@ void CMyListView::OnFileTouch()
 
 void CMyListView::OnEditSelectAll() 
 {
-	CListCtrl& theListCtrl=GetListCtrl();
+	const CListCtrl& theListCtrl=GetListCtrl();
 	ListView_SetItemState( theListCtrl.GetSafeHwnd(), -1, LVIS_SELECTED, LVIS_SELECTED);
 }
 
@@ -1110,7 +1110,7 @@ bool CMyListView::DeleteItem( int iItem )
 bool CMyListView::DeleteItem( CObject* pObject)
 {
 	TRACE(L" >>> CMyListView::DeleteItem\r\n");
-	CListCtrl& theListCtrl=GetListCtrl();
+	const CListCtrl& theListCtrl=GetListCtrl();
 	if (theListCtrl.GetSelectedCount() == 0)
 	{
 
@@ -1173,7 +1173,7 @@ bool CMyListView::RedrawItem( int iItem )
 	}
 
 	RECT rcCrap;
-	CListCtrl& theListCtrl = GetListCtrl();
+	const CListCtrl& theListCtrl = GetListCtrl();
 	if (!theListCtrl.GetItemRect( iItem, &rcCrap, LVIR_BOUNDS))
 	{
 		TRACE(L"RedrawItem no item rect.\n");
@@ -1196,8 +1196,8 @@ int CMyListView::FindVisibleItem(CObject* pObject)
 	lvi.mask = LVIF_PARAM;
 
 	CListCtrl& theListCtrl=GetListCtrl();
-	int iTop=theListCtrl.GetTopIndex();
-	int iBottom = iTop + theListCtrl.GetCountPerPage();
+	const int iTop=theListCtrl.GetTopIndex();
+	const int iBottom = iTop + theListCtrl.GetCountPerPage();
 	int iItem;
 	
 	for (iItem = iTop; iItem < iBottom; iItem++)
@@ -1361,7 +1361,7 @@ void CMyListView::OnDestroy()
 
 void CMyListView::MyModifyStyleEx( LRESULT dwRemove, LRESULT dwAdd)
 {
-	CListCtrl& theListCtrl=GetListCtrl();
+	const CListCtrl& theListCtrl=GetListCtrl();
 	LRESULT dwExStyle = theListCtrl.SendMessage (LVM_GETEXTENDEDLISTVIEWSTYLE);
 	dwExStyle |= dwAdd;
 	dwExStyle &= ~dwRemove;
@@ -1371,14 +1371,14 @@ void CMyListView::MyModifyStyleEx( LRESULT dwRemove, LRESULT dwAdd)
 void CMyListView::OnFileProperties() 
 {
 	// get the doc
-	CMyDoc* pDoc=GetDocument();
+	const CMyDoc* pDoc=GetDocument();
 	if (pDoc == nullptr)
 	{
 		return;
 	}
 
 	// get the listctrl
-	CListCtrl& theListCtrl=GetListCtrl();
+	const CListCtrl& theListCtrl=GetListCtrl();
 	if (theListCtrl.GetSelectedCount() > 1 )
 	{
 		return;
@@ -1657,7 +1657,7 @@ void CMyListView::OnEditCopy()
 		}
 	}
 
-	CListCtrl& theListCtrl = GetListCtrl();
+	const CListCtrl& theListCtrl = GetListCtrl();
 	if (theListCtrl.GetSelectedCount() > 1000)
 	{
 		// warn
@@ -1709,7 +1709,7 @@ bool CMyListView::GetItem(int nItem, POINT pt)
 	if (!::IsWindow(m_hWnd))
 		return false;
 
-	CListCtrl& theListCtrl = GetListCtrl();
+	const CListCtrl& theListCtrl = GetListCtrl();
 	theListCtrl.GetItemPosition(nItem, &pt);
 	if (pt.x < 0)
 	{
@@ -1831,7 +1831,7 @@ bool CMyListView::FillBuffer(bool fAllRows, bool fAllFields)
 		return false;
 	}
 
-	CListCtrl& theListCtrl = GetListCtrl();
+	const CListCtrl& theListCtrl = GetListCtrl();
 	if (!fAllRows && theListCtrl.GetSelectedCount() < 1)
 	{
 		// they want what's selected, but there's nothing selected

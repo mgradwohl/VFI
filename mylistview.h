@@ -214,7 +214,7 @@ inline void CMyListView::EmptyList()
 
 inline LRESULT CMyListView::MyGetExStyle()
 {
-	CListCtrl& theListCtrl=GetListCtrl();
+	CListCtrl const &theListCtrl=GetListCtrl();
 	return theListCtrl.SendMessage (LVM_GETEXTENDEDLISTVIEWSTYLE);
 }
 
@@ -225,7 +225,7 @@ inline CColumnInfo* CMyListView::GetColumnInfo()
 
 inline int CMyListView::StringCompare(CString str1, CString str2, bool fSortAscending)
 {
-	int i;
+	int i=0;
 
 	if (fSortAscending)
 	{
@@ -304,7 +304,7 @@ inline void CMyListView::OnUpdateViewSmartFit(CCmdUI* pCmdUI)
 
 inline void CMyListView::OnUpdateEditCopy(CCmdUI* pCmdUI) 
 {
-	CListCtrl& theListCtrl = GetListCtrl();
+	CListCtrl const &theListCtrl = GetListCtrl();
 	pCmdUI->Enable(theListCtrl.GetSelectedCount() > 0);	
 }
 

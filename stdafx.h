@@ -55,7 +55,6 @@
 #define _WIN32_IE _WIN32_IE_IE100	//0x0700        // Change this to the appropriate value to target other versions of IE.
 #endif
 
-#define	NTDDI_VERSION	NTDDI_WINBLUE	//NTDDI_LONGHORN 
 
 #ifdef	NOLISTVIEW
 #undef	NOLISTVIEW
@@ -65,23 +64,14 @@
 #undef	NODATETIMEPICK
 #endif
 
-//    NOTREEVIEW   TreeView control.
-//    NOTABCONTROL Tab control.
-//    NOANIMATE    Animate control.
-
-//#define ISOLATION_AWARE_ENABLED
-
-#include <afxpriv.h>
 #include <afxwin.h>         // MFC core and standard components
 #include <afxext.h>         // MFC extensions
 #include <afxcview.h>		// MFC CListView
 #include <afxmt.h>			// MFC MultiThreading Objects
-#include <afxtempl.h>
 #include <winnls.h>			// Language support
 #include <winbase.h>		// Types, ZeroMemory, etc
 #include <shlobj.h>			// Browse for folder
 #include <mmsystem.h>
-#include <afxdisp.h>
 
 static const int SIZEMEG = 1048576;
 static const int SIZEBUF = 2 * SIZEMEG;

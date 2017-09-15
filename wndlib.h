@@ -28,8 +28,6 @@
 	#error WndLib requires C++ compilation (use a .cpp suffix)
 #endif
 
-#include <windows.h>
-
 // MoveWindowEx flags
 enum { CDF_CENTER, CDF_TOPLEFT, CDF_NONE };
 

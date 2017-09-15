@@ -28,7 +28,7 @@
 	#error FileLib requires C++ compilation (use a .cpp suffix)
 #endif
 
-#include <windows.h>
+//#include <windows.h>
 #include "strlib.h"
 
 bool CreateFolder(LPCWSTR pszFolder);

@@ -24,7 +24,6 @@
 #ifndef GUID_H
 #pragma once
 
-#include <windows.h>
 #include <objbase.h>
 
 #ifdef _DEBUG

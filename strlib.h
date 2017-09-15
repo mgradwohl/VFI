@@ -28,7 +28,6 @@
 	#error StrLib requires C++ compilation (use a .cpp suffix)
 #endif
 
-#include <windows.h>
 #include <shlwapi.h>
 #include <lmcons.h>		// for UNLEN only
 #include <stdio.h>

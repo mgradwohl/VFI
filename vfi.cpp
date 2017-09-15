@@ -224,7 +224,7 @@ BOOL CMyApp::InitInstance()
 	free((void*) (m_pszProfileName));
 
 	// tried to use StrDup but it causes a crash on ~CWinApp
-	m_pszProfileName = _tcsdup(m_szIniPath);
+	m_pszProfileName = _wcsdup(m_szIniPath);
 	TRACE1( ">>> m_pszProfileName: %s\r\n",m_pszProfileName);
 
 	LoadStdProfileSettings( 0 );

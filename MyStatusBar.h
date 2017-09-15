@@ -45,8 +45,8 @@ public:
 
 	CMyDoc* GetActiveDoc()
 	{
-		CFrameWnd* pFrame = (CFrameWnd*)AfxGetMainWnd();
-		return (reinterpret_cast<CMyDoc*> (pFrame->GetActiveDocument()));
+		CFrameWnd* pFrame = reinterpret_cast<CFrameWnd*>(AfxGetMainWnd());
+		return (reinterpret_cast<CMyDoc*>(pFrame->GetActiveDocument()));
 	}
 
 	CToolTipCtrl* GetTip()

@@ -30,7 +30,6 @@
 	#endif
 #endif
 
-#include <windows.h>
 #include "tguid.h"
 
 #ifdef _DEBUG
