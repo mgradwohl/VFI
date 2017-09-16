@@ -434,6 +434,7 @@
     <ClInclude Include="TEvent.h" />
     <ClInclude Include="TGuid.h" />
     <ClInclude Include="TimeDlg.h" />
+    <ClInclude Include="trace.h" />
     <ClInclude Include="vfi.h" />
     <ClInclude Include="WiseFile.h" />
     <ClInclude Include="wndlib.h" />
@@ -474,6 +475,7 @@
     <ClCompile Include="STDAFX.CPP" />
     <ClCompile Include="strlib.cpp" />
     <ClCompile Include="Timedlg.cpp" />
+    <ClCompile Include="trace.cpp" />
     <ClCompile Include="vfi.cpp" />
     <ClCompile Include="WiseFile.cpp" />
     <ClCompile Include="wndlib.cpp" />

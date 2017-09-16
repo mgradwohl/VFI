@@ -33,12 +33,12 @@
 	#endif
 #endif
 
-#ifndef TRACE
-	#define TRACE(x) OutputDebugString(x)
-#endif
+//#ifndef TRACE
+//	#define TRACE(x) OutputDebugString(x)
+//#endif
 
 #include <shlobj.h>
-#include "strlib.h"
+#include "trace.h"
 #include "wndlib.h"
 
 int Width(LPCRECT prc)

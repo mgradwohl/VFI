@@ -22,16 +22,15 @@
 // IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
-#ifndef TRACE
-	#define TRACE(x) OutputDebugString(x)
-#endif
+//#ifndef TRACE
+//	#define TRACE(x) OutputDebugString(x)
+//#endif
 
-//#include <windows.h>
 #include <shlobj.h>
 #include <shlwapi.h>
 #include <shellapi.h>
 
-//#include "stdafx.h"
+#include "trace.h"
 #include "strlib.h"
 #include "filelib.h"
 	

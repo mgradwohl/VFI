@@ -41,11 +41,12 @@
 	#endif
 #endif
 
-#ifndef TRACE
-	#define TRACE(x) OutputDebugString(x)
-#endif
+//#ifndef TRACE
+//	#define TRACE(x) OutputDebugString(x)
+//#endif
 
-#include <tchar.h>	//only for _stprintf
+//#include <tchar.h>	//only for _stprintf
+#include "trace.h"
 #include "strlib.h"
 
 int mbstrcch(LPCSTR pszSource)
@@ -114,7 +115,7 @@ bool float2str(LPWSTR pszDest, double d)
 	WCHAR szIn[32];
 	WCHAR szOut[32];
 
-	swprintf_s(szIn, _T("%.4f"), d);
+	swprintf_s(szIn, L"%.4f", d);
 	if (0 == GetNumberFormat( LOCALE_USER_DEFAULT, 0, (LPWSTR)szIn, NULL, (LPWSTR)szOut, 32 ))
 		return false;
 

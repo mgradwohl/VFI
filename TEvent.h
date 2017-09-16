@@ -21,7 +21,6 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR 
 // IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#ifndef TEVENT_H
 #pragma once
 
 #ifdef _DEBUG
@@ -30,13 +29,8 @@
 	#endif
 #endif
 
+#include "trace.h"
 #include "tguid.h"
-
-#ifdef _DEBUG
-	#define MYTRACE(x) OutputDebugString(x)
-#else
-	#define MYTRACE(x)
-#endif
 
 class TEvent  
 {
@@ -50,7 +44,7 @@ public:
 	{
 		if (NULL != m_hEvent)
 		{
-			MYTRACE((LPCWSTR) L"TEvent::~TEvent warning: Closing.\r\n");
+			TRACE (L"TEvent::~TEvent warning: Closing.\r\n");
 			Close();
 		}
 	}
@@ -69,7 +63,7 @@ public:
 
 		if (NULL != m_hEvent)
 		{
-			MYTRACE(L"TEvent::Create warning: Event handle already used.\r\n");
+			TRACE(L"TEvent::Create warning: Event handle already used.\r\n");
 			return false;
 		}
 		
@@ -80,11 +74,11 @@ public:
 
 		if (GetLastError() == ERROR_ALREADY_EXISTS)
 		{
-			MYTRACE((LPCWSTR) L"TEvent::Create warning: Event already exists.\r\n");
+			TRACE(L"TEvent::Create warning: Event already exists.\r\n");
 		 	return false;
 		}
 
-		MYTRACE((LPCWSTR) L"TEvent::Create: Event created successfully.\r\n");
+		TRACE(L"TEvent::Create: Event created successfully.\r\n");
 		return (NULL != m_hEvent);
 	}
 
@@ -101,16 +95,16 @@ public:
 	{
 		if (NULL == m_hEvent)
 		{
-			MYTRACE(L"TEvent::Close warning: NULL Event.\r\n");
+			TRACE(L"TEvent::Close warning: NULL Event.\r\n");
 			return false;
 		}
 
 		if (! ::CloseHandle (m_hEvent))
 		{
-			MYTRACE(L"TEvent::Close warning: CloseHandle failed.\r\n");
+			TRACE(L"TEvent::Close warning: CloseHandle failed.\r\n");
 			return false;
 		}
-		MYTRACE(L"TEvent::Closed\r\n");
+		TRACE(L"TEvent::Closed\r\n");
 
 		m_hEvent = NULL;
 		return true;
@@ -120,7 +114,7 @@ public:
 	{
 		if (NULL == m_hEvent)
 		{
-			MYTRACE(L"TEvent::Signaled warning: NULL Event.\r\n");
+			TRACE(L"TEvent::Signaled warning: NULL Event.\r\n");
 			return false;
 		}
 
@@ -131,7 +125,7 @@ public:
 	{
 		if (NULL == m_hEvent)
 		{
-			MYTRACE(L"TEvent::Signal warning: NULL Event.\r\n");
+			TRACE(L"TEvent::Signal warning: NULL Event.\r\n");
 			return false;
 		}
 
@@ -142,7 +136,7 @@ public:
 	{
 		if (NULL == m_hEvent)
 		{
-			MYTRACE(L"TEvent::Reset warning: NULL Event.\r\n");
+			TRACE(L"TEvent::Reset warning: NULL Event.\r\n");
 			return false;
 		}
 
@@ -161,7 +155,7 @@ public:
 	{
 		if (NULL == m_hEvent)
 		{
-			MYTRACE(L"TEvent::Wait warning: NULL Event.\r\n");
+			TRACE(L"TEvent::Wait warning: NULL Event.\r\n");
 			return;
 		}
 
@@ -178,5 +172,3 @@ private:
 	HANDLE m_hEvent;
 };
 
-#define TEVENT_H
-#endif//TEVENT_H

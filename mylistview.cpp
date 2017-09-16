@@ -1172,15 +1172,15 @@ bool CMyListView::RedrawItem( int iItem )
 		return false;
 	}
 
-	RECT rcCrap;
+	RECT rcDirty;
 	const CListCtrl& theListCtrl = GetListCtrl();
-	if (!theListCtrl.GetItemRect( iItem, &rcCrap, LVIR_BOUNDS))
+	if (!theListCtrl.GetItemRect( iItem, &rcDirty, LVIR_BOUNDS))
 	{
 		TRACE(L"RedrawItem no item rect.\n");
 		return false;
 	}
 	
-	InvalidateRect( &rcCrap, FALSE);
+	InvalidateRect( &rcDirty, FALSE);
 	return true;
 }
 
@@ -1226,7 +1226,13 @@ bool CMyListView::RedrawItem( CObject* pObject )
 		return false;
 	}
 
-	int iItem = FindVisibleItem(pObject);
+	if (pObject == nullptr)
+	{
+		return false;
+
+	}
+
+	const int iItem = FindVisibleItem(pObject);
 	if ( -1 == iItem)
 	{
 		return false;
@@ -1237,8 +1243,9 @@ bool CMyListView::RedrawItem( CObject* pObject )
 
 void CMyListView::UpdateWidths()
 {
-	CListCtrl& theListCtrl=GetListCtrl();
+	CListCtrl& theListCtrl = GetListCtrl();
 	SetRedraw(FALSE);
+
 	for( int i=0; i < LIST_NUMCOLUMNS; i++ )
 	{
 		TRACE(L">>> CMyListView:UpdateWidths visible %d, %d\r\n",i,m_pci[i].IsVisible());
@@ -1262,8 +1269,8 @@ void CMyListView::OnFileAdd()
 	LPWSTR pszBuf = new WCHAR[BUFSIZE];
 	if (pszBuf == nullptr)
 		return;
+	lstrinit(pszBuf);
 
-	*pszBuf = '\0';
 	WCHAR szFilter[_MAX_PATH];
 	WCHAR szTitle[_MAX_PATH];
 	int nFiles = 0;
@@ -1361,7 +1368,7 @@ void CMyListView::OnDestroy()
 
 void CMyListView::MyModifyStyleEx( LRESULT dwRemove, LRESULT dwAdd)
 {
-	const CListCtrl& theListCtrl=GetListCtrl();
+	const CListCtrl& theListCtrl = GetListCtrl();
 	LRESULT dwExStyle = theListCtrl.SendMessage (LVM_GETEXTENDEDLISTVIEWSTYLE);
 	dwExStyle |= dwAdd;
 	dwExStyle &= ~dwRemove;

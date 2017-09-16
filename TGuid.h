@@ -25,6 +25,7 @@
 #pragma once
 
 #include <objbase.h>
+#include "trace.h"
 
 #ifdef _DEBUG
 	#ifdef DEBUG_NEW
@@ -35,9 +36,9 @@
 	#endif
 #endif
 
-#ifndef TRACE
-	#define TRACE(x) OutputDebugString(x)
-#endif
+//#ifndef TRACE
+//	#define TRACE(x) OutputDebugString(x)
+//#endif
 
 class TGuid  
 {

@@ -132,10 +132,10 @@ public:
 	inline bool IsDirty()
 	{
 #ifdef DEBUG
-		TRACE (">>>  DIRTY LIST CHECK\r\n");
-		TRACE1("     Dirty list: %lu items\r\n", m_DirtyList.GetCount());
-		TRACE1("     Dirty CRC:  %lu\r\n", m_dwDirtyCRC);
-		TRACE1("     Dirty Info: %lu\r\n", m_dwDirtyInfo);
+		TRACE(L">>>  DIRTY LIST CHECK\r\n");
+		TRACE(L"     Dirty list: %lu items\r\n", m_DirtyList.GetCount());
+		TRACE(L"     Dirty CRC:  %lu\r\n", m_dwDirtyCRC);
+		TRACE(L"     Dirty Info: %lu\r\n", m_dwDirtyInfo);
 #endif
 		return ( m_dwDirtyCRC + m_dwDirtyInfo > 0 );
 	}

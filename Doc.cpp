@@ -514,7 +514,7 @@ spWiseFile CMyDoc::RemoveDirtyHead()
 	while (!m_sLock.Lock(MTX_LOCK));
 		if (m_DirtyList.isEmpty())
 		{
-			TRACE ("Attempt to remove from empty dirty list");
+			TRACE (L"Attempt to remove from empty dirty list");
 			pObject = NULL;
 		}
 		else
