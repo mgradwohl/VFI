@@ -102,7 +102,6 @@ public:
 	MyList m_DirtyList;
 	MyList m_KillList;
 
-	//CMyObList* GetList() {return &m_FileList;}
 	MyList* GetList() { return &m_FileList; }
 
 	static CMyDoc* GetDoc();

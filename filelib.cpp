@@ -21,11 +21,6 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR 
 // IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-
-//#ifndef TRACE
-//	#define TRACE(x) OutputDebugString(x)
-//#endif
-
 #include <shlobj.h>
 #include <shlwapi.h>
 #include <shellapi.h>

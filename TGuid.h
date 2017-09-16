@@ -35,10 +35,6 @@
 	#endif
 #endif
 
-//#ifndef TRACE
-//	#define TRACE(x) OutputDebugString(x)
-//#endif
-
 class TGuid  
 {
 public:

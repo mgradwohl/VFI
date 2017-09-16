@@ -361,8 +361,7 @@ void CMyListView::OnDropFiles(HDROP hDropInfo)
 	UINT i=0;
 	WCHAR szFileName[_MAX_PATH];
 	lstrinit(szFileName);
-	//WCHAR szBuf[256];
-
+	
 	// determine how many files we have
 	nFiles = ::DragQueryFile( hDropInfo, 0xFFFFFFFF, NULL, 0);
 
@@ -545,6 +544,11 @@ void CMyListView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 	if (! ::IsWindow(m_hWnd))
 		return;
 
+	if (pHint == nullptr)
+	{
+		return;
+	}
+
 	CMyDoc* pDoc = GetDocument();
 	if (pDoc == nullptr)
 	{
@@ -556,15 +560,15 @@ void CMyListView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 		case HINT_EMPTY:	EmptyList();
 							m_fAutomatic = false;
 							break;
-		case HINT_ADD:		ASSERT( NULL != pHint);
-							AddItem( static_cast<CWiseFile*> (pHint));
+
+		case HINT_ADD:		AddItem( static_cast<CWiseFile*> (pHint));
 							break;
-		case HINT_DELETE:	ASSERT( NULL != pHint);
-							m_fAutomatic = false;
+
+		case HINT_DELETE:	m_fAutomatic = false;
 							DeleteItem( static_cast<CWiseFile*> (pHint));
 							break;
-		case HINT_REFRESH:	ASSERT( NULL != pHint);
-							RedrawItem( static_cast<CWiseFile*> (pHint));
+
+		case HINT_REFRESH:	RedrawItem( static_cast<CWiseFile*> (pHint));
 							break;
 		case HINT_DONEINFO:
 		case HINT_DONECRC:
@@ -859,8 +863,7 @@ bool CMyListView::RestorePreferences()
 	m_pci[16].SetFormat(LVCFMT_LEFT);
 	m_pci[17].SetFormat(LVCFMT_LEFT);
 	m_pci[18].SetFormat(LVCFMT_LEFT);
-	//m_pci[19].SetFormat(LVCFMT_LEFT);
-
+	
 	// some are fixed, some aren't
 	m_pci[4].SetFixedWidth(12);		// '_MM/DD/YYYY_'
 	m_pci[5].SetFixedWidth(10);		// '_00:00_XM_'
@@ -1075,10 +1078,11 @@ void CMyListView::OnFileTouch()
 	{
 		iItem = theListCtrl.GetNextSelectedItem(pos);
 		pInfo = reinterpret_cast<CWiseFile*> (theListCtrl.GetItemData(iItem));
-		ASSERT (pInfo);
-		// party
-		TRACE(L">>> Touching file.\r\n");
-		pInfo->TouchFileTime( &ftime );//, TRUE, TRUE, TRUE);
+		if (pInfo != nullptr)
+		{
+			TRACE(L">>> Touching file.\r\n");
+			pInfo->TouchFileTime(&ftime);
+		}
 		theApp.ForwardMessages();
 	}
 

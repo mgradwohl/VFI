@@ -231,12 +231,10 @@ inline int CMyListView::StringCompare(CString str1, CString str2, bool fSortAsce
 	if (fSortAscending)
 	{
 		i=CompareString(LOCALE_USER_DEFAULT, 0, str1, -1, str2, -1);
-		//return lstrcmpi( str1, str2 );
 	}
 	else
 	{
 		i=CompareString(LOCALE_USER_DEFAULT, 0, str2, -1, str1, -1);
-		//return lstrcmpi( str2, str1 );
 	}
 	return i-2;
 }

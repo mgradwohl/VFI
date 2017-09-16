@@ -324,8 +324,7 @@ BOOL CMyStatusBar::OnToolTipText( UINT id, NMHDR* pNMHDR, LRESULT* pResult )
 
 	WCHAR szTip[255];
 	lstrinit(szTip);
-	//szTip[0] = '\0';
-
+	
 	if (pNMHDR->code == TTN_NEEDTEXTW && (pTTTW->uFlags & TTF_IDISHWND))
 	{
 		if (nID == (UINT_PTR)m_ctlProgress1.m_hWnd)

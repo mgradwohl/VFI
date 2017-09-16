@@ -30,20 +30,20 @@
 	#define STRICT
 #endif
 
-#ifndef WINVER											// Specifies that the minimum required platform is Windows Vista.
-#define WINVER _WIN32_WINNT_WIN10						// Change this to the appropriate value to target other versions of Windows.
+#ifndef WINVER
+#define WINVER _WIN32_WINNT_WIN10
 #endif
 
-#ifndef _WIN32_WINNT									// Specifies that the minimum required platform is Windows Vista.
-#define _WIN32_WINNT _WIN32_WINNT_WIN10					// Change this to the appropriate value to target other versions of Windows.
+#ifndef _WIN32_WINNT
+#define _WIN32_WINNT _WIN32_WINNT_WIN10
 #endif
 
-#ifndef _WIN32_WINDOWS									// Specifies that the minimum required platform is Windows 98.
-#define _WIN32_WINDOWS 0x0410							// Change this to the appropriate value to target Windows Me or later.
+#ifndef _WIN32_WINDOWS
+#define _WIN32_WINDOWS 0x0410
 #endif
 
-#ifndef _WIN32_IE										// Specifies that the minimum required platform is Internet Explorer 7.0.
-#define _WIN32_IE _WIN32_IE_IE100						// Change this to the appropriate value to target other versions of IE.
+#ifndef _WIN32_IE
+#define _WIN32_IE _WIN32_IE_IE100
 #endif
 
 #ifdef	NOLISTVIEW

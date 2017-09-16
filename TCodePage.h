@@ -467,7 +467,6 @@ public:
 
 	operator LPCTSTR()
 	{
-		//return GetString();
 		return NULL;
 	}
 
@@ -520,7 +519,6 @@ public:
 
 private:
 	IMultiLanguage2* m_pML;
-	//IMultiLanguage* m_pML;
 
 	MIMECPINFO m_mcp;
 	WORD m_wCodePage;

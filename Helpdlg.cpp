@@ -153,7 +153,6 @@ bool CHelpDlg::LoadRTF()
 	pV = static_cast<BYTE*> (LockResource(hG));
 
 	CMemFile resstm(pV, cbRes) ;
-	/*	DWORD dwSize = */ resstm.GetLength();
 
 	EDITSTREAM es;
 	es.dwCookie = (DWORD_PTR) &resstm;  //dwCookie is made for this

@@ -41,11 +41,6 @@
 	#endif
 #endif
 
-//#ifndef TRACE
-//	#define TRACE(x) OutputDebugString(x)
-//#endif
-
-//#include <tchar.h>	//only for _stprintf
 #include "trace.h"
 #include "strlib.h"
 
@@ -93,7 +88,6 @@ bool int2str(LPWSTR pszDest, QWORD i)
 	WCHAR szOut[67];
 	WCHAR szDec[2];
 
-	//swprintf((LPWSTR)szIn, L"%I64d", i);
 	_ui64tow_s(i, szIn, 67, 10);
 
 	GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_SDECIMAL, (LPWSTR)szDec, 2);

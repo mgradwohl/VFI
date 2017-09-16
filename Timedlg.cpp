@@ -86,7 +86,7 @@ void CTimeDlg::DateTimeMerge()
 /////////////////////////////////////////////////////////////////////////////
 // CTimeDlg dialog
 
-CTimeDlg::CTimeDlg(CWnd* pParent /*=NULL*/)
+CTimeDlg::CTimeDlg(CWnd* pParent)
 	: CDialog(CTimeDlg::IDD, pParent)
 {
 	//{{AFX_DATA_INIT(CTimeDlg)

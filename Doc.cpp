@@ -356,7 +356,6 @@ void CMyDoc::DeleteContents()
 	TRACE(L"CMyDoc::DeleteContents()\n");
 	if (!m_fFirstTime)
 	{
-		//SaveModified();
 		UpdateAllViews( NULL, HINT_EMPTY, NULL);
 		
 		// Clear the Dirty List
@@ -472,14 +471,6 @@ DWORD UpdateThreadInfo( LPVOID pParam )
 BOOL CMyDoc::ResumeAllThreads()
 {
 	TRACE(L"CMyDoc::ResumeAllThreads()\n");
-	
-	//CMainFrame* pFrame = static_cast<CMainFrame*> (AfxGetMainWnd());
-	//if (NULL == pFrame)
-	//	return FALSE;
-	//
-	//CMyListView* pView = static_cast<CMyListView*> (pFrame->GetActiveView());
-	//if (NULL == pView)
-	//	return FALSE;
 	
 	if ( (!g_eGoThreadInfo.Signaled()) && (m_dwDirtyInfo > 0) )
 	{
@@ -730,9 +721,6 @@ BOOL CMyDoc::CreateThreads()
 	g_eGoThreadInfo.Create(L"GoThreadInfo");
 	g_eGoThreadCRC.Create(L"GoThreadCRC");
 	
-	ASSERT(NULL==g_hThreadCRC);
-	ASSERT(NULL==g_hThreadInfo);
-
 	// Create the Threads
 	g_hThreadInfo=CreateThread( NULL, 0, (LPTHREAD_START_ROUTINE)UpdateThreadInfo, this, THREAD_PRIORITY, &g_dwThreadInfo);
 	if (g_hThreadInfo == NULL)
@@ -840,9 +828,6 @@ void CMyDoc::TerminateThreads()
 	g_eTermThreads.Close();
 	g_eGoThreadCRC.Close();
 	g_eGoThreadInfo.Close();
-	
-	// handled by destructor
-	// FreeCRCMemory();
 }
 
 void CMyDoc::OnCloseDocument() 

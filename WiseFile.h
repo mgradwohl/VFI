@@ -50,7 +50,7 @@ enum FileStates
 	FWFS_CRC_COMPLETE		=0x0010,	// CRC complete
 	FWFS_CRC_ERROR			=0x0020,	// error generating CRC
 	FWFS_DELETE				=0x0040,	// pending deletion
-	FWFS_INVALID			=0x0080	// invalid state
+	FWFS_INVALID			=0x0080		// invalid state
 };
 
 #define	FWF_SUCCESS				0

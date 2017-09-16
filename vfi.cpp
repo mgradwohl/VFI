@@ -191,12 +191,6 @@ BOOL CMyApp::InitInstance()
 		return FALSE;
 	}
 
-	// for LVM_SETBKIMAGE
-	//if (S_OK != CoInitialize(NULL))
-	//{
-	//	ASSERT(false);
-	//}
-
 	// Init the Rich Edit Box
 	AfxInitRichEdit();
 
@@ -367,7 +361,7 @@ BOOL CAboutDlg::OnInitDialog()
 
 	CString str;
 	//TODO put our version information in here
-	str.FormatMessage(STR_TITLE, L"4.90", L"4.90.1708.2201");
+	str.FormatMessage(STR_TITLE, L"4.91", L"4.91.1609.2201");
 	pCtl->SetWindowText(str);
 
 	// set the Author
