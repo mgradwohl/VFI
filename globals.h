@@ -52,14 +52,3 @@ extern TEvent g_eTermThreads;
 // CRC Memory handles
 extern BYTE* g_pBuf;
 extern DWORD g_dwChunk;
-
-#ifdef TEST
-	#define ALERT(x, s)	{	\
-						if (!x) \
-						{	\
-							ErrorMessageBox(NULL, GetLastError(), L"VFI Alert", s);	\
-						}	\
-					}
-	#else
-		#define ALERT(x, s)
-#endif

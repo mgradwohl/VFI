@@ -41,8 +41,6 @@ enum { CDF_CENTER, CDF_TOPLEFT, CDF_NONE };
 #define MWX_NW		0x0008	// 0000 0000  0000 1000
 #define MWX_APP		0x8000	// 1000 0000  0000 0000
 
-UINT32 UClamp(INT_PTR val);
-__int32 Clamp(INT_PTR val);
 int Width(LPCRECT prc);
 int Height(LPCRECT prc);
 int Height(const HWND hWnd);
@@ -58,7 +56,14 @@ void CenterWindow(const HWND hWndParent, const HWND hWnd);
 bool MoveWindowEx(const HWND hWnd, const WORD wAlign);
 int ErrorMessageBox(const HWND hWnd, const DWORD dwError, LPCWSTR pszTitle, LPCWSTR pszMessage);
 int ErrorMessageBox(const HINSTANCE hInst, const HWND hWnd, const DWORD dwError, const UINT idTitle, const UINT idMessage);
+int _alert(bool fCondition, LPWSTR message);
 bool SaveBox(const HWND hWnd, LPCWSTR pszTitle, LPCWSTR pszFilter, LPWSTR pszFile, const DWORD dwFlags);
 bool OpenBox(const HWND hWnd, LPCWSTR pszTitle, LPCWSTR pszFilter, LPWSTR pszFile, LPWSTR pszFolder, const DWORD dwFlags);
 bool BrowseForFile(const HWND hWnd, LPCWSTR pszTitle, LPWSTR pszFolder);
 bool BrowseForFolder(const HWND hWnd, LPCWSTR pszTitle, LPWSTR pszFolder);
+
+#ifdef DEBUG
+	#define ALERT _alert
+#else
+	#define ALERT __noop
+#endif

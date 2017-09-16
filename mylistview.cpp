@@ -177,7 +177,7 @@ void CMyListView::OnInitialUpdate()
 		CHeaderCtrl* pHeader=theListCtrl.GetHeaderCtrl();
 		if (!pHeader)
 		{
-			TRACE0( "InitialUpdate could not get Header\n.");
+			TRACE( "InitialUpdate could not get Header\n.");
 			return;
 		}
 
@@ -207,8 +207,8 @@ void CMyListView::OnInitialUpdate()
 		
 		// create the image list for sorting
 		m_imlView.Create(16, 16, ILC_MASK, 2, 2);
-		VERIFY(-1 != m_imlView.Add(theApp.LoadIcon(IDI_ASCEND)));
-		VERIFY(-1 != m_imlView.Add(theApp.LoadIcon(IDI_DESCEND)));
+		m_imlView.Add(theApp.LoadIcon(IDI_ASCEND));
+		m_imlView.Add(theApp.LoadIcon(IDI_DESCEND));
 		pHeader->SetImageList(&m_imlView);
 
 		InitColumns();
@@ -276,7 +276,7 @@ bool CMyListView::AddItem(CWiseFile* pFileInfo)
 
 	CListCtrl& theListCtrl=GetListCtrl();
 	iItem=theListCtrl.GetItemCount();
-	TRACE1( ">>> CMyListView::AddItem() iItem==%d\r\n",iItem);
+	TRACE( ">>> CMyListView::AddItem() iItem==%d\r\n",iItem);
 
 	LV_ITEM lvi;
 	ZeroMemory(&lvi, sizeof(lvi));
@@ -790,7 +790,7 @@ int CALLBACK CMyListView::ListViewCompareProc(LPARAM lParam1, LPARAM lParam2, LP
 void CMyListView::OnContextMenu(CWnd*, CPoint point)
 {
 	CMenu menu;
-	VERIFY(menu.LoadMenu(CG_POPUP));
+	menu.LoadMenu(CG_POPUP);
 	
 	CMenu* pPopup = menu.GetSubMenu(0);
 	if (pPopup == nullptr)
@@ -1268,7 +1268,7 @@ void CMyListView::UpdateWidths()
 void CMyListView::OnFileAdd() 
 {
 	TRACE(L">>> CMyListView::OnFileAdd()\n");
-	#define BUFSIZE	512 * _MAX_PATH
+	static const int BUFSIZE = 512 * _MAX_PATH;
 
 	LPWSTR pszBuf = new WCHAR[BUFSIZE];
 	if (pszBuf == nullptr)
@@ -1485,7 +1485,7 @@ void CMyListView::MarkColumn()
 	CHeaderCtrl* pHeader = GetListCtrl().GetHeaderCtrl();
 	if (NULL==pHeader)
 	{
-		TRACE0( "MarkColumn can't get header control\n.");
+		TRACE( "MarkColumn can't get header control\n.");
 		return;
 	}
 
@@ -1493,7 +1493,7 @@ void CMyListView::MarkColumn()
 	ZeroMemory(&hi, sizeof(HDITEM));
 	if (!pHeader->GetItem(m_iSortColumn, &hi))
 	{
-		TRACE0( "MarkColumn can't get previously sorted column\n.");
+		TRACE( "MarkColumn can't get previously sorted column\n.");
 		return;
 	}
 
@@ -1527,7 +1527,7 @@ void CMyListView::UnMarkColumn()
 	CHeaderCtrl* pHeader = GetListCtrl().GetHeaderCtrl();
 	if (NULL==pHeader)
 	{
-		TRACE0( "MarkColumn can't get header control\n.");
+		TRACE( "MarkColumn can't get header control\n.");
 		return;
 	}
 
@@ -1535,7 +1535,7 @@ void CMyListView::UnMarkColumn()
 	ZeroMemory(&hi, sizeof(HDITEM));
 	if (!pHeader->GetItem(m_iSortColumn, &hi))
 	{
-		TRACE0( "MarkColumn can't get previously sorted column\n.");
+		TRACE( "MarkColumn can't get previously sorted column\n.");
 		return;
 	}
 

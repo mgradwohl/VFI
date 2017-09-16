@@ -65,9 +65,16 @@
 
 static const int SIZEMEG = 1048576;
 static const int SIZEBUF = 2 * SIZEMEG;
-
 static const int LIST_NUMCOLUMNS = 19;
 static const int LIST_MAXHEADLENGTH	= (64 * sizeof(WCHAR));
+static const int MTX_LOCK = 10;
+static const int THREAD_WAIT = 250;
+static const int THREAD_TRY = 10;
+static const int TIM_UPDATE = 101;
+static const int TIM_UPDATE_INTERVAL = 500;
+
+#define THREAD_PRIORITY THREAD_PRIORITY_NORMAL
+#define APP_PRIORITY THREAD_PRIORITY_ABOVE_NORMAL
 
 // Hints
 enum Hints
@@ -96,13 +103,6 @@ enum MWXFlags
 	MWX_APP		=0x8000
 };
 						
-// How long should we wait for the threads to die in ms
-static const int THREAD_WAIT	=250;
-// How many times should we try to kill them
-static const int THREAD_TRY		=10;
-#define THREAD_PRIORITY THREAD_PRIORITY_NORMAL
-#define APP_PRIORITY THREAD_PRIORITY_ABOVE_NORMAL
-
 #include "WiseFile.h"
 #include "resource.h"
 #include "strlib.h"

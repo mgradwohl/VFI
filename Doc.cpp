@@ -41,8 +41,6 @@
 	#endif
 #endif
 
-#define MTX_LOCK	10
-
 /////////////////////////////////////////////////////////////////////////////
 // CMyDoc
 
@@ -111,10 +109,6 @@ void CMyDoc::AssertValid() const
 void CMyDoc::Dump(CDumpContext& dc) const
 {
 	CDocument::Dump(dc);
-	//dc << "\n";
-	//dc << "Item Count: " << m_FileList.GetCount() << "\n";
-	//dc << "Dirty Count: " << m_DirtyList.GetCount() << "\n";
-	//dc << "Kill Count: " << m_KillList.GetCount() << "\n";
 }
 #endif //_DEBUG
 

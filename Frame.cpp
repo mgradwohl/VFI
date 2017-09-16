@@ -37,9 +37,6 @@
 	static CHAR THIS_FILE[] = __FILE__;
 #endif
 
-#define TIM_UPDATE			101
-#define TIM_UPDATE_INTERVAL	500
-
 /////////////////////////////////////////////////////////////////////////////
 // CMainFrame
 

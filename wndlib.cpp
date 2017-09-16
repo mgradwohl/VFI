@@ -326,6 +326,15 @@ int ErrorMessageBox(const HWND hWnd, const DWORD dwError, LPCWSTR pszTitle, LPCW
 	return error;
 }
 
+int _alert(bool fCondition, LPWSTR message)
+{
+	if (!fCondition)
+	{
+		return ErrorMessageBox(NULL, GetLastError(), L"VFI Alert", message);
+	}
+	return -1;
+}
+
 int ErrorMessageBox(const HINSTANCE hInst, const HWND hWnd, const DWORD dwError, const UINT idTitle, const UINT idMessage)
 {
 	LPVOID pBuf;

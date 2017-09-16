@@ -135,6 +135,7 @@ public:
 		TRACE(L"     Dirty CRC:  %lu\r\n", m_dwDirtyCRC);
 		TRACE(L"     Dirty Info: %lu\r\n", m_dwDirtyInfo);
 #endif
+		
 		return ( m_dwDirtyCRC + m_dwDirtyInfo > 0 );
 	}
 

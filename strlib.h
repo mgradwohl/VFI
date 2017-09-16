@@ -53,7 +53,7 @@
 	#define MAX_EXT	(_MAX_EXT)
 	#define MAX_USERNAME ((UNLEN + 1))
 #endif
-size_t const maxExtendedPathLength = 0x7FFF - 24;
+static const size_t maxExtendedPathLength = 0x7FFF - 24;
 
 // QWORD
 #define QWORD			DWORDLONG
@@ -63,9 +63,8 @@ size_t const maxExtendedPathLength = 0x7FFF - 24;
 
 // lccb
 // LCHAR count bytes
-#define sccb	 sizeof(char)
-#define	mccb	 sizeof(wchar_t)
-#define wccb	 sizeof(wchar_t)
+static const int sccb = sizeof(char);
+static const int wccb = sizeof(wchar_t);
 
 #define lccb wccb
 
