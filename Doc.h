@@ -21,7 +21,6 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR 
 // IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#ifndef DOC_H
 #pragma once
 #ifdef _DEBUG
 	#define new DEBUG_NEW
@@ -181,6 +180,3 @@ inline CMyDoc* CMyDoc::GetDoc()
 
 DWORD UpdateThreadInfo (LPVOID pParam);
 DWORD UpdateThreadCRC (LPVOID pParam);
-/////////////////////////////////////////////////////////////////////////////
-#define DOC_H
-#endif//DOC_H

@@ -24,8 +24,9 @@
 // mylistview.h : interface of the CMyListView class
 //
 /////////////////////////////////////////////////////////////////////////////
-#ifndef MYLISTVIEW_H
+
 #pragma once
+
 #ifdef _DEBUG
 	#define new DEBUG_NEW
 #endif
@@ -327,7 +328,3 @@ inline int CMyListView::TimeCompare( CTime time1, CTime time2, bool fSortAscendi
 	}
 	return -iResult;
 }
-
-/////////////////////////////////////////////////////////////////////////////
-#define MYLISTVIEW_H
-#endif//MYLISTVIEW_H

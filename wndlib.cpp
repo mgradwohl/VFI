@@ -33,10 +33,6 @@
 	#endif
 #endif
 
-//#ifndef TRACE
-//	#define TRACE(x) OutputDebugString(x)
-//#endif
-
 #include <shlobj.h>
 #include "trace.h"
 #include "wndlib.h"

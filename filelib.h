@@ -22,7 +22,6 @@
 // IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #pragma once
-#ifndef FILELIB_H
 
 #ifndef __cplusplus
 	#error FileLib requires C++ compilation (use a .cpp suffix)
@@ -59,6 +58,3 @@ bool PathGetContainingFolder(LPWSTR pszFileSpec);
 __int64 SetFilePointer64 (HANDLE hf, __int64 distance, DWORD MoveMethod);
 __int64 GetFileSize64(LPCWSTR pszFileSpec);
 void ShowShellFileProperties(HWND hwnd, LPCWSTR pwszFile);
-
-#define FILELIB_H
-#endif//FILELIB_H

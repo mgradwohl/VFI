@@ -21,8 +21,8 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR 
 // IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#ifndef FRAME_H
 #pragma once
+
 #ifdef _DEBUG
 	#ifdef DEBUG_NEW
 		#define new DEBUG_NEW
@@ -117,6 +117,3 @@ private:
 	QWORD m_qwSize;
 	int m_iCount;
 };
-
-#define FRAME_H
-#endif//FRAME_H

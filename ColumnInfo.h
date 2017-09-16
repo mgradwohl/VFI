@@ -21,7 +21,6 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR 
 // IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#ifndef COLUMNINFO_H
 #pragma once
 
 #ifdef _DEBUG
@@ -81,6 +80,3 @@ private:
 	int		m_dxFixed;		// non-zero means this is a fixed-width owner draw thing 
 	bool	m_fVisible : 1;
 };
-
-#define COLUMNINFO_H
-#endif//COLUMNINFO_H

@@ -1,4 +1,5 @@
 #pragma once
+
 #include "WiseFile.h"
 #include <vector>
 #include <memory>
@@ -7,7 +8,6 @@ using namespace std;
 typedef shared_ptr<CWiseFile> spWiseFile;
 typedef vector<spWiseFile> MyVector;
 typedef MyVector::iterator MyListIterator;
-
 
 class MyList
 {

@@ -24,8 +24,9 @@
 //
 // MyPropPage1.h : header file
 //
-#ifndef PROPPAGE_H
+
 #pragma once
+
 #ifdef _DEBUG
 	#define new DEBUG_NEW
 #endif
@@ -122,6 +123,3 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 };
-
-#define	 PROPPAGE_H
-#endif//PROPPAGE_H

@@ -22,7 +22,6 @@
 // IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #pragma once
-#ifndef STRLIB_H
 
 #ifndef __cplusplus
 	#error StrLib requires C++ compilation (use a .cpp suffix)
@@ -134,6 +133,3 @@ __forceinline void lstrinit(LPWSTR psz)
 {
 	*psz = '\0';
 }
-
-#define STRLIB_H
-#endif//STRLIB_H

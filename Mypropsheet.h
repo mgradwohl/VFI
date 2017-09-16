@@ -26,8 +26,8 @@
 // This class defines custom modal property sheet 
 // CMyPropSheet.
  
-#ifndef MYPROPSHEET_H
 #pragma once
+
 #ifdef _DEBUG
 	#define new DEBUG_NEW
 #endif
@@ -70,8 +70,3 @@ protected:
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };
-
-/////////////////////////////////////////////////////////////////////////////
-
-#define	MYPROPSHEET_H
-#endif//MYPROPSHEET_H

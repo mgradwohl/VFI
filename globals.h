@@ -63,5 +63,3 @@ extern DWORD g_dwChunk;
 	#else
 		#define ALERT(x, s)
 #endif
-
-

@@ -26,35 +26,25 @@
 //      are changed infrequently
 //
 
-//#pragma warning(disable: 4711)
-
 #ifndef STRICT
 	#define STRICT
 #endif
 
-/*
-#define _WIN32_WINNT	_WIN32_WINNT_WINBLUE //0x06000
-#define WINVER			_WIN32_WINNT_WINBLUE //0x0600
-#define	_WIN32_IE		_WIN32_IE_IE100 //0x0700
-#define	NTDDI_VERSION	NTDDI_WINBLUE //NTDDI_LONGHORN
-*/
-
-#ifndef WINVER						// Specifies that the minimum required platform is Windows Vista.
-#define WINVER _WIN32_WINNT_WINBLUE	//0x0600           // Change this to the appropriate value to target other versions of Windows.
+#ifndef WINVER											// Specifies that the minimum required platform is Windows Vista.
+#define WINVER _WIN32_WINNT_WIN10						// Change this to the appropriate value to target other versions of Windows.
 #endif
 
-#ifndef _WIN32_WINNT						// Specifies that the minimum required platform is Windows Vista.
-#define _WIN32_WINNT _WIN32_WINNT_WINBLUE	//0x0600     // Change this to the appropriate value to target other versions of Windows.
+#ifndef _WIN32_WINNT									// Specifies that the minimum required platform is Windows Vista.
+#define _WIN32_WINNT _WIN32_WINNT_WIN10					// Change this to the appropriate value to target other versions of Windows.
 #endif
 
-#ifndef _WIN32_WINDOWS          // Specifies that the minimum required platform is Windows 98.
-#define _WIN32_WINDOWS 0x0410   // Change this to the appropriate value to target Windows Me or later.
+#ifndef _WIN32_WINDOWS									// Specifies that the minimum required platform is Windows 98.
+#define _WIN32_WINDOWS 0x0410							// Change this to the appropriate value to target Windows Me or later.
 #endif
 
-#ifndef _WIN32_IE					// Specifies that the minimum required platform is Internet Explorer 7.0.
-#define _WIN32_IE _WIN32_IE_IE100	//0x0700        // Change this to the appropriate value to target other versions of IE.
+#ifndef _WIN32_IE										// Specifies that the minimum required platform is Internet Explorer 7.0.
+#define _WIN32_IE _WIN32_IE_IE100						// Change this to the appropriate value to target other versions of IE.
 #endif
-
 
 #ifdef	NOLISTVIEW
 #undef	NOLISTVIEW
@@ -79,7 +69,6 @@ static const int SIZEBUF = 2 * SIZEMEG;
 static const int LIST_NUMCOLUMNS = 19;
 static const int LIST_MAXHEADLENGTH	= (64 * sizeof(WCHAR));
 
-
 // Hints
 enum Hints
 {
@@ -91,15 +80,6 @@ enum Hints
 	HINT_DONECRC=	0x0F01,
 	HINT_DONEINFO=	0x0F02
 };
-
-
-//// Column Sort Flags
-//enum Sorts
-//{
-//	SORT_NONE		=0,
-//	SORT_ASCENDING	=1,
-//	SORT_DESCENDING	=2
-//};
 
 // MoveWindowEx flags
 enum MWXFlags

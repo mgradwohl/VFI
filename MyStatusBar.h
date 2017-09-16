@@ -21,8 +21,8 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR 
 // IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#ifndef MYSTATUSBAR_H
 #pragma once
+
 #ifdef _DEBUG
 	#define new DEBUG_NEW
 #endif
@@ -80,7 +80,3 @@ private:
 	CProgressCtrl m_ctlProgress1;
 	CProgressCtrl m_ctlProgress2;
 };
-
-#define MYSTATUSBAR_H
-#endif//MYSTATUSBAR_H
-

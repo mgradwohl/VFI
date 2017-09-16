@@ -21,7 +21,6 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR 
 // IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#ifndef GUID_H
 #pragma once
 
 #include <objbase.h>
@@ -102,6 +101,3 @@ private:
 			m_guid.Data4[4], m_guid.Data4[5], m_guid.Data4[6], m_guid.Data4[7]);
 	}
 };
-
-#define GUID_H
-#endif//GUID_H

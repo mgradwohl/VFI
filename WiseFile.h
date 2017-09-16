@@ -21,8 +21,8 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR 
 // IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#ifndef WISEFILE_H
 #pragma once
+
 #ifdef _DEBUG
 	#ifdef DEBUG_NEW
 		#define new DEBUG_NEW
@@ -249,6 +249,3 @@ private:
 	bool m_fszFlags;
 	bool m_fszAttribs;
 };
-
-#define WISEFILE_H
-#endif//WISEFILE_H

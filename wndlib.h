@@ -22,7 +22,6 @@
 // IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #pragma once
-#ifndef WNDLIB_H
 
 #ifndef __cplusplus
 	#error WndLib requires C++ compilation (use a .cpp suffix)
@@ -63,6 +62,3 @@ bool SaveBox(const HWND hWnd, LPCWSTR pszTitle, LPCWSTR pszFilter, LPWSTR pszFil
 bool OpenBox(const HWND hWnd, LPCWSTR pszTitle, LPCWSTR pszFilter, LPWSTR pszFile, LPWSTR pszFolder, const DWORD dwFlags);
 bool BrowseForFile(const HWND hWnd, LPCWSTR pszTitle, LPWSTR pszFolder);
 bool BrowseForFolder(const HWND hWnd, LPCWSTR pszTitle, LPWSTR pszFolder);
-
-#define WNDLIB_H
-#endif//WNDLIB_H

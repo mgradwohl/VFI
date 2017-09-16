@@ -171,4 +171,3 @@ public:
 private:
 	HANDLE m_hEvent;
 };
-

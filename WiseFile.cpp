@@ -22,12 +22,12 @@
 // IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "stdafx.h"
-#include <memory>
 #include "resource.h"
 #include "globals.h"
 #include "WiseFile.h"
 #include "Imagehlp.h"
 #include "strlib.h"
+#include <memory>
 
 #ifdef _DEBUG
 	#define new DEBUG_NEW

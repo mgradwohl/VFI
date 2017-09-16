@@ -21,8 +21,8 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR 
 // IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#ifndef HELPDLG_H
 #pragma once
+
 #ifdef _DEBUG
 	#define new DEBUG_NEW
 #endif
@@ -67,6 +67,3 @@ protected:
 private:
 	UINT m_nHelpID;
 };
-
-#define HELPDLG_H
-#endif//HELPDLG_H

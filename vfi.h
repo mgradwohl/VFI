@@ -21,7 +21,6 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR 
 // IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#ifndef VFI_H
 #pragma once
 
 #ifndef __AFXWIN_H__
@@ -78,6 +77,3 @@ private:
 
 /////////////////////////////////////////////////////////////////////////////
 extern CMyApp theApp;
-
-#define VFI_H
-#endif//VFI_H
