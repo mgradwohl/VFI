@@ -86,81 +86,81 @@ bool MoveWindow(const HWND hWnd, LPCRECT prc, const bool fRepaint)
 	return (0 != MoveWindow(hWnd, prc->left, prc->top, Width(prc), Height(prc), fRepaint));
 }
 
-void ChangeDialogFont(const HWND hWnd, const HFONT hFont, const int nFlag)
-{
-	RECT rcClient, rcNewClient, rcWnd, rcNewWnd;
-
-	// grab old and new text metrics
-	TEXTMETRIC tmOld, tmNew;
-	HDC hDC = GetDC(hWnd);
-	HFONT hFontOld = (HFONT) SelectObject(hDC, GetFont(hWnd));
-	GetTextMetrics(hDC, &tmOld);
-	SelectObject(hDC, hFont);
-	GetTextMetrics(hDC, &tmNew);
-	SelectObject(hDC, hFontOld);
-	ReleaseDC(hWnd, hDC);
-
-	long oldHeight = tmOld.tmHeight+tmOld.tmExternalLeading;
-	long newHeight = tmNew.tmHeight+tmNew.tmExternalLeading;
-
-	if (nFlag != CDF_NONE)
-	{
-		// calculate new dialog window rectangle
-		GetWindowRect(hWnd, &rcWnd);
-		GetClientRect(hWnd, &rcClient);
-		long xDiff = Width(&rcWnd) - Width(&rcClient);
-		long yDiff = Height(&rcWnd) - Height(&rcClient);
-	
-		rcClient.left = rcNewClient.top = 0;
-		rcNewClient.right = rcClient.right * tmNew.tmAveCharWidth / tmOld.tmAveCharWidth;
-		rcNewClient.bottom = rcClient.bottom * newHeight / oldHeight;
-
-		if (nFlag == CDF_TOPLEFT) // resize with origin at top/left of window
-		{
-			rcNewWnd.left = rcWnd.left;
-			rcNewWnd.top = rcWnd.top;
-			rcNewWnd.right = rcWnd.left + rcNewClient.right + xDiff;
-			rcNewWnd.bottom = rcWnd.top + rcNewClient.bottom + yDiff;
-		}
-		else if (nFlag == CDF_CENTER) // resize with origin at center of window
-		{
-			rcNewWnd.left = rcWnd.left - (rcNewClient.right - rcClient.right)/2;
-			rcNewWnd.top = rcWnd.top - (rcNewClient.bottom - rcClient.bottom)/2;
-			rcNewWnd.right = rcNewWnd.left + rcNewClient.right + xDiff;
-			rcNewWnd.bottom = rcNewWnd.top + rcNewClient.bottom + yDiff;
-		}
-		MoveWindow(hWnd, &rcNewWnd, false);
-	}
-
-	SetFont(hWnd, hFont, false);
-
-	// iterate through and move all child windows and change their font.
-	HWND hWndChild = GetWindow(hWnd, GW_CHILD);
-	WCHAR szBuf[32];
-	while (hWndChild)
-	{
-		SetFont(hWndChild, hFont, false);
-		GetWindowRect(hWndChild, &rcWnd);
-		GetClassName(hWndChild, szBuf, 31);
-
-		if (0 == _wcsicmp(szBuf, L"COMBOBOX"))
-		{
-			RECT rc;
-			SendMessage(hWndChild, CB_GETDROPPEDCONTROLRECT,0,(LPARAM) &rc);
-			rcWnd.right = rc.right;
-			rcWnd.bottom = rc.bottom;
-		}
-
-		ScreenToClient(hWnd, &rcWnd);
-		rcWnd.left = rcWnd.left * tmNew.tmAveCharWidth / tmOld.tmAveCharWidth;
-		rcWnd.right = rcWnd.right * tmNew.tmAveCharWidth / tmOld.tmAveCharWidth;
-		rcWnd.top = rcWnd.top * newHeight / oldHeight;
-		rcWnd.bottom = rcWnd.bottom * newHeight / oldHeight;
-		MoveWindow(hWndChild, &rcWnd, false);
-		
-		hWndChild = GetWindow(hWndChild, GW_HWNDNEXT);
-	}
-}
+//void ChangeDialogFont(const HWND hWnd, const HFONT hFont, const int nFlag)
+//{
+//	RECT rcClient, rcNewClient, rcWnd, rcNewWnd;
+//
+//	// grab old and new text metrics
+//	TEXTMETRIC tmOld, tmNew;
+//	HDC hDC = GetDC(hWnd);
+//	HFONT hFontOld = (HFONT) SelectObject(hDC, GetFont(hWnd));
+//	GetTextMetrics(hDC, &tmOld);
+//	SelectObject(hDC, hFont);
+//	GetTextMetrics(hDC, &tmNew);
+//	SelectObject(hDC, hFontOld);
+//	ReleaseDC(hWnd, hDC);
+//
+//	long oldHeight = tmOld.tmHeight+tmOld.tmExternalLeading;
+//	long newHeight = tmNew.tmHeight+tmNew.tmExternalLeading;
+//
+//	if (nFlag != CDF_NONE)
+//	{
+//		// calculate new dialog window rectangle
+//		GetWindowRect(hWnd, &rcWnd);
+//		GetClientRect(hWnd, &rcClient);
+//		long xDiff = Width(&rcWnd) - Width(&rcClient);
+//		long yDiff = Height(&rcWnd) - Height(&rcClient);
+//	
+//		rcClient.left = rcNewClient.top = 0;
+//		rcNewClient.right = rcClient.right * tmNew.tmAveCharWidth / tmOld.tmAveCharWidth;
+//		rcNewClient.bottom = rcClient.bottom * newHeight / oldHeight;
+//
+//		if (nFlag == CDF_TOPLEFT) // resize with origin at top/left of window
+//		{
+//			rcNewWnd.left = rcWnd.left;
+//			rcNewWnd.top = rcWnd.top;
+//			rcNewWnd.right = rcWnd.left + rcNewClient.right + xDiff;
+//			rcNewWnd.bottom = rcWnd.top + rcNewClient.bottom + yDiff;
+//		}
+//		else if (nFlag == CDF_CENTER) // resize with origin at center of window
+//		{
+//			rcNewWnd.left = rcWnd.left - (rcNewClient.right - rcClient.right)/2;
+//			rcNewWnd.top = rcWnd.top - (rcNewClient.bottom - rcClient.bottom)/2;
+//			rcNewWnd.right = rcNewWnd.left + rcNewClient.right + xDiff;
+//			rcNewWnd.bottom = rcNewWnd.top + rcNewClient.bottom + yDiff;
+//		}
+//		MoveWindow(hWnd, &rcNewWnd, false);
+//	}
+//
+//	SetFont(hWnd, hFont, false);
+//
+//	// iterate through and move all child windows and change their font.
+//	HWND hWndChild = GetWindow(hWnd, GW_CHILD);
+//	WCHAR szBuf[32];
+//	while (hWndChild)
+//	{
+//		SetFont(hWndChild, hFont, false);
+//		GetWindowRect(hWndChild, &rcWnd);
+//		GetClassName(hWndChild, szBuf, 31);
+//
+//		if (0 == _wcsicmp(szBuf, L"COMBOBOX"))
+//		{
+//			RECT rc;
+//			SendMessage(hWndChild, CB_GETDROPPEDCONTROLRECT,0,(LPARAM) &rc);
+//			rcWnd.right = rc.right;
+//			rcWnd.bottom = rc.bottom;
+//		}
+//
+//		ScreenToClient(hWnd, &rcWnd);
+//		rcWnd.left = rcWnd.left * tmNew.tmAveCharWidth / tmOld.tmAveCharWidth;
+//		rcWnd.right = rcWnd.right * tmNew.tmAveCharWidth / tmOld.tmAveCharWidth;
+//		rcWnd.top = rcWnd.top * newHeight / oldHeight;
+//		rcWnd.bottom = rcWnd.bottom * newHeight / oldHeight;
+//		MoveWindow(hWndChild, &rcWnd, false);
+//		
+//		hWndChild = GetWindow(hWndChild, GW_HWNDNEXT);
+//	}
+//}
 
 HFONT GetMessageFont()
 {
@@ -171,157 +171,157 @@ HFONT GetMessageFont()
 	return CreateFontIndirect(&ncm.lfMessageFont);
 }
 
-void CenterWindow(const HWND hWndParent, const HWND hWnd)
-{
-	// unused
-	hWndParent;
+//void CenterWindow(const HWND hWndParent, const HWND hWnd)
+//{
+//	// unused
+//	hWndParent;
+//
+//	RECT rcWnd;
+//	RECT rcMon;
+//	GetWindowRect(hWnd, &rcWnd);
+//
+//	MONITORINFO mi;
+//	mi.cbSize = sizeof(mi);
+//	GetMonitorInfo(MonitorFromWindow(hWnd, MONITOR_DEFAULTTONEAREST), &mi);
+//
+//	rcMon = mi.rcMonitor; // or mi.rcWork
+//
+//	rcWnd.left   = rcMon.left + ((rcMon.right  - rcMon.left) - 
+//								 (rcWnd.right  - rcWnd.left)) / 2;
+//	rcWnd.top    = rcMon.top  + ((rcMon.bottom - rcMon.top)  - 
+//								 (rcWnd.bottom - rcWnd.top)) / 2;
+//
+//	SetWindowPos(hWnd, NULL, rcWnd.left, rcWnd.top, 
+//				 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
+//}
 
-	RECT rcWnd;
-	RECT rcMon;
-	GetWindowRect(hWnd, &rcWnd);
-
-	MONITORINFO mi;
-	mi.cbSize = sizeof(mi);
-	GetMonitorInfo(MonitorFromWindow(hWnd, MONITOR_DEFAULTTONEAREST), &mi);
-
-	rcMon = mi.rcMonitor; // or mi.rcWork
-
-	rcWnd.left   = rcMon.left + ((rcMon.right  - rcMon.left) - 
-								 (rcWnd.right  - rcWnd.left)) / 2;
-	rcWnd.top    = rcMon.top  + ((rcMon.bottom - rcMon.top)  - 
-								 (rcWnd.bottom - rcWnd.top)) / 2;
-
-	SetWindowPos(hWnd, NULL, rcWnd.left, rcWnd.top, 
-				 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
-}
-
-bool MoveWindowEx(const HWND hWnd, const WORD wAlign)
-{
-	if (!IsWindow(hWnd))
-	{
-		return false;
-	}
-	
-	RECT rc;
-	HWND hWndParent = GetParent(hWnd);
-
-	if (wAlign & MWX_APP)
-	{
-		// move based on application window rect
-		if (NULL==hWndParent || !::IsWindow(hWndParent))
-		{
-			TRACE(L"MoveWindowEx invalid main window, centering on desktop.\n");
-			SystemParametersInfo(SPI_GETWORKAREA, 0, &rc, 0);
-		}
-		else
-		{
-			GetWindowRect(hWndParent, &rc);
-		}
-	}
-	else
-	{
-		// move based on usable window rect
-		HMONITOR hMon = ::MonitorFromWindow(hWnd, MONITOR_DEFAULTTONEAREST);
-		MONITORINFO mi;
-		ZeroMemory(&mi, sizeof(mi));
-		mi.cbSize = sizeof(mi);
-		if (!GetMonitorInfo(hMon, &mi))
-		{
-			SystemParametersInfo(SPI_GETWORKAREA, 0, &rc, 0);
-		}
-		else
-		{
-			CopyRect(&rc, &(mi.rcWork));
-		}
-	}
-
-	// Get size of window and calc current width and height
-	RECT rcBox;
-	GetWindowRect(hWnd, &rcBox);
-	int iW = Width(&rcBox);
-	int iH = Height(&rcBox);
-
-	switch (LOBYTE(wAlign))
-	{
-	case MWX_CENTER:
-		{
-			rcBox.top = abs(rc.bottom - rc.top - iH) / 2;
-			rcBox.left = abs(rc.right - rc.left - iW) / 2;
-		}
-		break;
-	case MWX_NORTH:
-		{
-			rcBox.top = rc.top;
-			rcBox.left = abs(rc.right - rc.left - iW) / 2;
-		}
-		break;
-	case MWX_NE:
-		{
-			rcBox.top = rc.top;
-			rcBox.left = rc.right - iW;
-		}
-		break;
-	case MWX_EAST:
-		{
-			rcBox.top = abs(rc.bottom - rc.top - iH) / 2;
-			rcBox.left = rc.right - iW;
-		}
-		break;
-	case MWX_SE:
-		{
-			rcBox.top = rc.bottom - iH;
-			rcBox.left = rc.right - iW;
-		}
-		break;
-	case MWX_SOUTH:
-		{
-			rcBox.top = rc.bottom - iH;
-			rcBox.left = abs(rc.right - rc.left - iW) / 2;
-		}
-		break;
-	case MWX_SW:
-		{
-			rcBox.top = rc.bottom - iH;
-			rcBox.left = rc.left;
-		}
-		break;
-	case MWX_WEST:
-		{
-			rcBox.top = abs(rc.bottom - rc.top - iH) / 2;
-			rcBox.left = rc.left;
-		}
-		break;
-	case MWX_NW:
-		{
-			rcBox.top = rc.top;
-			rcBox.left = rc.left;
-		}
-		break;
-	}
-	rcBox.bottom = rcBox.top + iH;
-	rcBox.right = rcBox.left + iW;
-
-	if (wAlign & MWX_APP)
-	{
-		ClientToScreen(hWnd, &rcBox);
-	}
-	MoveWindow(hWnd, &rcBox, TRUE);
-	return true;
-}
+//bool MoveWindowEx(const HWND hWnd, const WORD wAlign)
+//{
+//	if (!IsWindow(hWnd))
+//	{
+//		return false;
+//	}
+//	
+//	RECT rc;
+//	HWND hWndParent = GetParent(hWnd);
+//
+//	if (wAlign & MWX_APP)
+//	{
+//		// move based on application window rect
+//		if (NULL==hWndParent || !::IsWindow(hWndParent))
+//		{
+//			TRACE(L"MoveWindowEx invalid main window, centering on desktop.\n");
+//			SystemParametersInfo(SPI_GETWORKAREA, 0, &rc, 0);
+//		}
+//		else
+//		{
+//			GetWindowRect(hWndParent, &rc);
+//		}
+//	}
+//	else
+//	{
+//		// move based on usable window rect
+//		HMONITOR hMon = ::MonitorFromWindow(hWnd, MONITOR_DEFAULTTONEAREST);
+//		MONITORINFO mi;
+//		ZeroMemory(&mi, sizeof(mi));
+//		mi.cbSize = sizeof(mi);
+//		if (!GetMonitorInfo(hMon, &mi))
+//		{
+//			SystemParametersInfo(SPI_GETWORKAREA, 0, &rc, 0);
+//		}
+//		else
+//		{
+//			CopyRect(&rc, &(mi.rcWork));
+//		}
+//	}
+//
+//	// Get size of window and calc current width and height
+//	RECT rcBox;
+//	GetWindowRect(hWnd, &rcBox);
+//	int iW = Width(&rcBox);
+//	int iH = Height(&rcBox);
+//
+//	switch (LOBYTE(wAlign))
+//	{
+//	case MWX_CENTER:
+//		{
+//			rcBox.top = abs(rc.bottom - rc.top - iH) / 2;
+//			rcBox.left = abs(rc.right - rc.left - iW) / 2;
+//		}
+//		break;
+//	case MWX_NORTH:
+//		{
+//			rcBox.top = rc.top;
+//			rcBox.left = abs(rc.right - rc.left - iW) / 2;
+//		}
+//		break;
+//	case MWX_NE:
+//		{
+//			rcBox.top = rc.top;
+//			rcBox.left = rc.right - iW;
+//		}
+//		break;
+//	case MWX_EAST:
+//		{
+//			rcBox.top = abs(rc.bottom - rc.top - iH) / 2;
+//			rcBox.left = rc.right - iW;
+//		}
+//		break;
+//	case MWX_SE:
+//		{
+//			rcBox.top = rc.bottom - iH;
+//			rcBox.left = rc.right - iW;
+//		}
+//		break;
+//	case MWX_SOUTH:
+//		{
+//			rcBox.top = rc.bottom - iH;
+//			rcBox.left = abs(rc.right - rc.left - iW) / 2;
+//		}
+//		break;
+//	case MWX_SW:
+//		{
+//			rcBox.top = rc.bottom - iH;
+//			rcBox.left = rc.left;
+//		}
+//		break;
+//	case MWX_WEST:
+//		{
+//			rcBox.top = abs(rc.bottom - rc.top - iH) / 2;
+//			rcBox.left = rc.left;
+//		}
+//		break;
+//	case MWX_NW:
+//		{
+//			rcBox.top = rc.top;
+//			rcBox.left = rc.left;
+//		}
+//		break;
+//	}
+//	rcBox.bottom = rcBox.top + iH;
+//	rcBox.right = rcBox.left + iW;
+//
+//	if (wAlign & MWX_APP)
+//	{
+//		ClientToScreen(hWnd, &rcBox);
+//	}
+//	MoveWindow(hWnd, &rcBox, TRUE);
+//	return true;
+//}
 
 int ErrorMessageBox(const HWND hWnd, const DWORD dwError, LPCWSTR pszTitle, LPCWSTR pszMessage)
 {
-	LPVOID pBuf;
+	LPWSTR pBuffer = nullptr;
 	FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER|FORMAT_MESSAGE_FROM_SYSTEM,
 		NULL, dwError,
 		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-		(LPWSTR)&pBuf, 0, NULL);
+		(LPWSTR)&pBuffer, 0, NULL);
 
-	LPWSTR pszBuf = new WCHAR[(lstrlen(pszMessage) + lstrlen((LPCWSTR)pBuf) + 256) * 2];
-	wsprintf(pszBuf, TEXT("%s\r\n\r\nError number: %lu\r\n\r\n%s"), pszMessage, dwError, (LPCWSTR)pBuf);
+	LPWSTR pszBuf = new WCHAR[(lstrlen(pszMessage) + lstrlen(pBuffer) + 256) * 2];
+	wsprintf(pszBuf, TEXT("%s\r\n\r\nError number: %lu\r\n\r\n%s"), pszMessage, dwError, pBuffer);
 	const int error = MessageBox(hWnd, pszBuf, pszTitle, MB_OK | MB_ICONINFORMATION);
 
-	LocalFree(pBuf);
+	LocalFree(pBuffer);
 	delete [] pszBuf;
 	return error;
 }

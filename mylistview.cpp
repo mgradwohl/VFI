@@ -236,9 +236,8 @@ void CMyListView::OnInitialUpdate()
 		// Adds ability to use UNC paths and specify output file
 		// Does NO directory or file checking though... 
 		{
-			LPWSTR *argv;
 			int argc = 0;
-			argv = CommandLineToArgvW(::GetCommandLine(),&argc);
+			LPWSTR *argv = CommandLineToArgvW(::GetCommandLine(),&argc);
 			
 			wmemset(m_szFolder,0,_MAX_PATH);
 			wmemset(m_szCmdLineOutput,0,_MAX_PATH);
@@ -271,12 +270,11 @@ void CMyListView::OnInitialUpdate()
 
 bool CMyListView::AddItem(CWiseFile* pFileInfo)
 {
-	int iItem;
+	CListCtrl& theListCtrl = GetListCtrl();
+	int iItem = theListCtrl.GetItemCount();
 	int iSubItem=1;
 
-	CListCtrl& theListCtrl=GetListCtrl();
-	iItem=theListCtrl.GetItemCount();
-	TRACE( ">>> CMyListView::AddItem() iItem==%d\r\n",iItem);
+	TRACE(">>> CMyListView::AddItem() iItem==%d\r\n", iItem);
 
 	LV_ITEM lvi;
 	ZeroMemory(&lvi, sizeof(lvi));
@@ -877,7 +875,7 @@ bool CMyListView::RestorePreferences()
 	m_pci[12].SetFixedWidth(19);	// _xx.xxxx.xxxx.xxxx_ product version
 	m_pci[18].SetFixedWidth(10);	// CRC
 
-	unsigned int t1,t2;
+	unsigned int t1, t2;
 	for (int i=0; i < LIST_NUMCOLUMNS; i++)
 	{
 		m_pci[i].SetLabelID(STR_COLUMN0 + i);
@@ -1007,7 +1005,7 @@ void CMyListView::UpdateDirty()
 void CMyListView::OnFileRename() 
 {
 	SHFILEOPSTRUCT	shFileOp;
-
+	ZeroMemory(&shFileOp, sizeof(LPSHFILEOPSTRUCT));
 	shFileOp.hwnd; 
 	shFileOp.wFunc; 
 	shFileOp.pFrom; 
@@ -1054,22 +1052,22 @@ void CMyListView::OnFileTouch()
 	}
 
 	int iItem = 0;
-	SYSTEMTIME time;
-	FILETIME localftime;
-	FILETIME ftime;
 	CWiseFile* pInfo = NULL;
 
 	SetRedraw(FALSE);
 
-	CString strText;
 	WCHAR szTouch[64];
 	int2str(szTouch, theListCtrl.GetSelectedCount());
+	CString strText;
 	strText.FormatMessage(STR_FILETOUCH, szTouch);
 	UpdateStatus(szTouch);
 
+	SYSTEMTIME time;
 	dlg.GetTime( &time );
 	time.wSecond = 0;
+	FILETIME localftime;
 	SystemTimeToFileTime( &time, &localftime);
+	FILETIME ftime;
 	LocalFileTimeToFileTime( &localftime, &ftime);
 
 	iItem = 0;
@@ -1127,13 +1125,11 @@ bool CMyListView::DeleteItem( CObject* pObject)
 		return FALSE;
 	}
 
-	int iItem;
 	LV_FINDINFO lvfi;
-
 	ZeroMemory( &lvfi, sizeof(lvfi));
-	lvfi.flags=LVFI_PARAM;
-	lvfi.lParam=(LPARAM) pObject;
-	iItem=theListCtrl.FindItem( &lvfi, -1);
+	lvfi.flags = LVFI_PARAM;
+	lvfi.lParam = (LPARAM) pObject;
+	int iItem = theListCtrl.FindItem( &lvfi, -1);
 	if ( -1 == iItem)
 	{
 		return FALSE;
@@ -1145,25 +1141,23 @@ bool CMyListView::DeleteItem( CObject* pObject)
 bool CMyListView::InitColumns()
 {
 	TRACE(L">>> CMyListView::InitColumns()\r\n");
-	int	iCol;
-	LV_COLUMN lvc;
 
+	LV_COLUMN lvc;
 	ZeroMemory( &lvc, sizeof(lvc));
-	CListCtrl& theListCtrl=GetListCtrl();
 
 	WCHAR szText[LIST_MAXHEADLENGTH];
 
 	lvc.mask=LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
 	lvc.pszText=szText;
-	for (iCol=0; iCol < LIST_NUMCOLUMNS; iCol++)
+	for (int iCol = 0; iCol < LIST_NUMCOLUMNS; iCol++)
 	{
-		lvc.iSubItem=iCol;
-		::LoadString(AfxGetResourceHandle(),
-				m_pci[iCol].GetLabelID(),
-				szText, LIST_MAXHEADLENGTH);
+		lvc.iSubItem = iCol;
+		::LoadString(AfxGetResourceHandle(), m_pci[iCol].GetLabelID(), szText, LIST_MAXHEADLENGTH);
 				
 		lvc.cx = max(m_pci[iCol].GetWidth(), 10);
 		lvc.fmt = m_pci[iCol].GetFormat();
+
+		CListCtrl& theListCtrl = GetListCtrl();
 		if (theListCtrl.InsertColumn( iCol, &lvc) == -1 ) return false;
 	}
 	return true;
@@ -1177,6 +1171,8 @@ bool CMyListView::RedrawItem( int iItem )
 	}
 
 	RECT rcDirty;
+	ZeroMemory(&rcDirty, sizeof(RECT));
+
 	const CListCtrl& theListCtrl = GetListCtrl();
 	if (!theListCtrl.GetItemRect( iItem, &rcDirty, LVIR_BOUNDS))
 	{
@@ -1199,8 +1195,8 @@ int CMyListView::FindVisibleItem(CObject* pObject)
 	ZeroMemory(&lvi, sizeof(LVITEM));
 	lvi.mask = LVIF_PARAM;
 
-	CListCtrl& theListCtrl=GetListCtrl();
-	const int iTop=theListCtrl.GetTopIndex();
+	const CListCtrl& theListCtrl = GetListCtrl();
+	const int iTop = theListCtrl.GetTopIndex();
 	const int iBottom = iTop + theListCtrl.GetCountPerPage();
 	int iItem;
 	
@@ -1275,11 +1271,11 @@ void CMyListView::OnFileAdd()
 		return;
 	lstrinit(pszBuf);
 
-	WCHAR szFilter[_MAX_PATH];
-	WCHAR szTitle[_MAX_PATH];
 	int nFiles = 0;
 
+	WCHAR szFilter[_MAX_PATH];
 	::LoadString(AfxGetResourceHandle(), STR_FILEFILTER,  szFilter, _MAX_PATH);
+	WCHAR szTitle[_MAX_PATH];
 	::LoadString(AfxGetResourceHandle(), STR_OPENTITLE, szTitle, _MAX_PATH);
 	pipe2null(szFilter);
 
@@ -1854,7 +1850,9 @@ bool CMyListView::FillBuffer(bool fAllRows, bool fAllFields)
 	int iItem = 0;
 	int c = 0;
 	int j = 0;
+
 	POSITION pos;
+	ZeroMemory(&pos, sizeof(POSITION));
 
 	CloseBuffer();
 	// count up the size of the buffer we need

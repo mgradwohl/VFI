@@ -64,9 +64,6 @@ END_MESSAGE_MAP()
 
 bool CMyStatusBar::AddBarTips()
 {
-	RECT rc;
-	int nIndex = 0;
-
 	EnableToolTips(TRUE);
 	m_ctlProgress1.EnableToolTips(TRUE);
 	m_ctlProgress2.EnableToolTips(TRUE);
@@ -78,7 +75,8 @@ bool CMyStatusBar::AddBarTips()
 		return FALSE;
 	
 
-	nIndex = CommandToIndex(ID_INDICATOR_COUNT);
+	int nIndex = CommandToIndex(ID_INDICATOR_COUNT);
+	RECT rc;
 	GetItemRect( nIndex, &rc );
 	if (!m_Tip.AddTool(this, TIP_COUNT, &rc, ID_INDICATOR_COUNT))
 		return FALSE;
@@ -98,10 +96,8 @@ bool CMyStatusBar::AddBarTips()
 
 bool CMyStatusBar::CreateProgressCtrl()
 {
+	int nIndex = CommandToIndex( ID_PROGRESS );
 	RECT rc;
-	int nIndex;
-
-	nIndex = CommandToIndex( ID_PROGRESS );
 	GetItemRect( nIndex, &rc );
 	SetPaneText(nIndex, L"", TRUE);
 	SetPaneStyle(nIndex, SBPS_NORMAL);// | SBPS_DISABLED);
@@ -185,9 +181,10 @@ void CMyStatusBar::SetPaneSize( UINT nPaneID, UINT nStringID )
 	// Done with the DC, release it
 	ReleaseDC(pdc);
 
-	UINT nID, nStyle;
-	int nWidth;
-	int nIndex = nIndex = CommandToIndex( nPaneID );
+	UINT nID = 0;
+	UINT nStyle = 0;
+	int nWidth = 0;
+	int nIndex = CommandToIndex( nPaneID );
 	GetPaneInfo(nIndex, nID, nStyle, nWidth);
 	SetPaneInfo(nIndex, nID, nStyle, sz.cx);
 }
@@ -230,7 +227,8 @@ void CMyStatusBar::OnSize(UINT nType, int cx, int cy)
 	CStatusBar::OnSize(nType, cx, cy);
 	
 	RECT rc;
-	int nIndex;
+	ZeroMemory(&rc, sizeof(RECT));
+	int nIndex = 0;
 
 	if (::IsWindow(m_hWnd))
 	{

@@ -320,8 +320,8 @@ void CMyApp::OnAppAbout()
 
 bool CMyApp::ForwardMessages()
 {
-	MSG msg;
 	LONG lIdle = 0;
+	MSG msg;
 
 	while (::PeekMessage(&msg, NULL, 0,0, PM_REMOVE) )
 	{
@@ -393,13 +393,11 @@ BOOL CMyApp::FirstInstance()
 
 BOOL CMyApp::SetFocusToPrevInstance()
 {
-	CWnd* pWndPrev;
-	CWnd* pWndChild;
 	CString strWndTitle;
-
 	strWndTitle.LoadString(AFX_IDS_APP_TITLE);
 
-	pWndPrev = CWnd::FindWindow(NULL, strWndTitle);
+	CWnd* pWndChild;
+	CWnd* pWndPrev = CWnd::FindWindow(NULL, strWndTitle);
 	if (NULL != pWndPrev)
 	{
 		pWndChild = pWndPrev->GetLastActivePopup();

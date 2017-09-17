@@ -9,7 +9,6 @@
 #define IDD_COLUMNOPTIONS               103
 #define IDR_MAINFRAME                   104
 #define IDD_GENERALOPTIONS              109
-#define IDD_PROGRESS                    110
 #define IDD_TIMEBOX                     131
 #define IDR_RTF_HELP                    132
 #define IDD_RTFHELP                     138
@@ -152,7 +151,6 @@
 #define STR_TEST_DISKSPACE              901
 #define TIPS                            1000
 #define TIP_PROGRESS_CRC                1001
-#define IDC_PROGRESS1                   1002
 #define TIP_COUNT                       1002
 #define IDC_AUDIOCUE                    1003
 #define TIP_SIZE                        1003

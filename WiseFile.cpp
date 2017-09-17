@@ -758,8 +758,7 @@ int CWiseFile::GetDateCreation (LPWSTR pszText, bool fLocal)
 		return FWF_ERR_INVALID;
 	}
 
-	WCHAR szDate[64];
-	SYSTEMTIME* pst = NULL;
+	SYSTEMTIME* pst = nullptr;
 	if (fLocal)
 	{
 		pst = &m_stLocalCreation;
@@ -769,6 +768,7 @@ int CWiseFile::GetDateCreation (LPWSTR pszText, bool fLocal)
 		pst = &m_stUTCCreation;
 	}
 
+	WCHAR szDate[64];
 	if (0 == ::GetDateFormat(::GetThreadLocale(), DATE_SHORTDATE, pst, NULL, szDate, 64 ))
 	{
 		return FWF_ERR_OTHER;
@@ -787,8 +787,7 @@ int CWiseFile::GetDateLastAccess (LPWSTR pszText, bool fLocal)
 		return FWF_ERR_INVALID;
 	}
 
-	WCHAR szDate[64];
-	SYSTEMTIME* pst;
+	SYSTEMTIME* pst = nullptr;
 	if (fLocal)
 	{
 		pst = &m_stLocalLastAccess;
@@ -798,6 +797,7 @@ int CWiseFile::GetDateLastAccess (LPWSTR pszText, bool fLocal)
 		pst = &m_stUTCLastAccess;
 	}
 
+	WCHAR szDate[64];
 	if (0 == ::GetDateFormat(::GetThreadLocale(), DATE_SHORTDATE, pst, NULL, szDate, 64 ))
 	{
 		return FWF_ERR_OTHER;
@@ -816,8 +816,7 @@ int CWiseFile::GetDateLastWrite (LPWSTR pszText, bool fLocal)
 		return FWF_ERR_INVALID;
 	}
 
-	WCHAR szDate[64];
-	SYSTEMTIME* pst;
+	SYSTEMTIME* pst = nullptr;
 	if (fLocal)
 	{
 		pst = &m_stLocalLastWrite;
@@ -827,6 +826,7 @@ int CWiseFile::GetDateLastWrite (LPWSTR pszText, bool fLocal)
 		pst = &m_stUTCLastWrite;
 	}
 
+	WCHAR szDate[64];
 	if (0 == ::GetDateFormat(::GetThreadLocale(), DATE_SHORTDATE, pst, NULL, szDate, 64 ))
 	{
 		return FWF_ERR_OTHER;
@@ -899,8 +899,7 @@ int CWiseFile::GetTimeCreation (LPWSTR pszText, bool fLocal)
 		return FWF_ERR_INVALID;
 	}
 
-	WCHAR szTime[64];
-	SYSTEMTIME* pst;
+	SYSTEMTIME* pst = nullptr;
 	if (fLocal)
 	{
 		pst = &m_stLocalCreation;
@@ -910,6 +909,7 @@ int CWiseFile::GetTimeCreation (LPWSTR pszText, bool fLocal)
 		pst = &m_stUTCCreation;
 	}
 
+	WCHAR szTime[64];
 	if (0 == ::GetTimeFormat(::GetThreadLocale(), TIME_NOSECONDS, pst, NULL, szTime, 64 ))
 	{
 			return FWF_ERR_OTHER;
@@ -928,8 +928,7 @@ int CWiseFile::GetTimeLastAccess (LPWSTR pszText, bool fLocal)
 		return FWF_ERR_INVALID;
 	}
 
-	WCHAR szTime[64];
-	SYSTEMTIME* pst;
+	SYSTEMTIME* pst = nullptr;
 	if (fLocal)
 	{
 		pst = &m_stLocalLastAccess;
@@ -939,6 +938,7 @@ int CWiseFile::GetTimeLastAccess (LPWSTR pszText, bool fLocal)
 		pst = &m_stUTCLastAccess;
 	}
 
+	WCHAR szTime[64];
 	if (0 == ::GetTimeFormat(::GetThreadLocale(), TIME_NOSECONDS, pst, NULL, szTime, 64 ))
 	{
 		return FWF_ERR_OTHER;
@@ -957,8 +957,7 @@ int CWiseFile::GetTimeLastWrite (LPWSTR pszText, bool fLocal)
 		return FWF_ERR_INVALID;
 	}
 
-	WCHAR szTime[64];
-	SYSTEMTIME* pst;
+	SYSTEMTIME* pst = nullptr;
 	if (fLocal)
 	{
 		pst = &m_stLocalLastWrite;
@@ -968,6 +967,7 @@ int CWiseFile::GetTimeLastWrite (LPWSTR pszText, bool fLocal)
 		pst = &m_stUTCLastWrite;
 	}
 
+	WCHAR szTime[64];
 	if (0 == ::GetTimeFormat(::GetThreadLocale(), TIME_NOSECONDS, pst, NULL, szTime, 64 ))
 	{
 		return FWF_ERR_OTHER;
