@@ -62,6 +62,10 @@
 #include <winbase.h>		// Types, ZeroMemory, etc
 #include <shlobj.h>			// Browse for folder
 #include <mmsystem.h>
+#include <memory>
+#include <vector>
+
+using namespace std;
 
 static const int SIZEMEG = 1048576;
 static const int SIZEBUF = 2 * SIZEMEG;
@@ -108,7 +112,3 @@ enum MWXFlags
 #include "strlib.h"
 #include "wndlib.h"
 #include "filelib.h"
-#include <memory>
-#include <vector>
-
-using namespace std;

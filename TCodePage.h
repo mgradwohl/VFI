@@ -40,6 +40,8 @@ public:
 		m_wCodePage = 0;
 		m_pszCodePage = NULL;
 		m_pML = NULL;
+		ZeroMemory(&m_mcp, sizeof(MIMECPINFO));
+		ZeroMemory(&m_mcp, sizeof(IMultiLanguage2));
 
 		if (SUCCEEDED(CoInitialize(NULL)))
 		{

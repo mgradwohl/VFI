@@ -165,7 +165,6 @@ protected:
 private:
 	bool m_fCheckPath;
 	QWORD m_qwSizeRead;
-	bool m_fPause;
 	bool m_fSentHintCRC = false;
 	bool m_fSentHintInfo = false;
 	bool m_fFirstTime = true;

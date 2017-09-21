@@ -24,6 +24,10 @@
 #include <shlobj.h>
 #include <shlwapi.h>
 #include <shellapi.h>
+#include <memory>
+#include <string>
+
+using namespace std;
 
 #include "trace.h"
 #include "strlib.h"
@@ -313,32 +317,29 @@ bool PathIsLocal(LPCWSTR pszPath)
 	if (PathIsNetworkPath(pszPath))
 		return false;
 
-	LPWSTR pszBuf = new WCHAR[_MAX_PATH];
-	if (pszBuf == nullptr)
-	{
-		return false;
-	}
-	wcscpy_s(pszBuf, _MAX_PATH, pszPath);
+
+	const int bufferlength = lstrlen(pszPath) + 1;
+	wstring buffer;
+	buffer.resize(bufferlength);
+
+	wcscpy_s(&buffer[0], bufferlength, pszPath);
 
 	// removes .. and . and stuff like that
-	PathStripToRoot(pszBuf);
-	PathRemoveBackslash(pszBuf);
+	PathStripToRoot(&buffer[0]);
+	PathRemoveBackslash(&buffer[0]);
 
-	if (!PathIsRoot(pszBuf))
+	if (!PathIsRoot(&buffer[0]))
 	{
 		// not an absolute
-		delete [] pszBuf;
 		return false;
 	}
 
 	// otherwise see if Win32 can determine the type
-	if (DRIVE_REMOTE == GetDriveType(pszBuf))
+	if (DRIVE_REMOTE == GetDriveType(&buffer[0]))
 	{
-		delete [] pszBuf;
 		return false;
 	}
 
-	delete [] pszBuf;
 	return true;
 }
 

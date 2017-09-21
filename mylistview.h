@@ -164,10 +164,10 @@ private:
 
 	// For sorting
 	static int TimeCompare( CTime time1, CTime time2, bool fSortAscending );
-	static int WordCompare( WORD w1, WORD w2, bool fSortAscending );
-	static int DWordCompare( DWORD dw1, DWORD dw2, bool fSortAscending );
+	constexpr static int WordCompare( WORD w1, WORD w2, bool fSortAscending );
+	constexpr static int DWordCompare( DWORD dw1, DWORD dw2, bool fSortAscending );
 	static int StringCompare( CString str1, CString str2, bool fSortAscending );
-	static int QWordCompare( QWORD qw1, QWORD qw2, bool fSortAscending);
+	constexpr static int QWordCompare( QWORD qw1, QWORD qw2, bool fSortAscending);
 	int m_iSortColumn;
 
 	// Columns, styles and window collateral
@@ -239,7 +239,7 @@ inline int CMyListView::StringCompare(CString str1, CString str2, bool fSortAsce
 	return i-2;
 }
 
-inline int CMyListView::WordCompare( WORD w1, WORD w2, bool fSortAscending)
+constexpr inline int CMyListView::WordCompare( WORD w1, WORD w2, bool fSortAscending)
 {
 	int iResult=0;
 	if (fSortAscending)
@@ -252,7 +252,7 @@ inline int CMyListView::WordCompare( WORD w1, WORD w2, bool fSortAscending)
 	return iResult;
 }
 
-inline int CMyListView::DWordCompare( DWORD dw1, DWORD dw2, bool fSortAscending)
+constexpr inline int CMyListView::DWordCompare( DWORD dw1, DWORD dw2, bool fSortAscending)
 {
 	int iResult=0;
 	if (fSortAscending)
@@ -274,7 +274,7 @@ inline int CMyListView::DWordCompare( DWORD dw1, DWORD dw2, bool fSortAscending)
 	return iResult;
 }
 
-inline int CMyListView::QWordCompare( QWORD qw1, QWORD qw2, bool fSortAscending)
+constexpr inline int CMyListView::QWordCompare( QWORD qw1, QWORD qw2, bool fSortAscending)
 {
 	int iResult=0;
 	if (fSortAscending)

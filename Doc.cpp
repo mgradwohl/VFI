@@ -774,7 +774,7 @@ void CMyDoc::TerminateThreads()
 			if (WAIT_OBJECT_0==WaitForSingleObject (g_hThreadCRC, THREAD_WAIT))
 				break;
 		}
-		if (S_OK != CloseHandle(g_hThreadCRC))
+		if (CloseHandle(g_hThreadCRC) == FALSE)
 		{
 			TerminateThread(g_hThreadCRC, (DWORD)-1);
 			TRACE(L"THREADMAIN: CRC thread nuked\n");
@@ -802,7 +802,7 @@ void CMyDoc::TerminateThreads()
 				break;
 		}
 		
-		if (S_OK != CloseHandle(g_hThreadInfo))
+		if (CloseHandle(g_hThreadInfo) == FALSE)
 		{
 			TerminateThread(g_hThreadInfo, (DWORD)-1);
 			TRACE(L"THREADMAIN: Info thread nuked\n");
