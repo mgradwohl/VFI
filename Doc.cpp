@@ -79,13 +79,13 @@ CMyDoc::~CMyDoc()
 BOOL CMyDoc::OnNewDocument()
 {
 	if (!CDocument::OnNewDocument())
-		return FALSE;
+		return false;
 	
 	m_qwSize = 0;
 	m_qwSizeRead = 0;
 	UpdateAllViews( NULL, HINT_EMPTY, NULL);
 	
-	return TRUE;
+	return true;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -94,7 +94,7 @@ BOOL CMyDoc::OnNewDocument()
 void CMyDoc::Serialize(CArchive& ar)
 {
 	ar;
-	SetModifiedFlag( FALSE );
+	SetModifiedFlag( false );
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -116,7 +116,7 @@ void CMyDoc::Dump(CDumpContext& dc) const
 // CMyDoc commands
 
 
-BOOL CMyDoc::DeleteFile( CWiseFile* pFileInfo )
+bool CMyDoc::DeleteFile( CWiseFile* pFileInfo )
 {
 	if (pFileInfo == nullptr)
 		return false;
@@ -143,7 +143,7 @@ BOOL CMyDoc::DeleteFile( CWiseFile* pFileInfo )
 	p.reset(pFileInfo);
 	AddToKill(p);
 	
-	return TRUE;
+	return true;
 }
 
 BOOL CMyDoc::OnSaveDocument(LPCWSTR lpszPathName) 
@@ -155,7 +155,7 @@ BOOL CMyDoc::OnSaveDocument(LPCWSTR lpszPathName)
 	{
 		if (IDNO == AfxMessageBox(STR_DIRTYSAVE, MB_YESNO | MB_ICONQUESTION))
 		{
-			return FALSE;
+			return false;
 		}
 	}
 
@@ -169,11 +169,11 @@ BOOL CMyDoc::OnSaveDocument(LPCWSTR lpszPathName)
 	pipe2null(szFilter);
 	LoadString(AfxGetResourceHandle(), STR_SAVEAS, szTitle, 128);
 	if (!SaveBox(AfxGetMainWnd()->m_hWnd, szTitle, szFilter, szPath, OFN_OVERWRITEPROMPT))
-		return FALSE;
+		return false;
 
 	if (WriteFileEx(szPath))
 	{
-		return TRUE;
+		return true;
 	}
 
 	DWORD const dw = GetLastError();
@@ -186,7 +186,7 @@ BOOL CMyDoc::OnSaveDocument(LPCWSTR lpszPathName)
 			ERR_TITLE,
 			ERR_SAVEGENERAL);
 	}
-	return FALSE;
+	return false;
 }
 
 BOOL CMyDoc::SaveModified() 
@@ -197,12 +197,12 @@ BOOL CMyDoc::SaveModified()
 
 	if (!pView->PromptToSave())
 	{
-		return TRUE;
+		return true;
 	}
 
 	if (!IsModified() )
 	{
-		return TRUE;
+		return true;
 	}
 	
 	const int iReturn = AfxMessageBox(STR_SAVEMODIFIED,MB_ICONQUESTION | MB_YESNOCANCEL);
@@ -210,16 +210,16 @@ BOOL CMyDoc::SaveModified()
 	switch (iReturn)
 	{
 	case IDCANCEL:
-		return FALSE;
+		return false;
 	case IDYES:
 		OnSaveDocument( L"");
-		return TRUE;
+		return true;
 	case IDNO:
-		SetModifiedFlag(FALSE);
-		return TRUE;
+		SetModifiedFlag(false);
+		return true;
 	}
 	TRACE(L"CMyDoc::SaveModified() should never get here.\n");
-	return FALSE;
+	return false;
 }
 
 void CMyDoc::OnFileSaveas() 
@@ -239,7 +239,7 @@ DWORD CMyDoc::RecurseDir( LPWSTR pszPath )
 	CStringList PathList;
 	CString strText;
 	CStringList FileList;
-	BOOL fRun=FALSE;
+	bool fRun=false;
 	
 	const CMainFrame* pFrame = dynamic_cast<CMainFrame*> (AfxGetMainWnd());
 	if (pFrame == nullptr)
@@ -327,7 +327,7 @@ DWORD CMyDoc::RecurseDir( LPWSTR pszPath )
 	while ( !FileList.IsEmpty())
 	{
 		strFile = FileList.RemoveHead();
-		if (FALSE == this->AddFile(strFile))
+		if (false == this->AddFile(strFile))
 		{
 			strText.FormatMessage(ERR_FILEINUSE, (LPCWSTR)strFile);
 		}
@@ -338,7 +338,7 @@ DWORD CMyDoc::RecurseDir( LPWSTR pszPath )
 		}
 	}
 
-	SetPathName(pszPath, FALSE);
+	SetPathName(pszPath, false);
 	pView->ResetStatus();
 	ResumeAllThreads();
 
@@ -462,7 +462,7 @@ DWORD UpdateThreadInfo( LPVOID pParam )
 	return 0;
 }
 
-BOOL CMyDoc::ResumeAllThreads()
+bool CMyDoc::ResumeAllThreads()
 {
 	TRACE(L"CMyDoc::ResumeAllThreads()\n");
 	
@@ -478,15 +478,15 @@ BOOL CMyDoc::ResumeAllThreads()
 		g_eGoThreadCRC.Signal(true);
 	}
 	
-	return TRUE;
+	return true;
 }
 
-BOOL CMyDoc::SuspendAllThreads()
+bool CMyDoc::SuspendAllThreads()
 {
 	g_eGoThreadInfo.Reset();
 	g_eGoThreadCRC.Reset();
 	
-	return TRUE;
+	return true;
 }
 
 spWiseFile CMyDoc::RemoveDirtyHead()
@@ -511,13 +511,13 @@ spWiseFile CMyDoc::RemoveDirtyHead()
 	return pObject;
 }
 
-BOOL CMyDoc::RemoveFromDirty( spWiseFile pFileInfo )
+bool CMyDoc::RemoveFromDirty( spWiseFile pFileInfo )
 {
 	TRACE(L"CMyDoc::RemoveFromDirty\n");
 
 	if (pFileInfo==nullptr || m_DirtyList.isEmpty())
 	{
-		return FALSE;
+		return false;
 	}
 	
 	CSingleLock m_sLock( &m_Mutex );
@@ -525,10 +525,10 @@ BOOL CMyDoc::RemoveFromDirty( spWiseFile pFileInfo )
 		m_DirtyList.Remove(pFileInfo);
 	m_sLock.Unlock();
 	
-	return TRUE;
+	return true;
 }
 
-BOOL CMyDoc::AddToDirty( spWiseFile pFileInfo )
+bool CMyDoc::AddToDirty( spWiseFile pFileInfo )
 {
 	TRACE(L"CMyDoc::AddToDirty\n");
 
@@ -542,7 +542,7 @@ BOOL CMyDoc::AddToDirty( spWiseFile pFileInfo )
 		m_DirtyList.AddTail(pFileInfo);
 	m_sLock.Unlock();
 	
-	return TRUE;
+	return true;
 }
 
 void CMyDoc::ChangeItemState( spWiseFile pFileInfo, WORD wState )
@@ -617,7 +617,7 @@ void CMyDoc::DeleteKillList()
 	m_KillList.RemoveAll();
 }
 
-BOOL CMyDoc::AddFile(CString strFolder, CString strFileName)
+bool CMyDoc::AddFile(CString strFolder, CString strFileName)
 {
 	PathAddBackslash(strFolder.GetBuffer(_MAX_PATH));
 	strFolder.ReleaseBuffer(-1);
@@ -625,7 +625,7 @@ BOOL CMyDoc::AddFile(CString strFolder, CString strFileName)
 	return AddFile(strFolder);
 }
 
-BOOL CMyDoc::AddFile(LPCWSTR pszFilename)
+bool CMyDoc::AddFile(LPCWSTR pszFilename)
 {
 	TRACE(L"CMyDoc::AddFile()\n");
 	
@@ -633,7 +633,7 @@ BOOL CMyDoc::AddFile(LPCWSTR pszFilename)
 	if (g_eTermThreads.Signaled())
 	{
 		TRACE(L"AddFile aborting\r\n");
-		return FALSE;
+		return false;
 	}
 
 	spWiseFile pNewFile (new CWiseFile);
@@ -663,34 +663,34 @@ BOOL CMyDoc::AddFile(LPCWSTR pszFilename)
 		InterlockedIncrement(&m_dwDirtyCRC);
 		InterlockedIncrement(&m_dwDirtyInfo);
 
-		SetModifiedFlag( TRUE );
+		SetModifiedFlag( true );
 		UpdateAllViews( NULL, HINT_ADD, pNewFile.get());
 		
 		m_fSentHintInfo = false;
 		m_fSentHintCRC = false;
 
 		// set the pathname
-		SetPathName(pszFilename, FALSE);
+		SetPathName(pszFilename, false);
 	}
-	return TRUE;
+	return true;
 }
 
-BOOL CMyDoc::RemoveFromMain( spWiseFile pFileInfo )
+bool CMyDoc::RemoveFromMain( spWiseFile pFileInfo )
 {
 	TRACE(L"CMyDoc::RemoveFromMain\n");
 	
 	if (pFileInfo==nullptr || m_FileList.isEmpty())
-		return FALSE;
+		return false;
 	
 	CSingleLock m_sLock( &m_Mutex );
 	while (!m_sLock.Lock(MTX_LOCK));
 		m_FileList.Remove(pFileInfo);
 	m_sLock.Unlock();
 	
-	return TRUE;
+	return true;
 }
 
-BOOL CMyDoc::AddToMain( spWiseFile pFileInfo )
+bool CMyDoc::AddToMain( spWiseFile pFileInfo )
 {
 	TRACE(L"CMyDoc::AddToMain\n");
 	
@@ -706,7 +706,7 @@ BOOL CMyDoc::AddToMain( spWiseFile pFileInfo )
 	return true;
 }
 
-BOOL CMyDoc::CreateThreads()
+bool CMyDoc::CreateThreads()
 {
 	TRACE(L"CMyDoc::CreateThreads()\n");
 	
@@ -728,7 +728,7 @@ BOOL CMyDoc::CreateThreads()
 		return false;
 	}
 
-	return TRUE;
+	return true;
 }
 
 void CMyDoc::RemoveAllMain()
@@ -1162,7 +1162,7 @@ DWORD UpdateThreadCRC( LPVOID pParam )
 				// read a chunk (or just what's remaining)
 				dwBytesRead = (DWORD) min(g_dwChunk, qwBytesRemaining);
 				TRACE(L"THREADCRC: Requesting %lu bytes\n",dwBytesRead);
-				if (FALSE == ReadFile(hFile, g_pBuf, min(g_dwChunk, ((DWORD)qwBytesRemaining)), &dwBytesRead, NULL))
+				if (false == ReadFile(hFile, g_pBuf, min(g_dwChunk, ((DWORD)qwBytesRemaining)), &dwBytesRead, NULL))
 				{
 					pDoc->ChangeItemState(pFileInfo,FWFS_CRC_ERROR);
 					break;
@@ -1355,6 +1355,6 @@ bool CMyDoc::WriteFileEx(LPCWSTR pszFile)
 	CloseHandle(hFile);
 
 	pView->ResetStatus();
-	SetModifiedFlag(FALSE);
+	SetModifiedFlag(false);
 	return true;
 }

@@ -84,7 +84,7 @@ CMainFrame::CMainFrame()
 {
 	m_iCount = -1;
 	m_qwSize = (DWORD) -1;
-	m_fShowToolTips = TRUE;
+	m_fShowToolTips = true;
 }
 
 CMainFrame::~CMainFrame()
@@ -100,7 +100,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	DWORD dwStyle = ::GetClassLong (m_hWnd, GCL_STYLE);
 	::SetClassLong (m_hWnd, GCL_STYLE, dwStyle & ~(CS_HREDRAW | CS_VREDRAW));
 
-	if (!EnableToolTips(TRUE))
+	if (!EnableToolTips(true))
 		return -1;
 
 	NONCLIENTMETRICS ncm;
@@ -191,16 +191,16 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	if (pMenu)
 	{
 		CMenu* pSubMenu = pMenu->GetSubMenu(0);
-		if (pSubMenu) pSubMenu->SetDefaultItem(1, TRUE);
+		if (pSubMenu) pSubMenu->SetDefaultItem(1, true);
 
 		pSubMenu = pMenu->GetSubMenu(1);
-		if (pSubMenu) pSubMenu->SetDefaultItem(0, TRUE);
+		if (pSubMenu) pSubMenu->SetDefaultItem(0, true);
 
 		pSubMenu = pMenu->GetSubMenu(2);
-		if (pSubMenu) pSubMenu->SetDefaultItem(5, TRUE);
+		if (pSubMenu) pSubMenu->SetDefaultItem(5, true);
 
 		pSubMenu = pMenu->GetSubMenu(3);
-		if (pSubMenu) pSubMenu->SetDefaultItem(3, TRUE);
+		if (pSubMenu) pSubMenu->SetDefaultItem(3, true);
 	}
 
 	return 0;
@@ -245,14 +245,14 @@ BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs)
 {
 	if (!CFrameWnd::PreCreateWindow(cs))
 	{
-		return FALSE;
+		return false;
 	}
 
-	m_fShowToolTips = theApp.GetProfileInt( L"Preferences", L"ToolTips",TRUE);
+	m_fShowToolTips = theApp.GetProfileInt( L"Preferences", L"ToolTips",true);
 
 	cs.style &= ~FWS_ADDTOTITLE;
 
-	return TRUE;
+	return true;
 }
 
 void CMainFrame::OnDropFiles(HDROP hDropInfo) 
@@ -290,7 +290,7 @@ void CMainFrame::OnUpdateCount(CCmdUI* pCmdUI)
 	int2str(szBuf, m_iCount);							//StrFormatByteSize64(m_qwSize, szBuf, 32 );
 	wcscat_s(szBuf, 64, L" files\0");
 
-	m_wndStatusBar.SetPaneText(m_wndStatusBar.CommandToIndex( ID_INDICATOR_COUNT ), szBuf, TRUE);
+	m_wndStatusBar.SetPaneText(m_wndStatusBar.CommandToIndex( ID_INDICATOR_COUNT ), szBuf, true);
 }
 
 void CMainFrame::OnUpdateSize(CCmdUI* pCmdUI)
@@ -307,7 +307,7 @@ void CMainFrame::OnUpdateSize(CCmdUI* pCmdUI)
 	int2str(szBuf, m_qwSize);							//StrFormatByteSize64(m_qwSize, szBuf, 32 );
 	wcscat_s(szBuf, 64, L" bytes\0");
 
-	m_wndStatusBar.SetPaneText(m_wndStatusBar.CommandToIndex( ID_INDICATOR_SIZE ), szBuf, TRUE);
+	m_wndStatusBar.SetPaneText(m_wndStatusBar.CommandToIndex( ID_INDICATOR_SIZE ), szBuf, true);
 }
 
 void CMainFrame::SavePreferences()
@@ -351,12 +351,12 @@ void CMainFrame::OnUpdateBuffer(CCmdUI* pCmdUI)
 	// normally use int2str but here I want something properly formatted like "32 MB"
 	StrFormatByteSize(g_dwChunk, szBuf, 32);
 
-	m_wndStatusBar.SetPaneText(m_wndStatusBar.CommandToIndex( ID_INDICATOR_BUFFER ), szBuf, TRUE);
+	m_wndStatusBar.SetPaneText(m_wndStatusBar.CommandToIndex( ID_INDICATOR_BUFFER ), szBuf, true);
 }
 
 void CMainFrame::OnMyHelp() 
 {
-	BOOL fShowQuickHelp = (1 == theApp.GetProfileInt( L"Preferences", L"ShowQuickHelp",1) );
+	bool fShowQuickHelp = (1 == theApp.GetProfileInt( L"Preferences", L"ShowQuickHelp",1) );
 	CHelpDlg dlgHelp(this, IDR_RTF_HELP, true);
 	dlgHelp.m_fShowAgain = fShowQuickHelp;
 	dlgHelp.DoModal();

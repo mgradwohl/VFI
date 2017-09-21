@@ -197,7 +197,7 @@ bool MyGetUserName(LPWSTR pszUserName)
 	}
 
 	DWORD dwLen = MAX_USERNAME;
-	return (FALSE != GetUserName(pszUserName, &dwLen));
+	return (false != GetUserName(pszUserName, &dwLen));
 }
 
 bool strfmt(HINSTANCE hInstance, LPWSTR pszBuffer, UINT nFormatID, ...)

@@ -143,18 +143,18 @@ BOOL CMyListView::PreCreateWindow(CREATESTRUCT& cs)
 	TRACE(L"CMyListView::PreCreateWindow()\n");
 	if (!CListView::PreCreateWindow(cs))
 	{
-		return FALSE;
+		return false;
 	}
 
 	if (!RestorePreferences())
 	{
-		return FALSE;
+		return false;
 	}
 
 	cs.style |= LVS_SHOWSELALWAYS | LVS_REPORT | LVS_AUTOARRANGE;
 	cs.dwExStyle |= LVS_EX_GRIDLINES | LVS_EX_FULLROWSELECT;
 	cs.dwExStyle &= ~WS_EX_DLGMODALFRAME;
-	return TRUE;
+	return true;
 }
 
 void CMyListView::OnInitialUpdate() 
@@ -320,7 +320,7 @@ bool CMyListView::AddItem(CWiseFile* pFileInfo)
 		}		
 	}
 
-	return TRUE;
+	return true;
 }
 
 void CMyListView::OnAddButtload() 
@@ -418,10 +418,10 @@ void CMyListView::OnDropFiles(HDROP hDropInfo)
 			strSearch += '\\';
 		}
 		strSearch += "*.*";
-		fRun = (TRUE==m_Find.FindFile(strSearch,0));
+		fRun = (TRUE == m_Find.FindFile(strSearch,0));
 		while ( fRun && !g_eTermThreads.Signaled())
 		{
-			fRun = (TRUE==m_Find.FindNextFile());
+			fRun = (TRUE == m_Find.FindNextFile());
 			// if it's a directory, and it's not dots then add it to the path list
 			if ( m_Find.IsDirectory() && !m_Find.IsDots() )
 			{
@@ -458,7 +458,7 @@ void CMyListView::OnDropFiles(HDROP hDropInfo)
 		pDoc = GetDocument();
 		if (pDoc != nullptr)
 		{
-			if (FALSE == pDoc->AddFile(strFile))
+			if (false == pDoc->AddFile(strFile))
 			{
 				strText.FormatMessage(ERR_FILEINUSE, (LPCWSTR)strFile);
 				UpdateStatus(strText);
@@ -492,7 +492,7 @@ void CMyListView::OnGetDispInfo(NMHDR* pNMHDR, LRESULT* pResult)
 
 void CMyListView::OnUpdateFileNew(CCmdUI* pCmdUI) 
 {
-	pCmdUI->Enable( TRUE );
+	pCmdUI->Enable( true );
 }
 
 void CMyListView::OnUpdateFileTouch(CCmdUI* pCmdUI) 
@@ -639,7 +639,7 @@ void CMyListView::OnColumnClick(NMHDR* pNMHDR, LRESULT* pResult)
 
 	// ensure that the selected item is visible
 	// only ensures that the first selected item is visible
-	theListCtrl.EnsureVisible(theListCtrl.GetNextItem( -1, LVNI_SELECTED), TRUE);
+	theListCtrl.EnsureVisible(theListCtrl.GetNextItem( -1, LVNI_SELECTED), true);
 
 	*pResult = 0;
 }
@@ -821,7 +821,7 @@ BOOL CMyListView::PreTranslateMessage(MSG* pMsg)
 			point.Offset(5, 5);
 			OnContextMenu(NULL, point);
 
-			return TRUE;
+			return true;
 		}
 	}
 	return CListView::PreTranslateMessage(pMsg);
@@ -922,7 +922,7 @@ bool CMyListView::SavePreferences()
 
 	if (NULL == m_pci)
 	{
-		return FALSE;
+		return false;
 	}
 
 	for (int i=0; i < LIST_NUMCOLUMNS; i++)
@@ -930,11 +930,11 @@ bool CMyListView::SavePreferences()
 		strEntry.Format( L"%d",i);
 		if (!m_pci[i].IsVisible())
 		{
-			strValue.Format( L"%d, %d",m_pci[i].GetWidth(), m_pci[i].IsVisible() == TRUE ? 1 : 0 );
+			strValue.Format( L"%d, %d",m_pci[i].GetWidth(), m_pci[i].IsVisible() == true ? 1 : 0 );
 		}
 		else
 		{
-			strValue.Format( L"%d, %d",theListCtrl.GetColumnWidth(i), m_pci[i].IsVisible() == TRUE ? 1 : 0 );
+			strValue.Format( L"%d, %d",theListCtrl.GetColumnWidth(i), m_pci[i].IsVisible() == true ? 1 : 0 );
 		}
 		TRACE(L">>> CMyListView::SavePreferences\t%s\n",(LPCWSTR)strValue);
 		theApp.WriteProfileString( L"Columns",strEntry,strValue);
@@ -1054,7 +1054,7 @@ void CMyListView::OnFileTouch()
 	int iItem = 0;
 	CWiseFile* pInfo = NULL;
 
-	SetRedraw(FALSE);
+	SetRedraw(false);
 
 	WCHAR szTouch[64];
 	int2str(szTouch, theListCtrl.GetSelectedCount());
@@ -1086,7 +1086,7 @@ void CMyListView::OnFileTouch()
 
 	ResetStatus();
 
-	SetRedraw(TRUE);
+	SetRedraw(true);
 	Invalidate();
 }
 
@@ -1106,7 +1106,7 @@ bool CMyListView::DeleteItem( int iItem )
 		UpdateWindow();
 	}
 
-	return (TRUE==theListCtrl.DeleteItem( iItem ));
+	return (TRUE == theListCtrl.DeleteItem( iItem ));
 }
 
 bool CMyListView::DeleteItem( CObject* pObject)
@@ -1122,7 +1122,7 @@ bool CMyListView::DeleteItem( CObject* pObject)
 			ERR_TITLE,
 			ERR_NODELETE);
 
-		return FALSE;
+		return false;
 	}
 
 	LV_FINDINFO lvfi;
@@ -1132,7 +1132,7 @@ bool CMyListView::DeleteItem( CObject* pObject)
 	int iItem = theListCtrl.FindItem( &lvfi, -1);
 	if ( -1 == iItem)
 	{
-		return FALSE;
+		return false;
 	}
 
 	return DeleteItem( iItem );
@@ -1180,7 +1180,7 @@ bool CMyListView::RedrawItem( int iItem )
 		return false;
 	}
 	
-	InvalidateRect( &rcDirty, FALSE);
+	InvalidateRect( &rcDirty, false);
 	return true;
 }
 
@@ -1244,12 +1244,12 @@ bool CMyListView::RedrawItem( CObject* pObject )
 void CMyListView::UpdateWidths()
 {
 	CListCtrl& theListCtrl = GetListCtrl();
-	SetRedraw(FALSE);
+	SetRedraw(false);
 
 	for( int i=0; i < LIST_NUMCOLUMNS; i++ )
 	{
 		TRACE(L">>> CMyListView:UpdateWidths visible %d, %d\r\n",i,m_pci[i].IsVisible());
-		if (FALSE == m_pci[i].IsVisible())
+		if (false == m_pci[i].IsVisible())
 		{
 			theListCtrl.SetColumnWidth( i, 0 );
 		}
@@ -1258,7 +1258,7 @@ void CMyListView::UpdateWidths()
 			theListCtrl.SetColumnWidth( i, m_pci[i].GetWidth() );
 		}
 	}
-	SetRedraw(TRUE);
+	SetRedraw(true);
 }
 
 void CMyListView::OnFileAdd() 
@@ -1419,7 +1419,7 @@ void CMyListView::OnEditRemove()
 	strText.FormatMessage(STR_FILEREMOVE, szCount);
 	UpdateStatus(strText);
 
-	SetRedraw(FALSE);
+	SetRedraw(false);
 	CWiseFile* pInfo = nullptr;
 	int iItem = theListCtrl.GetNextItem( -1, LVNI_SELECTED);
 	CMyDoc* pDoc = GetDocument();
@@ -1437,7 +1437,7 @@ void CMyListView::OnEditRemove()
 		}
 		iItem = theListCtrl.GetNextItem( iItem-1, LVNI_SELECTED);
 	}
-	SetRedraw(TRUE);
+	SetRedraw(true);
 	
 	if (theListCtrl.GetItemCount() > iItem)
 	{
@@ -1454,19 +1454,19 @@ void CMyListView::OnEditRemove()
 void CMyListView::OnViewSmartFit() 
 {
 	CListCtrl& theListCtrl = GetListCtrl();
-	SetRedraw(FALSE);
+	SetRedraw(false);
 
 	for (int i = 0; i < LIST_NUMCOLUMNS; i++)
 	{
-		if (TRUE == m_pci[i].IsVisible())
+		if (true == m_pci[i].IsVisible())
 		{
 			m_fLockHeaderWidth = true;
 			theListCtrl.SetColumnWidth(i, LVSCW_AUTOSIZE);
 		}
 	}
 
-	SetRedraw(TRUE);
-	Invalidate(FALSE);
+	SetRedraw(true);
+	Invalidate(false);
 
 	m_fLockHeaderWidth = false;
 }
@@ -1571,7 +1571,7 @@ void CMyListView::UpdateStatus(LPCWSTR pszStatus)
 	if (NULL == pFrame || !::IsWindow(pFrame->m_hWnd))
 		return;
 
-	pFrame->GetStatusBar()->SetPaneText(0, pszStatus, TRUE);
+	pFrame->GetStatusBar()->SetPaneText(0, pszStatus, true);
 }
 
 void CMyListView::OnCustomDraw(NMHDR* pNMHDR, LRESULT* pResult) 

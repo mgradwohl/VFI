@@ -305,7 +305,7 @@ HFONT GetMessageFont()
 //	{
 //		ClientToScreen(hWnd, &rcBox);
 //	}
-//	MoveWindow(hWnd, &rcBox, TRUE);
+//	MoveWindow(hWnd, &rcBox, true);
 //	return true;
 //}
 
@@ -362,7 +362,7 @@ bool SaveBox(const HWND hWnd, LPCWSTR pszTitle, LPCWSTR pszFilter, LPWSTR pszFil
 	WCHAR szFile[_MAX_PATH];
 	*szFile = L'\0';
 	WCHAR szDesktop[_MAX_PATH];
-	SHGetSpecialFolderPath(NULL, szDesktop, CSIDL_DESKTOPDIRECTORY, FALSE);
+	SHGetSpecialFolderPath(NULL, szDesktop, CSIDL_DESKTOPDIRECTORY, false);
 
 	OPENFILENAME of;
 	::ZeroMemory(&of, sizeof(OPENFILENAME));
@@ -391,7 +391,7 @@ bool OpenBox(const HWND hWnd, LPCWSTR pszTitle, LPCWSTR pszFilter, LPWSTR pszFil
 	if (NULL == pszFolder)
 	{
 		WCHAR szDesktop[_MAX_PATH];
-		SHGetSpecialFolderPath(NULL, szDesktop, CSIDL_DESKTOPDIRECTORY, FALSE);
+		SHGetSpecialFolderPath(NULL, szDesktop, CSIDL_DESKTOPDIRECTORY, false);
 		of.lpstrInitialDir = szDesktop;
 	}
 	else

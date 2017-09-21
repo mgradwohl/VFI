@@ -76,11 +76,11 @@ BOOL CHelpDlg::OnInitDialog()
 		pWnd->ShowWindow(SW_HIDE);
 	}
 
-	UpdateData(FALSE);
+	UpdateData(false);
 
 	LoadRTF();
 	
-	return TRUE;
+	return true;
 }
 
 bool CHelpDlg::LoadRTF(UINT nID)

@@ -52,8 +52,8 @@ public:
 	WCHAR m_szIniPath[_MAX_PATH];
 	bool ForwardMessages();
 	CMyApp();
-	BOOL FirstInstance();
-	BOOL SetFocusToPrevInstance();
+	bool FirstInstance();
+	bool SetFocusToPrevInstance();
 
 // Overrides
 	// ClassWizard generated virtual function overrides

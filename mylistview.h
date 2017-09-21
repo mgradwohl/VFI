@@ -298,7 +298,7 @@ inline int CMyListView::QWordCompare( QWORD qw1, QWORD qw2, bool fSortAscending)
 
 inline void CMyListView::OnUpdateViewSmartFit(CCmdUI* pCmdUI) 
 {
-	pCmdUI->Enable(TRUE);
+	pCmdUI->Enable(true);
 }
 
 inline void CMyListView::OnUpdateEditCopy(CCmdUI* pCmdUI) 

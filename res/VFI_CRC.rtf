@@ -1282,14 +1282,14 @@ the algorithm:\par
    N'th bit iteration. This parameter should be specified as a\par
    hexadecimal number.\par
 \par
-   REFIN: This is a boolean parameter. If it is FALSE, input bytes are\par
+   REFIN: This is a boolean parameter. If it is false, input bytes are\par
    processed with bit 7 being treated as the most significant bit\par
    (MSB) and bit 0 being treated as the least significant bit. If this\par
-   parameter is FALSE, each byte is reflected before being processed.\par
+   parameter is false, each byte is reflected before being processed.\par
 \par
-   REFOUT: This is a boolean parameter. If it is set to FALSE, the\par
+   REFOUT: This is a boolean parameter. If it is set to false, the\par
    final value in the register is fed into the XOROUT stage directly,\par
-   otherwise, if this parameter is TRUE, the final register value is\par
+   otherwise, if this parameter is true, the final register value is\par
    reflected first.\par
 \par
    XOROUT: This is an W-bit value that should be specified as a\par
@@ -1429,8 +1429,8 @@ the specified "check" checksum when fed the test string "123456789"\par
 /*            p_cm->cm_width = 16;                                            */\par
 /*            p_cm->cm_poly  = 0x8005L;                                       */\par
 /*            p_cm->cm_init  = 0L;                                            */\par
-/*            p_cm->cm_refin = TRUE;                                          */\par
-/*            p_cm->cm_refot = TRUE;                                          */\par
+/*            p_cm->cm_refin = true;                                          */\par
+/*            p_cm->cm_refot = true;                                          */\par
 /*            p_cm->cm_xorot = 0L;                                            */\par
 /*         Note: Poly is specified without its top bit (18005 becomes 8005).  */\par
 /*         Note: Width is one bit less than the raw poly width.               */\par
@@ -1481,9 +1481,9 @@ typedef unsigned long   ulong;\par
 typedef unsigned        bool;\par
 typedef unsigned char * p_ubyte_;\par
 \par
-#ifndef TRUE\par
-#define FALSE 0\par
-#define TRUE  1\par
+#ifndef true\par
+#define false 0\par
+#define true  1\par
 #endif\par
 \par
 /* Change to the second definition if you don't have prototypes. */\par
@@ -1712,8 +1712,8 @@ int    index;\par
 Despite all the fuss I've made about understanding and defining CRC\par
 algorithms, the mechanics of their high-speed implementation remains\par
 trivial. There are really only two forms: normal and reflected. Normal\par
-shifts to the left and covers the case of algorithms with Refin=FALSE\par
-and Refot=FALSE. Reflected shifts to the right and covers algorithms\par
+shifts to the left and covers the case of algorithms with Refin=false\par
+and Refot=false. Reflected shifts to the right and covers algorithms\par
 with both those parameters true. (If you want one parameter true and\par
 the other false, you'll have to figure it out for yourself!) The\par
 polynomial is embedded in the lookup table (to be discussed). The\par
@@ -1814,12 +1814,12 @@ table. Skip to the word "Summary" if you want to skip over this code.\par
 /*    #define TB_FILE   "crctable.out"                                        */\par
 /*    #define TB_WIDTH  2                                                     */\par
 /*    #define TB_POLY   0x8005L                                               */\par
-/*    #define TB_REVER  TRUE                                                  */\par
+/*    #define TB_REVER  true                                                  */\par
 \par
 #define TB_FILE   "crctable.out"\par
 #define TB_WIDTH  4\par
 #define TB_POLY   0x04C11DB7L\par
-#define TB_REVER  TRUE\par
+#define TB_REVER  true\par
 \par
 /******************************************************************************/\par
 \par
@@ -1851,7 +1851,7 @@ LOCAL void chkparam ()\par
     chk_err("chkparam: Width parameter is illegal.");\par
  if ((TB_WIDTH == 2) && (TB_POLY & 0xFFFF0000L))\par
     chk_err("chkparam: Poly parameter is too wide.");\par
- if ((TB_REVER != FALSE) && (TB_REVER != TRUE))\par
+ if ((TB_REVER != false) && (TB_REVER != true))\par
     chk_err("chkparam: Reverse parameter is not boolean.");\par
 \}\par
 \par
@@ -1877,9 +1877,9 @@ LOCAL void gentable ()\par
  WP("/*    Poly    : 0x%08lXL                                      */\\n",\par
     (ulong) TB_POLY);\par
  if (TB_REVER)\par
- WR("/*    Reverse : TRUE.                                            */\\n");\par
+ WR("/*    Reverse : true.                                            */\\n");\par
  else\par
- WR("/*    Reverse : FALSE.                                           */\\n");\par
+ WR("/*    Reverse : false.                                           */\\n");\par
  WR("/*                                                               */\\n");\par
  WR("/* For more information on the Rocksoft^tm Model CRC Algorithm,  */\\n");\par
  WR("/* see the document titled \\"A Painless Guide to CRC Error        */\\n");\par

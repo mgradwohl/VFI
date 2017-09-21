@@ -185,10 +185,10 @@ BOOL CMyApp::InitInstance()
 #endif
 
 	// Allow only one instance
-	if ( FALSE == FirstInstance() )
+	if ( false == FirstInstance() )
 	{
 		SetFocusToPrevInstance();
-		return FALSE;
+		return false;
 	}
 
 	// Init the Rich Edit Box
@@ -198,7 +198,7 @@ BOOL CMyApp::InitInstance()
 	m_wmUpdateView = ::RegisterWindowMessage( L"VFI_UpdateView");
 	if (0 == m_wmUpdateView)
 	{
-		return FALSE;
+		return false;
 	}
 
 	// Use an INI not the Registry
@@ -211,7 +211,7 @@ BOOL CMyApp::InitInstance()
 			GetLastError(),
 			ERR_TITLE,
 			ERR_INSTALL);
-		return FALSE;
+		return false;
 	}
 	::LoadString(AfxGetResourceHandle(), STR_INIFILENAME, szIniName, _MAX_PATH);
 	PathAppend(m_szIniPath, szIniName);
@@ -239,7 +239,7 @@ BOOL CMyApp::InitInstance()
 	m_pMainWnd->DragAcceptFiles();
 
 	// Show quick help
-	BOOL fShowQuickHelp = (1 == theApp.GetProfileInt(L"Preferences", L"ShowQuickHelp", 1));
+	bool fShowQuickHelp = (1 == theApp.GetProfileInt(L"Preferences", L"ShowQuickHelp", 1));
 	if (fShowQuickHelp)
 	{
 		CHelpDlg dlgHelp(AfxGetMainWnd(), IDR_RTF_HELP, true);
@@ -249,7 +249,7 @@ BOOL CMyApp::InitInstance()
 		WriteProfileInt( L"Preferences", L"ShowQuickHelp",fShowQuickHelp == TRUE ? 1 : 0);
 	}
 
-	return TRUE;
+	return true;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -374,11 +374,11 @@ BOOL CAboutDlg::OnInitDialog()
 	str.LoadString(STR_AUTHOR);
 	pCtl->SetWindowText(str);
 
-	return TRUE;
+	return true;
 }
 
 
-BOOL CMyApp::FirstInstance()
+bool CMyApp::FirstInstance()
 {
 	CString strEvent;
 
@@ -386,12 +386,12 @@ BOOL CMyApp::FirstInstance()
 	strEvent += "::SingleInstanceEvent";
 	if (m_eOneTime.Create(strEvent))
 	{
-		return TRUE;
+		return true;
 	}
-	return FALSE;
+	return false;
 }
 
-BOOL CMyApp::SetFocusToPrevInstance()
+bool CMyApp::SetFocusToPrevInstance()
 {
 	CString strWndTitle;
 	strWndTitle.LoadString(AFX_IDS_APP_TITLE);
@@ -408,9 +408,9 @@ BOOL CMyApp::SetFocusToPrevInstance()
 		}
 		pWndChild->SetForegroundWindow();
 		
-		return TRUE;
+		return true;
 	}
-	return FALSE;
+	return false;
 }
 
 int CMyApp::ExitInstance() 

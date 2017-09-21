@@ -47,7 +47,7 @@ CPageGeneral::CPageGeneral() : CPropertyPage(CPageGeneral::IDD)
 	m_fAudioCue = false;
 	m_strWave = "";
 	m_fIncludePath = false;
-	m_fSavePrompt = FALSE;
+	m_fSavePrompt = false;
 	m_strSavePath = "";
 	//}}AFX_DATA_INIT
 }
@@ -90,7 +90,7 @@ END_MESSAGE_MAP()
 //
 CPageColumn::CPageColumn() : CPropertyPage(CPageColumn::IDD)
 {
-	m_fInitialized=FALSE;
+	m_fInitialized=false;
 	m_pci = NULL;
 }
 
@@ -106,7 +106,7 @@ void CPageColumn::DoDataExchange(CDataExchange* pDX)
 		for( int i=0; i < LIST_NUMCOLUMNS; i++ )
 		{
 			m_pci[i].SetVisible(m_ctlColumns.GetCheck( i ) ? true : false);
-			TRACE(L">>> CPageColumn::DoDataExchange %d, %d\r\n",i,m_ctlColumns.GetCheck( i )==1 ? TRUE : FALSE);
+			TRACE(L">>> CPageColumn::DoDataExchange %d, %d\r\n",i,m_ctlColumns.GetCheck( i )==1 ? true : false);
 		}
 	}
 	else
@@ -155,8 +155,8 @@ BOOL CPageGeneral::OnInitDialog()
 	CPropertyPage::OnInitDialog();
 	OnAudiocue();
 
-	// return TRUE unless you set the focus to a control
-	return TRUE;
+	// return true unless you set the focus to a control
+	return true;
 }
 
 CCheckListBox* CPageColumn::GetCheckListBox()
@@ -186,7 +186,7 @@ BOOL CPageColumn::OnInitDialog()
 		TRACE(L">>> CPageColumn::OnInitDialog %s, %d\r\n",(LPCWSTR)strLabel, m_pci[i].IsVisible() ? 1 : 0);
 	}
 	
-	return TRUE;  // return TRUE unless you set the focus to a control
+	return true;  // return true unless you set the focus to a control
 }
 
 CColumnInfo* CPageColumn::GetColumnInfo()
@@ -199,7 +199,7 @@ INT_PTR CPageColumn::DoModal()
 	for( int i=0; i < LIST_NUMCOLUMNS; i++ )
 	{
 		m_pci[i].SetVisible(m_ctlColumns.GetCheck( i ) ? true : false);
-		TRACE(L">>> CPageColumn::DoModal %d, %d\r\n",i,m_ctlColumns.GetCheck( i )==1 ? TRUE : FALSE);
+		TRACE(L">>> CPageColumn::DoModal %d, %d\r\n",i,m_ctlColumns.GetCheck( i )==1 ? true : false);
 	}
 	return CPropertyPage::DoModal();
 }
@@ -246,10 +246,10 @@ void CPageGeneral::OnBrowseWave()
 		CButton* pCheck = static_cast<CButton*> (GetDlgItem(IDC_AUDIOCUE));
 		if (pCheck != nullptr)
 		{
-			pCheck->SetCheck(TRUE);
+			pCheck->SetCheck(true);
 		}
 
-		UpdateData(FALSE);
+		UpdateData(false);
 	}
 }
 
@@ -259,7 +259,7 @@ void CPageGeneral::OnChangeWave()
 
 void CPageGeneral::OnKillFocusEditWave() 
 {
-	UpdateData(TRUE);
+	UpdateData(true);
 	if (!DoesFileExist(m_strWave) && !m_strWave.IsEmpty())
 	{
 		CString strError;
@@ -274,7 +274,7 @@ void CPageGeneral::OnKillFocusEditWave()
 			strError);
 
 		m_strWave.Empty();
-		UpdateData(FALSE);
+		UpdateData(false);
 		GetDlgItem(IDC_EDITWAVE)->SetFocus();
 	}
 }
@@ -292,7 +292,7 @@ void CPageGeneral::OnChangeSavepath()
 
 void CPageGeneral::OnKillfocusSavepath() 
 {
-	UpdateData(TRUE);
+	UpdateData(true);
 	if (!DoesFolderExist(m_strSavePath) && !m_strSavePath.IsEmpty())
 	{
 		CString strTitle;
@@ -303,7 +303,7 @@ void CPageGeneral::OnKillfocusSavepath()
 		ErrorMessageBox(AfxGetMainWnd()->GetSafeHwnd(), GetLastError(), strTitle, strError);
 
 		m_strSavePath.Empty();
-		UpdateData(FALSE);
+		UpdateData(false);
 		GetDlgItem(IDC_SAVEPATH)->SetFocus();
 	}	
 }
@@ -315,5 +315,5 @@ void CPageGeneral::OnBrowsepath()
 	{
 		m_strSavePath = szFolder;
 	}
-	UpdateData(FALSE);
+	UpdateData(false);
 }

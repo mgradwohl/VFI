@@ -60,17 +60,17 @@ public:
 	bool m_fLastTime;
 	void DeleteMainList();
 	void RemoveAllMain();
-	BOOL CreateThreads();
-	BOOL AddToMain( spWiseFile pFileInfo );
-	BOOL RemoveFromMain( spWiseFile pFileInfo );
+	bool CreateThreads();
+	bool AddToMain( spWiseFile pFileInfo );
+	bool RemoveFromMain( spWiseFile pFileInfo );
 	void DeleteKillList();
 	void AddToKill( spWiseFile pFileInfo );
 	void ChangeItemState( spWiseFile pFileInfo, WORD wState );
-	BOOL AddToDirty( spWiseFile pFileInfo );
-	BOOL RemoveFromDirty( spWiseFile pFileInfo );
+	bool AddToDirty( spWiseFile pFileInfo );
+	bool RemoveFromDirty( spWiseFile pFileInfo );
 	spWiseFile RemoveDirtyHead();
-	BOOL SuspendAllThreads();
-	BOOL ResumeAllThreads();
+	bool SuspendAllThreads();
+	bool ResumeAllThreads();
 	void RemoveAllDirty();
 	DWORD RecurseDir( LPWSTR pszPath);
 	
@@ -97,7 +97,7 @@ public:
 	QWORD m_qwSize;
 // Operations
 public:
-	BOOL DeleteFile( CWiseFile* pFileInfo );
+	bool DeleteFile( CWiseFile* pFileInfo );
 	MyList m_FileList;
 	MyList m_DirtyList;
 	MyList m_KillList;
@@ -105,9 +105,9 @@ public:
 	MyList* GetList() { return &m_FileList; }
 
 	static CMyDoc* GetDoc();
-	BOOL AddFile(CString strFolder, CString strFileName);
-	BOOL AddFile(LPCWSTR pszFileName);
-	BOOL IsEmpty() { return m_FileList.isEmpty(); }
+	bool AddFile(CString strFolder, CString strFileName);
+	bool AddFile(LPCWSTR pszFileName);
+	bool IsEmpty() { return m_FileList.isEmpty(); }
 
 // Overrides
 	// ClassWizard generated virtual function overrides
@@ -144,7 +144,7 @@ public:
 
 	inline bool CMyDoc::IsDirtyEmpty()
 	{
-		return (TRUE == m_DirtyList.isEmpty());
+		return (true == m_DirtyList.isEmpty());
 	}
 
 	virtual void SafeUpdateAllViews(CView* pSender, LPARAM lHint, CObject* pHint);

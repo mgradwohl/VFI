@@ -125,7 +125,7 @@ BOOL CTimeDlg::OnInitDialog()
 		pWnd->GetWindowRect(&rc2);
 		ScreenToClient(&rc2);
 		x = (rc1.Width() - rc2.Width()) / 2;
-		pWnd->MoveWindow( x, rc2.top, rc2.Width(), rc2.Height(), FALSE);
+		pWnd->MoveWindow( x, rc2.top, rc2.Width(), rc2.Height(), false);
 	}
 
 	pWnd = GetDlgItem(IDC_TIMEPICK);
@@ -133,9 +133,9 @@ BOOL CTimeDlg::OnInitDialog()
 	{
 		pWnd->GetWindowRect(&rc2);
 		ScreenToClient(&rc2);
-		pWnd->MoveWindow(x, rc2.top, rc2.Width(), rc2.Height(), FALSE);
+		pWnd->MoveWindow(x, rc2.top, rc2.Width(), rc2.Height(), false);
 	}
-	return FALSE;
+	return false;
 }
 
 void CTimeDlg::GetTime( SYSTEMTIME* pTime )
@@ -143,13 +143,13 @@ void CTimeDlg::GetTime( SYSTEMTIME* pTime )
 	if (pTime==nullptr)
 		return;
 
-	UpdateData(TRUE);
+	UpdateData(true);
 	*pTime = m_stDateTime;
 }
 
 void CTimeDlg::OnOK() 
 {
-	UpdateData(TRUE);
+	UpdateData(true);
 #ifdef _DEBUG
 	HWND hWnd = GetDlgItem(IDC_DATEPICK)->GetSafeHwnd();
 	RECT rc = {0,0,0,0};

@@ -83,7 +83,7 @@ protected:  // control bar embedded members
 	CImageList m_ilToolBar;
 	CImageList m_ilToolBarGrey;
 
-	BOOL m_fShowToolTips;
+	bool m_fShowToolTips;
 	static void CALLBACK EXPORT TimerProc(HWND hWnd, UINT nMsg, UINT nIDEvent, DWORD dwTime);
 
 // Generated message map functions

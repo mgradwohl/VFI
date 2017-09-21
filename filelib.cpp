@@ -41,42 +41,42 @@ bool GetTempFolder(LPWSTR pszFolder)
 
 bool GetWindowsFolder(LPWSTR pszFolder)
 {
-	return (TRUE == SHGetSpecialFolderPath(NULL, pszFolder, CSIDL_WINDOWS, FALSE));
+	return (TRUE == SHGetSpecialFolderPath(NULL, pszFolder, CSIDL_WINDOWS, false));
 }
 
 bool GetDesktopFolder(LPWSTR pszFolder)
 {
-	return ( TRUE == SHGetSpecialFolderPath(NULL, pszFolder, CSIDL_DESKTOPDIRECTORY, FALSE));
+	return ( TRUE == SHGetSpecialFolderPath(NULL, pszFolder, CSIDL_DESKTOPDIRECTORY, false));
 }
 
 bool GetSystemFolder(LPWSTR pszFolder)
 {
-	return ( TRUE == SHGetSpecialFolderPath(NULL, pszFolder, CSIDL_SYSTEM, FALSE));
+	return ( TRUE == SHGetSpecialFolderPath(NULL, pszFolder, CSIDL_SYSTEM, false));
 }
 
 bool GetRecycleFolder(LPWSTR pszFolder)
 {
-	return ( TRUE == SHGetSpecialFolderPath(NULL, pszFolder, CSIDL_BITBUCKET, FALSE));
+	return ( TRUE == SHGetSpecialFolderPath(NULL, pszFolder, CSIDL_BITBUCKET, false));
 }
 
 bool GetDocumentsFolder(LPWSTR pszFolder)
 {
-	return ( TRUE == SHGetSpecialFolderPath(NULL, pszFolder, CSIDL_PERSONAL, FALSE));
+	return ( TRUE == SHGetSpecialFolderPath(NULL, pszFolder, CSIDL_PERSONAL, false));
 }
 
 bool GetFontFolder(LPWSTR pszFolder)
 {
-	return ( TRUE == SHGetSpecialFolderPath(NULL, pszFolder, CSIDL_FONTS, FALSE));
+	return ( TRUE == SHGetSpecialFolderPath(NULL, pszFolder, CSIDL_FONTS, false));
 }
 
 bool GetProfileFolder(LPWSTR pszFolder)
 {
-	return ( TRUE == SHGetSpecialFolderPath(NULL, pszFolder, CSIDL_PROFILE, FALSE));
+	return ( TRUE == SHGetSpecialFolderPath(NULL, pszFolder, CSIDL_PROFILE, false));
 }
 
 bool GetProgramFilesFolder(LPWSTR pszFolder)
 {
-	return ( TRUE == SHGetSpecialFolderPath(NULL, pszFolder, CSIDL_PROGRAM_FILES, FALSE));
+	return ( TRUE == SHGetSpecialFolderPath(NULL, pszFolder, CSIDL_PROGRAM_FILES, false));
 }
 
 bool DoesFileExist(LPCWSTR pszFileName)

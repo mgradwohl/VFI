@@ -49,7 +49,7 @@ public:
 	CButton	m_btnBrowse;
 	BOOL	m_fAudioCue;
 	CString	m_strWave;
-	BOOL	m_fIncludePath;
+	bool	m_fIncludePath;
 	BOOL	m_fSavePrompt;
 	CString	m_strSavePath;
 	//}}AFX_DATA

@@ -64,34 +64,34 @@ END_MESSAGE_MAP()
 
 bool CMyStatusBar::AddBarTips()
 {
-	EnableToolTips(TRUE);
-	m_ctlProgress1.EnableToolTips(TRUE);
-	m_ctlProgress2.EnableToolTips(TRUE);
+	EnableToolTips(true);
+	m_ctlProgress1.EnableToolTips(true);
+	m_ctlProgress2.EnableToolTips(true);
 
 	if (!m_Tip.AddTool(&m_ctlProgress1, LPSTR_TEXTCALLBACK, NULL, 0))
-		return FALSE;
+		return false;
 
 	if (!m_Tip.AddTool(&m_ctlProgress2, LPSTR_TEXTCALLBACK, NULL, 0))
-		return FALSE;
+		return false;
 	
 
 	int nIndex = CommandToIndex(ID_INDICATOR_COUNT);
 	RECT rc;
 	GetItemRect( nIndex, &rc );
 	if (!m_Tip.AddTool(this, TIP_COUNT, &rc, ID_INDICATOR_COUNT))
-		return FALSE;
+		return false;
 
 	nIndex = CommandToIndex(ID_INDICATOR_SIZE);
 	GetItemRect( nIndex, &rc );
 	if (!m_Tip.AddTool(this, TIP_SIZE, &rc, ID_INDICATOR_SIZE))
-		return FALSE;
+		return false;
 
 	nIndex = CommandToIndex(ID_INDICATOR_BUFFER);
 	GetItemRect( nIndex, &rc );
 	if (!m_Tip.AddTool(this, TIP_BUFFER, &rc, ID_INDICATOR_BUFFER))
-		return FALSE;
+		return false;
 
-	return TRUE;
+	return true;
 }
 
 bool CMyStatusBar::CreateProgressCtrl()
@@ -99,14 +99,14 @@ bool CMyStatusBar::CreateProgressCtrl()
 	int nIndex = CommandToIndex( ID_PROGRESS );
 	RECT rc;
 	GetItemRect( nIndex, &rc );
-	SetPaneText(nIndex, L"", TRUE);
+	SetPaneText(nIndex, L"", true);
 	SetPaneStyle(nIndex, SBPS_NORMAL);// | SBPS_DISABLED);
 
 	// half the height of the pane
 	int dY = abs(rc.bottom - rc.top) / 2;
 
 	rc.bottom = rc.top + dY - 1;
-	if (FALSE == m_ctlProgress1.Create( PBS_SMOOTH | WS_CHILD | WS_VISIBLE, rc, this, ID_PROGRESS))
+	if (false == m_ctlProgress1.Create( PBS_SMOOTH | WS_CHILD | WS_VISIBLE, rc, this, ID_PROGRESS))
 	{
 		return false;
 	}
@@ -116,7 +116,7 @@ bool CMyStatusBar::CreateProgressCtrl()
 	// move the 2nd control down
 	rc.top += dY + 1;
 	rc.bottom += dY + 1;
-	if (FALSE == m_ctlProgress2.Create( PBS_SMOOTH | WS_CHILD | WS_VISIBLE, rc, this, ID_PROGRESS))
+	if (false == m_ctlProgress2.Create( PBS_SMOOTH | WS_CHILD | WS_VISIBLE, rc, this, ID_PROGRESS))
 	{
 		return false;
 	}
@@ -241,12 +241,12 @@ void CMyStatusBar::OnSize(UINT nType, int cx, int cy)
 			int dY = abs(rc.bottom - rc.top) / 2;
 
 			rc.bottom = rc.top + dY - 1;
-			m_ctlProgress1.MoveWindow( &rc, TRUE );
+			m_ctlProgress1.MoveWindow( &rc, true );
 
 			// move the 2nd control down
 			rc.top += dY + 1;
 			rc.bottom += dY + 1;
-			m_ctlProgress2.MoveWindow( &rc, TRUE );
+			m_ctlProgress2.MoveWindow( &rc, true );
 		}
 		if (::IsWindow(m_Tip.m_hWnd))
 		{
@@ -344,9 +344,9 @@ BOOL CMyStatusBar::OnToolTipText( UINT id, NMHDR* pNMHDR, LRESULT* pResult )
 		::SetWindowPos(pNMHDR->hwndFrom, HWND_TOP, 0, 0, 0, 0,
 			SWP_NOACTIVATE | SWP_NOSIZE | SWP_NOMOVE | SWP_NOOWNERZORDER);
 
-		return TRUE;
+		return true;
 	}
-	return FALSE;
+	return false;
 }
 
 

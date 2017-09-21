@@ -70,7 +70,7 @@ public:
 		// no security
 		// manual reset
 		// initially off
-		m_hEvent = ::CreateEvent(NULL, TRUE, FALSE, pszName);
+		m_hEvent = ::CreateEvent(NULL, true, false, pszName);
 
 		if (GetLastError() == ERROR_ALREADY_EXISTS)
 		{

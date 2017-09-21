@@ -988,7 +988,7 @@ int CWiseFile::TouchFileTime(FILETIME* lpTime)
 		return FWF_ERR_BADPARAM;
 
 	DWORD dwOldAttribs = ::GetFileAttributes( m_szFullPath );
-	if (FALSE == ::SetFileAttributes( m_szFullPath, FILE_ATTRIBUTE_NORMAL))
+	if (false == ::SetFileAttributes( m_szFullPath, FILE_ATTRIBUTE_NORMAL))
 	{
 		::SetFileAttributes( m_szFullPath, dwOldAttribs);
 		return FWF_ERR_OTHER;
@@ -1009,7 +1009,7 @@ int CWiseFile::TouchFileTime(FILETIME* lpTime)
 		return FWF_ERR_OTHER;
 	} 
 
-	if (FALSE == ::SetFileTime(hFile, lpTime, lpTime, lpTime))
+	if (false == ::SetFileTime(hFile, lpTime, lpTime, lpTime))
 	{
 		::SetFileAttributes( m_szFullPath, dwOldAttribs);
 		::CloseHandle(hFile);
