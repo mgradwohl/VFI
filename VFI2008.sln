@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26730.15
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32002.185
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VFI2008", "VFI2008.vcxproj", "{82CBEA25-8E8D-40BF-AF01-45DF55D4C24A}"
 EndProject
@@ -9,6 +9,8 @@ Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
 		Debug|x64 = Debug|x64
+		Profile|Win32 = Profile|Win32
+		Profile|x64 = Profile|x64
 		Release|Win32 = Release|Win32
 		Release|x64 = Release|x64
 	EndGlobalSection
@@ -17,6 +19,10 @@ Global
 		{82CBEA25-8E8D-40BF-AF01-45DF55D4C24A}.Debug|Win32.Build.0 = Debug|Win32
 		{82CBEA25-8E8D-40BF-AF01-45DF55D4C24A}.Debug|x64.ActiveCfg = Debug|Win32
 		{82CBEA25-8E8D-40BF-AF01-45DF55D4C24A}.Debug|x64.Build.0 = Debug|Win32
+		{82CBEA25-8E8D-40BF-AF01-45DF55D4C24A}.Profile|Win32.ActiveCfg = Profile|Win32
+		{82CBEA25-8E8D-40BF-AF01-45DF55D4C24A}.Profile|Win32.Build.0 = Profile|Win32
+		{82CBEA25-8E8D-40BF-AF01-45DF55D4C24A}.Profile|x64.ActiveCfg = Profile|x64
+		{82CBEA25-8E8D-40BF-AF01-45DF55D4C24A}.Profile|x64.Build.0 = Profile|x64
 		{82CBEA25-8E8D-40BF-AF01-45DF55D4C24A}.Release|Win32.ActiveCfg = Debug|Win32
 		{82CBEA25-8E8D-40BF-AF01-45DF55D4C24A}.Release|Win32.Build.0 = Debug|Win32
 		{82CBEA25-8E8D-40BF-AF01-45DF55D4C24A}.Release|x64.ActiveCfg = Debug|Win32

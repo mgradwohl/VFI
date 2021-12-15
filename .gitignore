@@ -92,3 +92,13 @@ VFI2008151003.vsp
 /.vs/VFI2008/v15/ipch/8186ad4642647d53.ipch
 /.vs/VFI2008/v15/ipch/fa5d4525dd28b83.ipch
 /Ruleset.ruleset
+*.sarif
+*.xml
+/x64/Profile/VFI2008.exe.recipe
+/x64/Profile/VFI2008.vcxproj.FileListAbsolute.txt
+/x64/Profile/VFI2008.exe.lastcodeanalysissucceeded
+/x64/Profile/CodeAnalysisResultManifest.txt
+/.vs/VFI2008/v17/Browse.VC.db
+/.vs/VFI2008/v17/Browse.VC.db-shm
+/.vs/VFI2008/v17/Browse.VC.db-wal
+/.vs/VFI2008/v17/Browse.VC.opendb
